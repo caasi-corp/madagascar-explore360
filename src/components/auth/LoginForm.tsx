@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -7,8 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { LogIn, User, Lock, Eye, EyeOff, AlertTriangle } from 'lucide-react';
-import { userAPI } from '@/lib/store';
 import { LoginFormData } from "@/types/auth";
+import { useAuth } from '@/contexts/AuthContext';
 
 interface LoginFormProps {
   onDemoLogin: (email: string, password: string) => void;
@@ -17,6 +16,7 @@ interface LoginFormProps {
 
 const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, loginError }) => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<LoginFormData>({
@@ -50,12 +50,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, loginError }) => {
     
     try {
       console.log("Tentative de connexion avec:", formData.email, formData.password);
-      const user = await userAPI.authenticate(formData.email, formData.password);
+      const user = await login(formData.email, formData.password);
       
       if (user) {
         console.log("Utilisateur authentifié:", user);
-        localStorage.setItem('userId', user.id);
-        localStorage.setItem('userRole', user.role);
         
         if (user.role === 'admin') {
           toast.success('Bienvenue, Admin !');

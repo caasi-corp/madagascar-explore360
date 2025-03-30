@@ -1,11 +1,10 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { User } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import NavbarLink from './NavbarLink';
 import NavbarDropdown from './NavbarDropdown';
 import ThemeToggle from './ThemeToggle';
+import AuthStatus from './AuthStatus';
 
 interface NavItem {
   title: string;
@@ -61,18 +60,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
       
       <div className="ml-4 flex items-center space-x-2">
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} isScrolled={scrolled} />
-        
-        <Link to="/login">
-          <Button variant="outline" className="rounded-full">
-            <User size={18} className="mr-1" /> Connexion
-          </Button>
-        </Link>
-        
-        <Link to="/register">
-          <Button className="rounded-full bg-madagascar-green hover:bg-madagascar-green/80 text-white">
-            S'inscrire
-          </Button>
-        </Link>
+        <AuthStatus />
       </div>
     </nav>
   );

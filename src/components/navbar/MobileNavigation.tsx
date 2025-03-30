@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ThemeToggle from './ThemeToggle';
+import AuthStatus from './AuthStatus';
 
 interface NavItem {
   title: string;
@@ -80,17 +81,8 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
                 </Link>
               )
             ))}
-            <div className="pt-4 flex space-x-3">
-              <Link to="/login" className="w-1/2">
-                <Button variant="outline" className="w-full">
-                  Connexion
-                </Button>
-              </Link>
-              <Link to="/register" className="w-1/2">
-                <Button className="w-full bg-madagascar-green hover:bg-madagascar-green/80 text-white">
-                  S'inscrire
-                </Button>
-              </Link>
+            <div className="pt-4">
+              <AuthStatus />
             </div>
           </nav>
         </div>

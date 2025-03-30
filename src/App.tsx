@@ -8,6 +8,7 @@ import { initDB } from './lib/store';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './components/ui/dialog';
 import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
+import { AuthProvider } from './contexts/AuthContext';
 
 // Initialize the query client
 const queryClient = new QueryClient({
@@ -76,8 +77,10 @@ function App() {
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-        <Toaster />
+        <AuthProvider>
+          <RouterProvider router={router} />
+          <Toaster />
+        </AuthProvider>
       </QueryClientProvider>
     </React.StrictMode>
   );

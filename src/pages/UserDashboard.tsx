@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
@@ -23,12 +22,13 @@ import {
   CalendarDays,
   ArrowRight,
 } from 'lucide-react';
-import { userAPI, bookingAPI, Tour, tourAPI, Booking } from '@/lib/store';
+import { bookingAPI, Tour, tourAPI, Booking } from '@/lib/store';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<{firstName: string, lastName: string} | null>(null);
+  const { user, logout } = useAuth();
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<Tour[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,27 +37,15 @@ const UserDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userId = localStorage.getItem('userId');
-        const userRole = localStorage.getItem('userRole');
-        
-        if (!userId || !userRole) {
+        if (!user) {
           navigate('/login');
           return;
         }
         
         setIsLoading(true);
         
-        // Charger les informations de l'utilisateur
-        const userData = await userAPI.getById(userId);
-        if (userData) {
-          setUser({
-            firstName: userData.firstName,
-            lastName: userData.lastName
-          });
-        }
-        
         // Charger les réservations de l'utilisateur
-        const userBookings = await bookingAPI.getByUserId(userId);
+        const userBookings = await bookingAPI.getByUserId(user.id);
         // Filtrer pour n'obtenir que les réservations à venir
         const upcoming = userBookings.filter(booking => 
           new Date(booking.startDate) >= new Date()
@@ -76,11 +64,10 @@ const UserDashboard = () => {
     };
     
     fetchData();
-  }, [navigate]);
+  }, [user, navigate]);
   
   const handleLogout = () => {
-    localStorage.removeItem('userId');
-    localStorage.removeItem('userRole');
+    logout();
     navigate('/');
     toast.success("Déconnexion réussie");
   };
