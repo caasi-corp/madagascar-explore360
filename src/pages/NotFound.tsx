@@ -19,11 +19,11 @@ const NotFound = () => {
     <Layout>
       <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
         <div className="relative mb-8">
-          <div className="relative z-10 text-madagascar-blue dark:text-madagascar-yellow text-9xl font-bold opacity-20">
+          <div className="relative z-10 text-northgascar-navy dark:text-northgascar-yellow text-9xl font-bold opacity-20">
             404
           </div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <Search size={120} className="text-madagascar-green" />
+            <Search size={120} className="text-northgascar-teal" />
           </div>
         </div>
         
@@ -33,7 +33,7 @@ const NotFound = () => {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4">
-          <Button asChild variant="default" className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
+          <Button asChild variant="default" className="bg-northgascar-teal hover:bg-northgascar-teal/80 text-white">
             <Link to="/">
               <Home className="mr-2 h-4 w-4" /> Accueil
             </Link>

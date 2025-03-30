@@ -68,13 +68,22 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				
-				// Custom colors
+				// Custom colors basées sur le logo
+				northgascar: {
+					navy: '#2E3E82', // Bleu marin du logo
+					teal: '#42C1D9', // Bleu clair/turquoise du logo
+					orange: '#E88544', // Orange du logo
+					pink: '#E84874', // Rose du logo
+					yellow: '#F8C135', // Jaune plus vif pour les accents
+				},
+
+				// On garde madagascar colors pour rétrocompatibilité
 				madagascar: {
-					green: '#2A9D8F',
-					blue: '#264653',
-					yellow: '#E9C46A',
-					orange: '#F4A261',
-					red: '#E76F51',
+					green: '#42C1D9', // Remplacé par le bleu clair du logo
+					blue: '#2E3E82', // Remplacé par le bleu marin du logo
+					yellow: '#F8C135', // Remplacé par le jaune du logo
+					orange: '#E88544', // Remplacé par l'orange du logo
+					red: '#E84874', // Remplacé par le rose du logo
 				},
 			},
 			borderRadius: {

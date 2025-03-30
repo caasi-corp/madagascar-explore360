@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-madagascar-blue text-white pt-16 pb-6">
+    <footer className="bg-northgascar-navy text-white pt-16 pb-6">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo and About */}
@@ -29,16 +29,16 @@ const Footer: React.FC = () => {
               Découvrez les merveilles de Madagascar avec North Gascar Tours. Guides experts, aventures inoubliables et pratiques de tourisme durable.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="hover:text-madagascar-yellow transition-colors">
+              <a href="#" className="hover:text-northgascar-yellow transition-colors">
                 <Facebook size={20} />
               </a>
-              <a href="#" className="hover:text-madagascar-yellow transition-colors">
+              <a href="#" className="hover:text-northgascar-yellow transition-colors">
                 <Instagram size={20} />
               </a>
-              <a href="#" className="hover:text-madagascar-yellow transition-colors">
+              <a href="#" className="hover:text-northgascar-yellow transition-colors">
                 <Twitter size={20} />
               </a>
-              <a href="#" className="hover:text-madagascar-yellow transition-colors">
+              <a href="#" className="hover:text-northgascar-yellow transition-colors">
                 <Youtube size={20} />
               </a>
             </div>
@@ -60,7 +60,7 @@ const Footer: React.FC = () => {
                 <li key={index}>
                   <Link 
                     to={link.path}
-                    className="text-gray-300 hover:text-madagascar-yellow transition-colors flex items-center"
+                    className="text-gray-300 hover:text-northgascar-yellow transition-colors flex items-center"
                   >
                     <ArrowRight size={14} className="mr-1" /> {link.name}
                   </Link>
@@ -74,20 +74,20 @@ const Footer: React.FC = () => {
             <h3 className="text-xl font-bold mb-4">Informations de Contact</h3>
             <ul className="space-y-3">
               <li className="flex items-start">
-                <MapPin size={18} className="mr-2 mt-1 text-madagascar-yellow" />
+                <MapPin size={18} className="mr-2 mt-1 text-northgascar-yellow" />
                 <span className="text-gray-300">
                   Bureau North Gascar Tours, Antananarivo, Madagascar
                 </span>
               </li>
               <li className="flex items-center">
-                <Phone size={18} className="mr-2 text-madagascar-yellow" />
-                <a href="tel:+261320500999" className="text-gray-300 hover:text-madagascar-yellow transition-colors">
+                <Phone size={18} className="mr-2 text-northgascar-yellow" />
+                <a href="tel:+261320500999" className="text-gray-300 hover:text-northgascar-yellow transition-colors">
                   +261 32 050 09 99
                 </a>
               </li>
               <li className="flex items-center">
-                <Mail size={18} className="mr-2 text-madagascar-yellow" />
-                <a href="mailto:info@northgascartours.com" className="text-gray-300 hover:text-madagascar-yellow transition-colors">
+                <Mail size={18} className="mr-2 text-northgascar-yellow" />
+                <a href="mailto:info@northgascartours.com" className="text-gray-300 hover:text-northgascar-yellow transition-colors">
                   info@northgascartours.com
                 </a>
               </li>
@@ -106,7 +106,7 @@ const Footer: React.FC = () => {
                 placeholder="Votre adresse email" 
                 className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
               />
-              <Button className="bg-madagascar-yellow hover:bg-madagascar-yellow/80 text-madagascar-blue font-medium">
+              <Button className="bg-northgascar-yellow hover:bg-northgascar-yellow/80 text-northgascar-navy font-medium">
                 S'abonner
               </Button>
             </div>
@@ -119,13 +119,13 @@ const Footer: React.FC = () => {
               © {currentYear} North Gascar Tours. Tous droits réservés.
             </p>
             <div className="flex space-x-4 mt-4 md:mt-0">
-              <Link to="/privacy-policy" className="text-gray-400 hover:text-madagascar-yellow text-sm">
+              <Link to="/privacy-policy" className="text-gray-400 hover:text-northgascar-yellow text-sm">
                 Politique de Confidentialité
               </Link>
-              <Link to="/terms-of-service" className="text-gray-400 hover:text-madagascar-yellow text-sm">
+              <Link to="/terms-of-service" className="text-gray-400 hover:text-northgascar-yellow text-sm">
                 Conditions d'Utilisation
               </Link>
-              <Link to="/sitemap" className="text-gray-400 hover:text-madagascar-yellow text-sm">
+              <Link to="/sitemap" className="text-gray-400 hover:text-northgascar-yellow text-sm">
                 Plan du Site
               </Link>
             </div>
