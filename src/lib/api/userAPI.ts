@@ -19,19 +19,26 @@ export const userAPI = {
   getByEmail: async (email: string) => {
     const db = await getDB();
     try {
-      // Console log pour debug
+      // Logs pour le débogage
       console.log("Recherche d'utilisateur par email:", email);
       const allUsers = await db.getAll('users');
-      console.log("Tous les utilisateurs:", allUsers);
+      console.log("Tous les utilisateurs:", JSON.stringify(allUsers));
       
-      const user = await db.getFromIndex('users', 'by-email', email);
-      console.log("Utilisateur trouvé par email:", user);
-      return user;
+      // Essayer d'abord avec l'index
+      try {
+        const user = await db.getFromIndex('users', 'by-email', email);
+        console.log("Utilisateur trouvé par index:", user);
+        return user;
+      } catch (indexError) {
+        console.warn("Erreur avec l'index, utilisation de la recherche alternative:", indexError);
+        // Recherche manuelle si l'index échoue
+        const user = allUsers.find(u => u.email === email);
+        console.log("Utilisateur trouvé par recherche manuelle:", user);
+        return user;
+      }
     } catch (error) {
       console.error("Erreur lors de la récupération de l'utilisateur par email:", error);
-      // Méthode alternative de recherche si l'index ne fonctionne pas correctement
-      const allUsers = await db.getAll('users');
-      return allUsers.find(user => user.email === email);
+      return null;
     }
   },
   
@@ -41,11 +48,17 @@ export const userAPI = {
       const user = await userAPI.getByEmail(email);
       console.log("Utilisateur récupéré:", user);
       
-      if (user && user.password === password) {
-        console.log("Authentification réussie");
+      if (!user) {
+        console.log("Échec d'authentification: utilisateur non trouvé");
+        return null;
+      }
+      
+      if (user.password === password) {
+        console.log("Authentification réussie pour:", email);
         return { id: user.id, email: user.email, role: user.role };
       }
-      console.log("Échec d'authentification: mot de passe incorrect ou utilisateur non trouvé");
+      
+      console.log("Échec d'authentification: mot de passe incorrect");
       return null;
     } catch (error) {
       console.error("Erreur lors de l'authentification:", error);
