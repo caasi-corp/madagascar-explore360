@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Hero from '@/components/Hero';
 import { TourProps } from '@/components/TourCard';
@@ -104,7 +105,7 @@ const Index = () => {
       seats: 1,
       transmission: 'Automatic',
       fuelType: 'Essence',
-      image: 'https://images.unsplash.com/photo-1566845735839-6e25c92269a1',
+      image: 'https://images.unsplash.com/photo-1628985816814-b5ce00832b6a',
       features: ['Casque inclus', 'Coffre de rangement', '4x4', 'Garde au sol élevée'],
       availability: false,
     },
