@@ -5,6 +5,7 @@ import NavbarLink from './NavbarLink';
 import NavbarDropdown from './NavbarDropdown';
 import ThemeToggle from './ThemeToggle';
 import AuthStatus from './AuthStatus';
+import { Button } from '@/components/ui/button';
 
 interface NavItem {
   title: string;
@@ -58,9 +59,12 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
         )
       ))}
       
-      <div className="ml-4 flex items-center space-x-2">
+      <div className="ml-4 flex items-center space-x-4">
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} isScrolled={scrolled} />
-        <AuthStatus />
+        <Link to="/login" className="text-white hover:text-northgascar-yellow">Connexion</Link>
+        <Button className="bg-northgascar-teal hover:bg-northgascar-teal/80 text-white font-medium">
+          S'inscrire
+        </Button>
       </div>
     </nav>
   );

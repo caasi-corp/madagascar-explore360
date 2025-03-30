@@ -24,10 +24,8 @@ const NavbarLink: React.FC<NavbarLinkProps> = ({
       to={to}
       className={`px-3 py-2 text-base font-medium transition-colors ${
         isActive 
-          ? 'text-madagascar-green dark:text-madagascar-yellow font-semibold' 
-          : isScrolled || isDark
-            ? 'text-foreground hover:text-madagascar-green'
-            : 'text-white hover:text-madagascar-yellow'
+          ? 'text-northgascar-yellow font-semibold' 
+          : 'text-white hover:text-northgascar-yellow'
       }`}
       onClick={onClick}
     >

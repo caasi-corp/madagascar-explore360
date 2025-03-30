@@ -7,20 +7,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 const HeroSearch = () => {
   return (
-    <div className="bg-white/90 dark:bg-northgascar-navy/90 backdrop-blur-md p-4 md:p-6 rounded-lg shadow-lg max-w-4xl mx-auto md:mx-0 animation-delay-600 animate-fade-in">
+    <div className="bg-northgascar-navy/80 backdrop-blur-md p-4 md:p-4 rounded-lg shadow-lg w-full max-w-4xl mt-8">
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <div className="relative">
           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-northgascar-teal" size={18} />
           <Input 
             placeholder="Où aller?" 
-            className="pl-10"
+            className="pl-10 bg-white border-none"
           />
         </div>
         <div className="relative">
           <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-northgascar-teal" size={18} />
           <Select>
-            <SelectTrigger className="pl-10">
-              <SelectValue placeholder="Sélectionner une date" />
+            <SelectTrigger className="pl-10 bg-white border-none">
+              <SelectValue placeholder="Sélectionner une..." />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="coming-week">Semaine à venir</SelectItem>
@@ -32,7 +32,7 @@ const HeroSearch = () => {
         <div className="relative">
           <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-northgascar-teal" size={18} />
           <Select>
-            <SelectTrigger className="pl-10">
+            <SelectTrigger className="pl-10 bg-white border-none">
               <SelectValue placeholder="Voyageurs" />
             </SelectTrigger>
             <SelectContent>

@@ -35,11 +35,7 @@ const NavbarDropdown: React.FC<NavbarDropdownProps> = ({
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 
-          className={`px-3 flex items-center text-base font-medium ${
-            isScrolled || isDark
-              ? 'text-foreground hover:text-madagascar-green'
-              : 'text-white hover:text-madagascar-yellow'
-          }`}
+          className="px-3 flex items-center text-base font-medium text-white hover:text-northgascar-yellow"
         >
           {title} <ChevronDown size={16} className="ml-1" />
         </Button>

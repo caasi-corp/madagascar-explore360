@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from './navbar';
 import Footer from './Footer';
 import WhatsAppChat from './WhatsAppChat';
@@ -10,10 +10,14 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  useEffect(() => {
+    console.log('Layout rendering, children:', !!children);
+  }, [children]);
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-grow mt-16">
+      <main className="flex-grow">
         {children || <Outlet />}
       </main>
       <WhatsAppChat />
