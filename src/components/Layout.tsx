@@ -16,9 +16,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow mt-16">
-        <div className="container mx-auto px-4 py-8">
-          {children || <Outlet />}
-        </div>
+        {children || <Outlet />}
       </main>
       <WhatsAppChat />
       <Footer />
