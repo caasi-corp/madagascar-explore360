@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import Hero from '@/components/Hero';
 import { TourProps } from '@/components/TourCard';
@@ -20,8 +19,14 @@ import CallToAction from '@/components/sections/CallToAction';
 
 const Index = () => {
   useEffect(() => {
-    console.log('Index page rendering');
+    console.log('Index page rendering - component mounted');
+    
+    return () => {
+      console.log('Index page unmounting');
+    };
   }, []);
+
+  console.log('Index page render function running');
 
   // Sample tour data
   const featuredTours: TourProps[] = [

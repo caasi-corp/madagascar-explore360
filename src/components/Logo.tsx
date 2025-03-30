@@ -23,7 +23,7 @@ const Logo: React.FC<LogoProps> = ({ variant = 'default', size = 'md' }) => {
         alt="North Gascar Tours Logo" 
         className={sizeClasses[size]}
       />
-      <span className="inline">North Gascar <span className="text-northgascar-orange">Tours</span></span>
+      <span className="hidden md:inline">North Gascar <span className="text-northgascar-teal dark:text-northgascar-orange">Tours</span></span>
     </Link>
   );
 };

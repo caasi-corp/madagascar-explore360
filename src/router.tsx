@@ -21,7 +21,8 @@ import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import TermsOfService from './pages/legal/TermsOfService';
 import Sitemap from './pages/legal/Sitemap';
 
-console.log('Creating browser router');
+console.log("Creating router");
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -120,5 +121,4 @@ const router = createBrowserRouter([
   }
 ]);
 
-console.log('Router created successfully');
 export default router;
