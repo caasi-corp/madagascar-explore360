@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
-import { Home, Map, ArrowLeft, MapSearch } from 'lucide-react';
+import { Home, Map, ArrowLeft, Search } from 'lucide-react';
 
 const NotFound = () => {
   const location = useLocation();
@@ -23,7 +23,7 @@ const NotFound = () => {
             404
           </div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <MapSearch size={120} className="text-madagascar-green" />
+            <Search size={120} className="text-madagascar-green" />
           </div>
         </div>
         
