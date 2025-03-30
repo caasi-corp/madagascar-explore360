@@ -42,7 +42,7 @@ const TourCard: React.FC<TourCardProps> = ({ tour, animationIndex = 0 }) => {
         />
         {tour.featured && (
           <Badge className="absolute top-3 left-3 bg-madagascar-yellow text-madagascar-blue animate-pulse">
-            Featured
+            À la une
           </Badge>
         )}
         {tour.category && (
@@ -80,7 +80,7 @@ const TourCard: React.FC<TourCardProps> = ({ tour, animationIndex = 0 }) => {
           <Button 
             className="w-full mt-2 bg-madagascar-green hover:bg-madagascar-green/80 text-white"
           >
-            View Details
+            Voir Détails
           </Button>
         </Link>
       </div>
