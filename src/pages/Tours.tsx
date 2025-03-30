@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import Hero from '@/components/Hero';
@@ -32,10 +31,10 @@ const Tours = () => {
   const tours: TourProps[] = [
     {
       id: '1',
-      title: 'Avenue of the Baobabs Tour',
-      description: 'Experience the iconic Avenue of the Baobabs, one of Madagascar\'s most famous landmarks.',
+      title: 'Circuit Allée des Baobabs',
+      description: 'Découvrez l\'emblématique Allée des Baobabs, l\'un des sites les plus célèbres de Madagascar.',
       location: 'Morondava',
-      duration: '2 Days',
+      duration: '2 Jours',
       price: 299,
       rating: 4.9,
       image: 'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb',
@@ -44,68 +43,68 @@ const Tours = () => {
     },
     {
       id: '2',
-      title: 'Lemur Trekking in Andasibe',
-      description: 'Trek through the Andasibe National Park and encounter various species of lemurs in their natural habitat.',
+      title: 'Randonnée Lémuriens à Andasibe',
+      description: 'Randonnez à travers le Parc National d\'Andasibe et rencontrez différentes espèces de lémuriens dans leur habitat naturel.',
       location: 'Andasibe',
-      duration: '3 Days',
+      duration: '3 Jours',
       price: 349,
       rating: 4.8,
       image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027',
       featured: true,
-      category: 'Wildlife',
+      category: 'Faune',
     },
     {
       id: '3',
-      title: 'Isalo National Park Adventure',
-      description: 'Discover the stunning landscapes of Isalo National Park with its canyons, waterfalls and natural pools.',
+      title: 'Aventure au Parc National de l\'Isalo',
+      description: 'Découvrez les paysages époustouflants du Parc National de l\'Isalo avec ses canyons, cascades et piscines naturelles.',
       location: 'Isalo',
-      duration: '4 Days',
+      duration: '4 Jours',
       price: 499,
       rating: 4.7,
       image: 'https://images.unsplash.com/photo-1469041797191-50ace28483c3',
       featured: true,
-      category: 'Adventure',
+      category: 'Aventure',
     },
     {
       id: '4',
-      title: 'Nosy Be Island Paradise',
-      description: 'Relax on the beautiful beaches of Nosy Be, Madagascar\'s premier beach destination.',
+      title: 'Paradis de l\'île de Nosy Be',
+      description: 'Détendez-vous sur les magnifiques plages de Nosy Be, la principale destination balnéaire de Madagascar.',
       location: 'Nosy Be',
-      duration: '5 Days',
+      duration: '5 Jours',
       price: 599,
       rating: 4.9,
       image: 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57',
       featured: false,
-      category: 'Beach',
+      category: 'Plage',
     },
     {
       id: '5',
-      title: 'Ranomafana National Park Expedition',
-      description: 'Explore the lush rainforests of Ranomafana and spot rare species of lemurs, birds and chameleons.',
+      title: 'Expédition au Parc National de Ranomafana',
+      description: 'Explorez les forêts luxuriantes de Ranomafana et observez des espèces rares de lémuriens, d\'oiseaux et de caméléons.',
       location: 'Ranomafana',
-      duration: '3 Days',
+      duration: '3 Jours',
       price: 389,
       rating: 4.6,
       image: 'https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a',
       featured: false,
-      category: 'Wildlife',
+      category: 'Faune',
     },
     {
       id: '6',
-      title: 'Tsingy de Bemaraha Trek',
-      description: 'Journey through the spectacular limestone formations of the Tsingy de Bemaraha National Park.',
+      title: 'Randonnée dans le Tsingy de Bemaraha',
+      description: 'Parcourez les spectaculaires formations calcaires du Parc National du Tsingy de Bemaraha.',
       location: 'Bemaraha',
-      duration: '4 Days',
+      duration: '4 Jours',
       price: 649,
       rating: 4.9,
       image: 'https://images.unsplash.com/photo-1504623953583-4ae307ea839f',
       featured: false,
-      category: 'Adventure',
+      category: 'Aventure',
     },
   ];
 
-  const categories = ['Nature', 'Wildlife', 'Adventure', 'Beach', 'Cultural', 'Photography'];
-  const durations = ['1-2 Days', '3-5 Days', '6-10 Days', '10+ Days'];
+  const categories = ['Nature', 'Faune', 'Aventure', 'Plage', 'Culture', 'Photographie'];
+  const durations = ['1-2 Jours', '3-5 Jours', '6-10 Jours', '10+ Jours'];
 
   const handlePriceRangeChange = (values: number[]) => {
     setFilters({ ...filters, priceRange: values });
@@ -132,33 +131,28 @@ const Tours = () => {
     setSelectedDate(undefined);
   };
 
-  // Filter tours based on current filters
   const filteredTours = tours.filter(tour => {
-    // Search term filter
     if (searchTerm && !tour.title.toLowerCase().includes(searchTerm.toLowerCase()) && 
         !tour.location.toLowerCase().includes(searchTerm.toLowerCase()) &&
         !tour.description.toLowerCase().includes(searchTerm.toLowerCase())) {
       return false;
     }
     
-    // Price range filter
     if (tour.price < filters.priceRange[0] || tour.price > filters.priceRange[1]) {
       return false;
     }
     
-    // Category filter
     if (filters.categories.length > 0 && !filters.categories.includes(tour.category || '')) {
       return false;
     }
     
-    // Duration filter
     if (filters.duration) {
       const tourDays = parseInt(tour.duration.split(' ')[0]);
       
-      if (filters.duration === '1-2 Days' && tourDays > 2) return false;
-      if (filters.duration === '3-5 Days' && (tourDays < 3 || tourDays > 5)) return false;
-      if (filters.duration === '6-10 Days' && (tourDays < 6 || tourDays > 10)) return false;
-      if (filters.duration === '10+ Days' && tourDays <= 10) return false;
+      if (filters.duration === '1-2 Jours' && tourDays > 2) return false;
+      if (filters.duration === '3-5 Jours' && (tourDays < 3 || tourDays > 5)) return false;
+      if (filters.duration === '6-10 Jours' && (tourDays < 6 || tourDays > 10)) return false;
+      if (filters.duration === '10+ Jours' && tourDays <= 10) return false;
     }
     
     return true;
@@ -171,8 +165,8 @@ const Tours = () => {
   return (
     <Layout>
       <Hero 
-        title="Discover Our Tours"
-        subtitle="Explore Madagascar's incredible biodiversity, stunning landscapes and unique culture"
+        title="Découvrez Nos Circuits"
+        subtitle="Explorez l'incroyable biodiversité, les paysages magnifiques et la culture unique de Madagascar"
         showSearch={false}
         height="min-h-[40vh]"
         backgroundImage="https://images.unsplash.com/photo-1504623953583-4ae307ea839f"
@@ -180,13 +174,12 @@ const Tours = () => {
       
       <div className="section-padding">
         <div className="container mx-auto">
-          {/* Search and Filter Bar */}
           <div className="bg-card rounded-lg shadow-md p-4 md:p-6 mb-8">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-grow">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                 <Input 
-                  placeholder="Search tours, locations..."
+                  placeholder="Rechercher circuits, lieux..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -198,7 +191,7 @@ const Tours = () => {
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="flex-shrink-0">
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {selectedDate ? format(selectedDate, 'PPP') : 'Select Date'}
+                      {selectedDate ? format(selectedDate, 'PPP') : 'Sélectionner une date'}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -218,7 +211,7 @@ const Tours = () => {
                   className="flex-shrink-0"
                 >
                   <Filter className="mr-2 h-4 w-4" />
-                  Filters
+                  Filtres
                 </Button>
               </div>
             </div>
@@ -226,16 +219,15 @@ const Tours = () => {
             {isFilterOpen && (
               <div className="mt-4 pt-4 border-t animate-fade-in">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-semibold">Filters</h3>
+                  <h3 className="font-semibold">Filtres</h3>
                   <Button variant="ghost" size="sm" onClick={resetFilters} className="h-8 px-2">
-                    <X size={14} className="mr-1" /> Reset filters
+                    <X size={14} className="mr-1" /> Réinitialiser
                   </Button>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Price Range */}
                   <div>
-                    <h4 className="text-sm font-medium mb-2">Price Range</h4>
+                    <h4 className="text-sm font-medium mb-2">Fourchette de Prix</h4>
                     <div className="px-2">
                       <Slider
                         defaultValue={filters.priceRange}
@@ -247,15 +239,14 @@ const Tours = () => {
                         className="my-6"
                       />
                       <div className="flex justify-between text-sm text-muted-foreground">
-                        <span>${filters.priceRange[0]}</span>
-                        <span>${filters.priceRange[1]}</span>
+                        <span>{filters.priceRange[0]} €</span>
+                        <span>{filters.priceRange[1]} €</span>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Duration */}
                   <div>
-                    <h4 className="text-sm font-medium mb-3">Duration</h4>
+                    <h4 className="text-sm font-medium mb-3">Durée</h4>
                     <RadioGroup value={filters.duration} onValueChange={handleDurationChange}>
                       {durations.map((duration) => (
                         <div key={duration} className="flex items-center space-x-2">
@@ -266,9 +257,8 @@ const Tours = () => {
                     </RadioGroup>
                   </div>
                   
-                  {/* Categories */}
                   <div>
-                    <h4 className="text-sm font-medium mb-3">Categories</h4>
+                    <h4 className="text-sm font-medium mb-3">Catégories</h4>
                     <div className="grid grid-cols-2 gap-2">
                       {categories.map((category) => (
                         <div key={category} className="flex items-center space-x-2">
@@ -292,13 +282,11 @@ const Tours = () => {
             )}
           </div>
           
-          {/* Tour Results */}
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">
-                {filteredTours.length} {filteredTours.length === 1 ? 'Tour' : 'Tours'} Available
+                {filteredTours.length} {filteredTours.length === 1 ? 'Circuit' : 'Circuits'} Disponible{filteredTours.length > 1 ? 's' : ''}
               </h2>
-              {/* Sort dropdown can be added here */}
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -309,9 +297,9 @@ const Tours = () => {
             
             {filteredTours.length === 0 && (
               <div className="text-center py-16">
-                <h3 className="text-xl font-semibold mb-2">No tours found</h3>
-                <p className="text-muted-foreground mb-6">Try adjusting your filters or search criteria.</p>
-                <Button onClick={resetFilters} variant="outline">Reset Filters</Button>
+                <h3 className="text-xl font-semibold mb-2">Aucun circuit trouvé</h3>
+                <p className="text-muted-foreground mb-6">Essayez d'ajuster vos filtres ou critères de recherche.</p>
+                <Button onClick={resetFilters} variant="outline">Réinitialiser les filtres</Button>
               </div>
             )}
           </div>

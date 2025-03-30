@@ -14,8 +14,8 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({
-  title = "Discover Madagascar's Hidden Treasures",
-  subtitle = "Experience the unique biodiversity and breathtaking landscapes with our expert local guides",
+  title = "Découvrez les Trésors Cachés de Madagascar",
+  subtitle = "Vivez l'expérience d'une biodiversité unique et de paysages à couper le souffle avec nos guides locaux experts",
   showSearch = true,
   backgroundImage = "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb",
   height = "h-screen"
@@ -45,7 +45,7 @@ const Hero: React.FC<HeroProps> = ({
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-madagascar-green" size={18} />
                 <Input 
-                  placeholder="Where to?" 
+                  placeholder="Où aller?" 
                   className="pl-10"
                 />
               </div>
@@ -53,12 +53,12 @@ const Hero: React.FC<HeroProps> = ({
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-madagascar-green" size={18} />
                 <Select>
                   <SelectTrigger className="pl-10">
-                    <SelectValue placeholder="Select date" />
+                    <SelectValue placeholder="Sélectionner une date" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="coming-week">Coming week</SelectItem>
-                    <SelectItem value="next-month">Next month</SelectItem>
-                    <SelectItem value="custom">Custom date</SelectItem>
+                    <SelectItem value="coming-week">Semaine à venir</SelectItem>
+                    <SelectItem value="next-month">Mois prochain</SelectItem>
+                    <SelectItem value="custom">Date personnalisée</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -66,19 +66,19 @@ const Hero: React.FC<HeroProps> = ({
                 <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-madagascar-green" size={18} />
                 <Select>
                   <SelectTrigger className="pl-10">
-                    <SelectValue placeholder="Guests" />
+                    <SelectValue placeholder="Voyageurs" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">1 Person</SelectItem>
-                    <SelectItem value="2">2 People</SelectItem>
-                    <SelectItem value="3+">3+ People</SelectItem>
-                    <SelectItem value="group">Group</SelectItem>
+                    <SelectItem value="1">1 Personne</SelectItem>
+                    <SelectItem value="2">2 Personnes</SelectItem>
+                    <SelectItem value="3+">3+ Personnes</SelectItem>
+                    <SelectItem value="group">Groupe</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <Button className="bg-madagascar-green hover:bg-madagascar-green/80 text-white h-10">
                 <Search className="mr-2" size={18} />
-                Search
+                Rechercher
               </Button>
             </div>
           </div>

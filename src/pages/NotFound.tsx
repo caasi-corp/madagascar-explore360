@@ -10,7 +10,7 @@ const NotFound = () => {
 
   useEffect(() => {
     console.error(
-      "404 Error: User attempted to access non-existent route:",
+      "404 Erreur: L'utilisateur a tenté d'accéder à une route inexistante:",
       location.pathname
     );
   }, [location.pathname]);
@@ -27,25 +27,25 @@ const NotFound = () => {
           </div>
         </div>
         
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">Page Not Found</h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-4">Page Non Trouvée</h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-md">
-          The page you're looking for seems to be lost in the Madagascar wilderness.
+          La page que vous recherchez semble s'être perdue dans la nature malgache.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4">
           <Button asChild variant="default" className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
             <Link to="/">
-              <Home className="mr-2 h-4 w-4" /> Go Home
+              <Home className="mr-2 h-4 w-4" /> Accueil
             </Link>
           </Button>
           <Button asChild variant="outline">
             <Link to="/tours">
-              <Map className="mr-2 h-4 w-4" /> Explore Tours
+              <Map className="mr-2 h-4 w-4" /> Explorer les Circuits
             </Link>
           </Button>
           <Button asChild variant="ghost" onClick={() => window.history.back()}>
             <div>
-              <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
+              <ArrowLeft className="mr-2 h-4 w-4" /> Retour
             </div>
           </Button>
         </div>

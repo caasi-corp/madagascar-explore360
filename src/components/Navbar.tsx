@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Sun, Moon, ChevronDown, User } from 'lucide-react';
@@ -63,18 +62,18 @@ const Navbar: React.FC = () => {
   };
 
   const navItems = [
-    { title: 'Home', path: '/' },
-    { title: 'Tours', path: '/tours' },
+    { title: 'Accueil', path: '/' },
+    { title: 'Circuits', path: '/tours' },
     { 
       title: 'Services', 
       path: '#', 
       dropdown: [
-        { title: 'Car Rental', path: '/services/car-rental' },
-        { title: 'Flight Booking', path: '/services/flights' },
-        { title: 'Hotel Booking', path: '/services/hotels' },
+        { title: 'Location de Voiture', path: '/services/car-rental' },
+        { title: 'Réservation de Vol', path: '/services/flights' },
+        { title: 'Réservation d\'Hôtel', path: '/services/hotels' },
       ]
     },
-    { title: 'About', path: '/about' },
+    { title: 'À Propos', path: '/about' },
     { title: 'Contact', path: '/contact' },
   ];
 
@@ -155,13 +154,13 @@ const Navbar: React.FC = () => {
                 variant="outline" 
                 className="rounded-full"
               >
-                <User size={18} className="mr-1" /> Login
+                <User size={18} className="mr-1" /> Connexion
               </Button>
             </Link>
             
             <Link to="/register">
               <Button className="rounded-full bg-madagascar-green hover:bg-madagascar-green/80 text-white">
-                Sign Up
+                S'inscrire
               </Button>
             </Link>
           </div>
@@ -222,12 +221,12 @@ const Navbar: React.FC = () => {
               <div className="pt-4 flex space-x-3">
                 <Link to="/login" className="w-1/2">
                   <Button variant="outline" className="w-full">
-                    Login
+                    Connexion
                   </Button>
                 </Link>
                 <Link to="/register" className="w-1/2">
                   <Button className="w-full bg-madagascar-green hover:bg-madagascar-green/80 text-white">
-                    Sign Up
+                    S'inscrire
                   </Button>
                 </Link>
               </div>

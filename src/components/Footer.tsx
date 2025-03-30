@@ -26,7 +26,7 @@ const Footer: React.FC = () => {
           <div className="space-y-4">
             <Logo variant="white" />
             <p className="text-gray-300 mt-4">
-              Discover the wonders of Madagascar with North Gascar Tours. Expert guides, unforgettable adventures, and sustainable tourism practices.
+              Découvrez les merveilles de Madagascar avec North Gascar Tours. Guides experts, aventures inoubliables et pratiques de tourisme durable.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="hover:text-madagascar-yellow transition-colors">
@@ -46,16 +46,16 @@ const Footer: React.FC = () => {
           
           {/* Quick Links */}
           <div>
-            <h3 className="text-xl font-bold mb-4">Quick Links</h3>
+            <h3 className="text-xl font-bold mb-4">Liens Rapides</h3>
             <ul className="space-y-2">
               {[
-                { name: 'Home', path: '/' },
-                { name: 'Tours & Excursions', path: '/tours' },
-                { name: 'Car Rental', path: '/services/car-rental' },
-                { name: 'Flight Booking', path: '/services/flights' },
-                { name: 'Hotel Booking', path: '/services/hotels' },
-                { name: 'About Us', path: '/about' },
-                { name: 'Contact Us', path: '/contact' },
+                { name: 'Accueil', path: '/' },
+                { name: 'Circuits & Excursions', path: '/tours' },
+                { name: 'Location de Voiture', path: '/services/car-rental' },
+                { name: 'Réservation de Vol', path: '/services/flights' },
+                { name: 'Réservation d\'Hôtel', path: '/services/hotels' },
+                { name: 'À Propos', path: '/about' },
+                { name: 'Contact', path: '/contact' },
               ].map((link, index) => (
                 <li key={index}>
                   <Link 
@@ -71,12 +71,12 @@ const Footer: React.FC = () => {
           
           {/* Contact Info */}
           <div>
-            <h3 className="text-xl font-bold mb-4">Contact Information</h3>
+            <h3 className="text-xl font-bold mb-4">Informations de Contact</h3>
             <ul className="space-y-3">
               <li className="flex items-start">
                 <MapPin size={18} className="mr-2 mt-1 text-madagascar-yellow" />
                 <span className="text-gray-300">
-                  North Gascar Tours Office, Antananarivo, Madagascar
+                  Bureau North Gascar Tours, Antananarivo, Madagascar
                 </span>
               </li>
               <li className="flex items-center">
@@ -96,18 +96,18 @@ const Footer: React.FC = () => {
           
           {/* Newsletter */}
           <div>
-            <h3 className="text-xl font-bold mb-4">Subscribe to Newsletter</h3>
+            <h3 className="text-xl font-bold mb-4">S'abonner à la Newsletter</h3>
             <p className="text-gray-300 mb-4">
-              Stay updated with our latest offers and tours
+              Restez informé de nos dernières offres et circuits
             </p>
             <div className="flex flex-col space-y-2">
               <Input 
                 type="email" 
-                placeholder="Your email address" 
+                placeholder="Votre adresse email" 
                 className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
               />
               <Button className="bg-madagascar-yellow hover:bg-madagascar-yellow/80 text-madagascar-blue font-medium">
-                Subscribe
+                S'abonner
               </Button>
             </div>
           </div>
@@ -116,17 +116,17 @@ const Footer: React.FC = () => {
         <div className="border-t border-white/10 mt-12 pt-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              © {currentYear} North Gascar Tours. All rights reserved.
+              © {currentYear} North Gascar Tours. Tous droits réservés.
             </p>
             <div className="flex space-x-4 mt-4 md:mt-0">
               <Link to="/privacy-policy" className="text-gray-400 hover:text-madagascar-yellow text-sm">
-                Privacy Policy
+                Politique de Confidentialité
               </Link>
               <Link to="/terms-of-service" className="text-gray-400 hover:text-madagascar-yellow text-sm">
-                Terms of Service
+                Conditions d'Utilisation
               </Link>
               <Link to="/sitemap" className="text-gray-400 hover:text-madagascar-yellow text-sm">
-                Sitemap
+                Plan du Site
               </Link>
             </div>
           </div>
