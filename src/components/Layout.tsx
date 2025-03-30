@@ -1,11 +1,12 @@
 
 import React from 'react';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 import Footer from './Footer';
 import WhatsAppChat from './WhatsAppChat';
+import { Outlet } from 'react-router-dom';
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
@@ -13,7 +14,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow">
-        {children}
+        {children || <Outlet />}
       </main>
       <WhatsAppChat />
       <Footer />
