@@ -18,23 +18,22 @@ export const userAPI = {
   
   getByEmail: async (email: string) => {
     const db = await getDB();
+    console.log("Recherche d'utilisateur par email:", email);
+    
     try {
-      // Logs pour le débogage
-      console.log("Recherche d'utilisateur par email:", email);
+      // Récupérer tous les utilisateurs pour la vérification
       const allUsers = await db.getAll('users');
-      console.log("Tous les utilisateurs:", JSON.stringify(allUsers));
+      console.log("Tous les utilisateurs dans la base:", JSON.stringify(allUsers));
       
-      // Essayer d'abord avec l'index
-      try {
-        const user = await db.getFromIndex('users', 'by-email', email);
-        console.log("Utilisateur trouvé par index:", user);
+      // Recherche directe en mémoire plutôt que par l'index qui semble poser problème
+      const user = allUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+      
+      if (user) {
+        console.log("Utilisateur trouvé:", user);
         return user;
-      } catch (indexError) {
-        console.warn("Erreur avec l'index, utilisation de la recherche alternative:", indexError);
-        // Recherche manuelle si l'index échoue
-        const user = allUsers.find(u => u.email === email);
-        console.log("Utilisateur trouvé par recherche manuelle:", user);
-        return user;
+      } else {
+        console.log("Aucun utilisateur trouvé avec cet email");
+        return null;
       }
     } catch (error) {
       console.error("Erreur lors de la récupération de l'utilisateur par email:", error);
@@ -44,14 +43,17 @@ export const userAPI = {
   
   authenticate: async (email: string, password: string) => {
     try {
-      console.log("Tentative d'authentification pour:", email);
+      console.log(`Tentative d'authentification pour: ${email} avec mot de passe: ${password}`);
       const user = await userAPI.getByEmail(email);
-      console.log("Utilisateur récupéré:", user);
       
       if (!user) {
         console.log("Échec d'authentification: utilisateur non trouvé");
         return null;
       }
+      
+      console.log(`Vérification du mot de passe pour ${email}`);
+      console.log(`Mot de passe fourni: ${password}`);
+      console.log(`Mot de passe stocké: ${user.password}`);
       
       if (user.password === password) {
         console.log("Authentification réussie pour:", email);

@@ -1,4 +1,3 @@
-
 import { IDBPDatabase } from 'idb';
 import { NorthGascarDB, Tour, Vehicle, User, Booking } from './schema';
 
@@ -10,6 +9,64 @@ export const seedData = async (db: IDBPDatabase<NorthGascarDB>) => {
   console.log("Début du processus de seed de la base de données");
   
   try {
+    // Vérifier d'abord si des données existent déjà
+    const existingUsers = await db.getAll('users');
+    if (existingUsers.length > 0) {
+      console.log("Des utilisateurs existent déjà, le seed ne sera pas exécuté");
+      return;
+    }
+    
+    // Seed users first - CRITICAL
+    console.log("Création des utilisateurs de test...");
+    const users: User[] = [
+      {
+        id: 'admin1',
+        firstName: 'Admin',
+        lastName: 'User',
+        email: 'admin@northgascartours.com',
+        password: 'Admin123!',
+        role: 'admin',
+      },
+      {
+        id: 'user1',
+        firstName: 'Pierre',
+        lastName: 'Martin',
+        email: 'user@northgascartours.com',
+        password: 'User123!',
+        role: 'user',
+      },
+      {
+        id: 'user2',
+        firstName: 'Marie',
+        lastName: 'Dubois',
+        email: 'marie@example.com',
+        password: 'password',
+        role: 'user',
+      }
+    ];
+    
+    // Use a single transaction for users
+    try {
+      console.log("Ajout des utilisateurs...");
+      const tx = db.transaction('users', 'readwrite');
+      const userStore = tx.objectStore('users');
+      
+      for (const user of users) {
+        await userStore.add(user);
+        console.log(`Utilisateur ajouté: ${user.email}`);
+      }
+      
+      await tx.done;
+      console.log("Transaction utilisateurs terminée avec succès");
+      
+      // Verify users were added
+      const addedUsers = await db.getAll('users');
+      console.log(`${addedUsers.length} utilisateurs ajoutés:`, JSON.stringify(addedUsers));
+    } catch (e) {
+      console.error("Erreur critique lors de l'ajout des utilisateurs:", e);
+      throw e; // This is critical, so we rethrow
+    }
+    
     // Seed tours
     const tours: Tour[] = [
       {
@@ -126,35 +183,6 @@ export const seedData = async (db: IDBPDatabase<NorthGascarDB>) => {
       },
     ];
     
-    // Add users avec log pour le débogage
-    console.log("Création des utilisateurs de test...");
-    const users: User[] = [
-      {
-        id: 'admin1',
-        firstName: 'Admin',
-        lastName: 'User',
-        email: 'admin@northgascartours.com',
-        password: 'Admin123!',
-        role: 'admin',
-      },
-      {
-        id: 'user1',
-        firstName: 'Pierre',
-        lastName: 'Martin',
-        email: 'user@northgascartours.com',
-        password: 'User123!',
-        role: 'user',
-      },
-      {
-        id: 'user2',
-        firstName: 'Marie',
-        lastName: 'Dubois',
-        email: 'marie@example.com',
-        password: 'password',
-        role: 'user',
-      }
-    ];
-    
     // Add some sample bookings
     const bookings: Booking[] = [
       {
@@ -167,65 +195,31 @@ export const seedData = async (db: IDBPDatabase<NorthGascarDB>) => {
         totalPrice: 299,
         createdAt: new Date().toISOString(),
       },
-      {
-        id: 'b2',
-        userId: 'user1',
-        vehicleId: 'v1',
-        startDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
-        endDate: new Date(Date.now() + 35 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 35 days from now
-        status: 'Pending',
-        totalPrice: 89 * 5, // 5 days rental
-        createdAt: new Date().toISOString(),
-      }
     ];
 
-    // Store data with proper error handling
+    // Store data with proper error handling - these are less critical
     try {
-      const tourStore = db.transaction('tours', 'readwrite').objectStore('tours');
-      for (const tour of tours) {
-        await tourStore.put(tour);
-      }
+      await db.transaction('tours', 'readwrite', store => {
+        tours.forEach(tour => store.put(tour));
+      });
       console.log("Tours ajoutés avec succès");
     } catch (e) {
       console.error("Erreur lors de l'ajout des tours:", e);
     }
     
     try {
-      const vehicleStore = db.transaction('vehicles', 'readwrite').objectStore('vehicles');
-      for (const vehicle of vehicles) {
-        await vehicleStore.put(vehicle);
-      }
+      await db.transaction('vehicles', 'readwrite', store => {
+        vehicles.forEach(vehicle => store.put(vehicle));
+      });
       console.log("Véhicules ajoutés avec succès");
     } catch (e) {
       console.error("Erreur lors de l'ajout des véhicules:", e);
     }
     
     try {
-      // Créer un nouvelle transaction pour les utilisateurs
-      const userTransaction = db.transaction('users', 'readwrite');
-      const userStore = userTransaction.objectStore('users');
-      
-      for (const user of users) {
-        await userStore.put(user);
-        console.log(`Utilisateur ajouté: ${user.email}`);
-      }
-      
-      // Attendre que la transaction soit complétée
-      await userTransaction.done;
-      console.log("Tous les utilisateurs ont été ajoutés avec succès");
-      
-      // Vérifier que les utilisateurs ont bien été ajoutés
-      const allUsers = await db.getAll('users');
-      console.log("Utilisateurs dans la base après le seed:", JSON.stringify(allUsers));
-    } catch (e) {
-      console.error("Erreur lors de l'ajout des utilisateurs:", e);
-    }
-    
-    try {
-      const bookingStore = db.transaction('bookings', 'readwrite').objectStore('bookings');
-      for (const booking of bookings) {
-        await bookingStore.put(booking);
-      }
+      await db.transaction('bookings', 'readwrite', store => {
+        bookings.forEach(booking => store.put(booking));
+      });
       console.log("Réservations ajoutées avec succès");
     } catch (e) {
       console.error("Erreur lors de l'ajout des réservations:", e);
@@ -234,5 +228,6 @@ export const seedData = async (db: IDBPDatabase<NorthGascarDB>) => {
     console.log("Seed de la base de données terminé avec succès");
   } catch (error) {
     console.error("Erreur générale durant le seed de la base de données:", error);
+    throw error;
   }
 };

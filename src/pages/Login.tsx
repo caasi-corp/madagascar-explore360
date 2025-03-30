@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { LogIn, User, Lock, Eye, EyeOff, RefreshCw } from 'lucide-react';
+import { LogIn, User, Lock, Eye, EyeOff, RefreshCw, AlertTriangle } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { userAPI } from '@/lib/store';
 import { resetDB } from '@/lib/db/db';
@@ -17,11 +17,29 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     remember: false,
   });
+  
+  // Vérifier la présence d'utilisateurs au chargement
+  useEffect(() => {
+    const checkUsers = async () => {
+      try {
+        const users = await userAPI.getAll();
+        console.log(`Page de connexion: ${users.length} utilisateurs trouvés dans la base`);
+        if (users.length === 0) {
+          setLoginError("Aucun utilisateur trouvé dans la base de données. Veuillez réinitialiser la base de données.");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification des utilisateurs:", error);
+      }
+    };
+    
+    checkUsers();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,6 +47,8 @@ const Login = () => {
       ...prevState,
       [name]: value,
     }));
+    // Effacer l'erreur quand l'utilisateur modifie le formulaire
+    setLoginError(null);
   };
 
   const handleCheckboxChange = (checked: boolean) => {
@@ -45,6 +65,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setLoginError(null);
     
     try {
       console.log("Tentative de connexion avec:", formData.email, formData.password);
@@ -63,11 +84,13 @@ const Login = () => {
           navigate('/user/dashboard');
         }
       } else {
-        console.log("Échec d'authentification: utilisateur non trouvé ou mot de passe incorrect");
+        console.log("Échec d'authentification");
+        setLoginError('Email ou mot de passe invalide');
         toast.error('Email ou mot de passe invalide');
       }
     } catch (error) {
       console.error("Erreur de connexion:", error);
+      setLoginError('Erreur lors de la connexion');
       toast.error('Erreur lors de la connexion');
     } finally {
       setIsLoading(false);
@@ -77,10 +100,19 @@ const Login = () => {
   const handleResetDatabase = async () => {
     try {
       setIsResetting(true);
+      setLoginError(null);
       await resetDB();
       toast.success("Base de données réinitialisée avec succès. Veuillez vous reconnecter.");
+      
+      // Vérifier que les utilisateurs ont bien été créés après réinitialisation
+      const users = await userAPI.getAll();
+      console.log(`Après réinitialisation: ${users.length} utilisateurs dans la base`);
+      if (users.length > 0) {
+        toast.success(`${users.length} utilisateurs ajoutés avec succès`);
+      }
     } catch (error) {
       console.error("Erreur lors de la réinitialisation de la base de données:", error);
+      setLoginError("Erreur lors de la réinitialisation. Veuillez recharger la page.");
       toast.error("Erreur lors de la réinitialisation de la base de données");
     } finally {
       setIsResetting(false);
@@ -93,6 +125,7 @@ const Login = () => {
       password,
       remember: false
     });
+    setLoginError(null);
   };
 
   return (
@@ -107,6 +140,13 @@ const Login = () => {
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
+              {loginError && (
+                <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-2 text-sm text-destructive">
+                  <AlertTriangle size={16} />
+                  <span>{loginError}</span>
+                </div>
+              )}
+              
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">

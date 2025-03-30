@@ -63,26 +63,32 @@ export const initDB = async () => {
             flightsStore.createIndex('by-arrival', 'arrival');
             flightsStore.createIndex('by-departureDate', 'departureDate');
           }
-          
-          // Add sample data - wrapped in try-catch for better error handling
-          try {
-            console.log("Démarrage du processus de seed...");
-            seedData(db);
-          } catch (seedError) {
-            console.error("Erreur lors du seed de la base de données:", seedError);
-          }
         },
       });
       
-      // Vérification que la base est correctement initialisée
+      // Maintenant que la base de données est initialisée, on peut ajouter les données initiales
       const db = await dbPromise;
-      console.log("Base de données initialisée avec succès!");
+      console.log("Base de données initialisée, vérification des données");
       
-      try {
-        const users = await db.getAll('users');
-        console.log(`Base de données contient ${users.length} utilisateurs:`, JSON.stringify(users));
-      } catch (e) {
-        console.error("Erreur lors de la vérification des utilisateurs:", e);
+      // Vérifier si des utilisateurs existent déjà
+      const usersCount = await db.count('users');
+      console.log(`Nombre d'utilisateurs trouvés: ${usersCount}`);
+      
+      // Si aucun utilisateur n'existe, ajouter les données de démo
+      if (usersCount === 0) {
+        console.log("Aucun utilisateur trouvé, ajout des données initiales...");
+        try {
+          await seedData(db);
+          
+          // Vérifier que les données ont bien été ajoutées
+          const usersAfterSeed = await db.getAll('users');
+          console.log(`Après le seed: ${usersAfterSeed.length} utilisateurs trouvés`);
+          console.log("Utilisateurs:", JSON.stringify(usersAfterSeed));
+        } catch (error) {
+          console.error("Erreur lors de l'ajout des données initiales:", error);
+        }
+      } else {
+        console.log("Des utilisateurs existent déjà dans la base");
       }
       
     } catch (error) {
@@ -126,10 +132,6 @@ export const resetDB = async () => {
     // Reinitialize
     const newDb = await initDB();
     console.log("Base de données réinitialisée avec succès");
-    
-    // Vérifier que les utilisateurs sont bien présents après la réinitialisation
-    const users = await newDb.getAll('users');
-    console.log(`Base de données réinitialisée contient ${users.length} utilisateurs:`, JSON.stringify(users));
     
     return newDb;
   } catch (error) {
