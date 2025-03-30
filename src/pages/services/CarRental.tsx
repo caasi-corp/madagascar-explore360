@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -35,7 +34,6 @@ import {
   FormLabel,
 } from '@/components/ui/form';
 
-// Sample vehicles data
 const vehicles = [
   {
     id: 'v1',

@@ -1,6 +1,4 @@
-
 import React from 'react';
-import Layout from '@/components/Layout';
 import Hero from '@/components/Hero';
 import { TourProps } from '@/components/TourCard';
 import { VehicleProps } from '@/components/VehicleCard';
@@ -80,7 +78,7 @@ const Index = () => {
       type: '4x4',
       pricePerDay: 89,
       seats: 7,
-      transmission: 'Automatic', // Changed from "Automatique" to "Automatic"
+      transmission: 'Automatic',
       fuelType: 'Diesel',
       image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf',
       features: ['Climatisation', 'GPS', 'Porte-bagages', '4x4', 'Bluetooth', 'Ports USB'],
@@ -92,7 +90,7 @@ const Index = () => {
       type: 'motorcycle',
       pricePerDay: 45,
       seats: 2,
-      transmission: 'Manual', // Changed from "Manuelle" to "Manual"
+      transmission: 'Manual',
       fuelType: 'Essence',
       image: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39',
       features: ['Casque inclus', 'Sacoches', 'Capacité tout-terrain', 'Économe en carburant'],
@@ -104,7 +102,7 @@ const Index = () => {
       type: 'quad',
       pricePerDay: 65,
       seats: 1,
-      transmission: 'Automatic', // Changed from "Automatique" to "Automatic"
+      transmission: 'Automatic',
       fuelType: 'Essence',
       image: 'https://images.unsplash.com/photo-1566845735839-6e25c92269a1',
       features: ['Casque inclus', 'Coffre de rangement', '4x4', 'Garde au sol élevée'],
@@ -160,7 +158,7 @@ const Index = () => {
   ];
 
   return (
-    <Layout>
+    <>
       {/* Hero Section */}
       <Hero />
       
@@ -178,7 +176,7 @@ const Index = () => {
       
       {/* Call To Action Section */}
       <CallToAction />
-    </Layout>
+    </>
   );
 };
 
