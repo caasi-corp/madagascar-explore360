@@ -13,6 +13,16 @@ interface HeroProps {
   height?: string;
 }
 
+// Les différents effets de transition possibles
+const transitionEffects = [
+  "fade", // fondu simple
+  "zoom", // zoom avant
+  "slide-left", // glissement de gauche à droite
+  "slide-right", // glissement de droite à gauche
+  "slide-up", // glissement de bas en haut
+  "zoom-fade" // combinaison de zoom et fondu
+];
+
 const Hero: React.FC<HeroProps> = ({
   title = "Excursions personnalisées dans le nord de Madagascar",
   subtitle = "Vivez l'expérience d'une biodiversité unique et de paysages à couper le souffle avec nos guides locaux experts",
@@ -29,27 +39,77 @@ const Hero: React.FC<HeroProps> = ({
   ];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [previousImageIndex, setPreviousImageIndex] = useState(-1);
+  const [currentEffect, setCurrentEffect] = useState("fade");
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % natureImages.length);
-    }, 6000); // Change image every 6 seconds
+      // Choisir un nouvel effet de transition aléatoire
+      const newEffect = transitionEffects[Math.floor(Math.random() * transitionEffects.length)];
+      setCurrentEffect(newEffect);
+      
+      // Mettre à jour les indices d'image et déclencher la transition
+      setPreviousImageIndex(currentImageIndex);
+      setIsTransitioning(true);
+      
+      setTimeout(() => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % natureImages.length);
+        setIsTransitioning(false);
+      }, 500); // Durée de la transition, synchronisée avec les animations CSS
+      
+    }, 6000); // Changement d'image toutes les 6 secondes
 
     return () => clearInterval(interval);
-  }, []);
+  }, [currentImageIndex, natureImages.length]);
 
   const currentImage = backgroundImage || natureImages[currentImageIndex];
+  const previousImage = previousImageIndex >= 0 ? natureImages[previousImageIndex] : currentImage;
+
+  // Classes CSS pour les différents effets de transition
+  const getTransitionClasses = () => {
+    switch (currentEffect) {
+      case "zoom":
+        return "transform-origin-center transition-transform duration-1000 scale-110";
+      case "slide-left":
+        return "translate-x-full transition-transform duration-500";
+      case "slide-right":
+        return "-translate-x-full transition-transform duration-500";
+      case "slide-up":
+        return "translate-y-full transition-transform duration-500";
+      case "zoom-fade":
+        return "scale-110 opacity-0 transition-all duration-1000";
+      case "fade":
+      default:
+        return "opacity-0 transition-opacity duration-500";
+    }
+  };
 
   return (
     <div 
-      className={`relative ${height} flex items-center transition-opacity duration-1000`}
-      style={{
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${currentImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        transition: 'background-image 1s ease-in-out',
-      }}
+      className={`relative ${height} flex items-center overflow-hidden`}
     >
+      {/* Couche d'image précédente */}
+      <div 
+        className={`absolute inset-0 w-full h-full transition-all duration-500 ${isTransitioning ? getTransitionClasses() : ''}`}
+        style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${previousImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+      
+      {/* Couche d'image actuelle */}
+      <div 
+        className={`absolute inset-0 w-full h-full ${isTransitioning ? 'opacity-100' : 'opacity-100'} transition-all duration-500`}
+        style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${currentImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          zIndex: isTransitioning ? 0 : 1,
+        }}
+      />
+      
       <div className="absolute bottom-4 right-4 z-20">
         <div className="flex gap-2">
           {natureImages.map((_, index) => (
@@ -57,8 +117,16 @@ const Hero: React.FC<HeroProps> = ({
               key={index}
               className={`w-3 h-3 rounded-full ${
                 index === currentImageIndex ? 'bg-northgascar-teal' : 'bg-white/50'
-              }`}
-              onClick={() => setCurrentImageIndex(index)}
+              } transition-all duration-300`}
+              onClick={() => {
+                setPreviousImageIndex(currentImageIndex);
+                setIsTransitioning(true);
+                setTimeout(() => {
+                  setCurrentImageIndex(index);
+                  setIsTransitioning(false);
+                }, 500);
+                setCurrentEffect(transitionEffects[Math.floor(Math.random() * transitionEffects.length)]);
+              }}
             />
           ))}
         </div>
