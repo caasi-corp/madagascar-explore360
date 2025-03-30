@@ -16,9 +16,9 @@ const Advantages: React.FC<AdvantagesProps> = ({ advantages }) => {
     <section className="section-padding">
       <div className="container mx-auto">
         <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">Why Choose North Gascar Tours</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">Pourquoi Choisir North Gascar Tours</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            We're committed to providing unforgettable experiences with safety, sustainability, and quality
+            Nous nous engageons à vous offrir des expériences inoubliables avec sécurité, durabilité et qualité
           </p>
         </div>
         

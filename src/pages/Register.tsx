@@ -32,7 +32,7 @@ const Register = () => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error("Les mots de passe ne correspondent pas");
       return;
     }
     
@@ -40,7 +40,7 @@ const Register = () => {
     
     // Mock registration functionality - replace with actual implementation later
     setTimeout(() => {
-      toast.success('Account created successfully!');
+      toast.success('Compte créé avec succès !');
       localStorage.setItem('userRole', 'user');
       navigate('/user/dashboard');
       setIsLoading(false);
@@ -52,31 +52,31 @@ const Register = () => {
       <div className="min-h-[80vh] flex flex-col items-center justify-center p-4">
         <Card className="w-full max-w-lg">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Create an Account</CardTitle>
+            <CardTitle className="text-2xl">Créer un compte</CardTitle>
             <CardDescription>
-              Sign up to start booking tours and adventures
+              Inscrivez-vous pour commencer à réserver des circuits et aventures
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="firstName">Prénom</Label>
                   <Input
                     id="firstName"
                     name="firstName"
-                    placeholder="John"
+                    placeholder="Jean"
                     value={formData.firstName}
                     onChange={handleChange}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="lastName">Nom</Label>
                   <Input
                     id="lastName"
                     name="lastName"
-                    placeholder="Doe"
+                    placeholder="Dupont"
                     value={formData.lastName}
                     onChange={handleChange}
                     required
@@ -88,7 +88,7 @@ const Register = () => {
                 <Input
                   id="email"
                   name="email"
-                  placeholder="name@example.com"
+                  placeholder="nom@exemple.com"
                   type="email"
                   autoCapitalize="none"
                   autoComplete="email"
@@ -99,7 +99,7 @@ const Register = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Mot de passe</Label>
                 <Input
                   id="password"
                   name="password"
@@ -110,7 +110,7 @@ const Register = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -121,13 +121,13 @@ const Register = () => {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                By creating an account, you agree to our{' '}
+                En créant un compte, vous acceptez nos{' '}
                 <Link to="/terms-of-service" className="text-madagascar-green hover:underline">
-                  Terms of Service
+                  Conditions d'utilisation
                 </Link>{' '}
-                and{' '}
+                et notre{' '}
                 <Link to="/privacy-policy" className="text-madagascar-green hover:underline">
-                  Privacy Policy
+                  Politique de confidentialité
                 </Link>.
               </p>
             </CardContent>
@@ -140,18 +140,18 @@ const Register = () => {
                 {isLoading ? (
                   <div className="flex items-center">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Creating account...
+                    Création du compte...
                   </div>
                 ) : (
                   <>
-                    <UserPlus className="mr-2 h-4 w-4" /> Create Account
+                    <UserPlus className="mr-2 h-4 w-4" /> Créer un compte
                   </>
                 )}
               </Button>
               <p className="text-sm text-center text-muted-foreground">
-                Already have an account?{" "}
+                Vous avez déjà un compte ?{" "}
                 <Link to="/login" className="text-madagascar-green hover:underline">
-                  Sign in
+                  Se connecter
                 </Link>
               </p>
             </CardFooter>

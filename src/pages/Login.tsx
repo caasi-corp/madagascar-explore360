@@ -43,14 +43,14 @@ const Login = () => {
       // For demonstration purposes, use email admin@northgascartours.com and password admin to access admin
       if (formData.email === 'admin@northgascartours.com' && formData.password === 'admin') {
         localStorage.setItem('userRole', 'admin');
-        toast.success('Welcome back, Admin!');
+        toast.success('Bienvenue, Admin !');
         navigate('/admin/dashboard');
       } else if (formData.email && formData.password) {
         localStorage.setItem('userRole', 'user');
-        toast.success('Login successful!');
+        toast.success('Connexion réussie !');
         navigate('/user/dashboard');
       } else {
-        toast.error('Invalid email or password');
+        toast.error('Email ou mot de passe invalide');
       }
       
       setIsLoading(false);
@@ -62,9 +62,9 @@ const Login = () => {
       <div className="min-h-[80vh] flex flex-col items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Welcome Back</CardTitle>
+            <CardTitle className="text-2xl">Bienvenue</CardTitle>
             <CardDescription>
-              Sign in to your account to continue
+              Connectez-vous à votre compte pour continuer
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
@@ -74,7 +74,7 @@ const Login = () => {
                 <Input
                   id="email"
                   name="email"
-                  placeholder="name@example.com"
+                  placeholder="nom@exemple.com"
                   type="email"
                   autoCapitalize="none"
                   autoComplete="email"
@@ -86,12 +86,12 @@ const Login = () => {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">Mot de passe</Label>
                   <Link 
                     to="/forgot-password"
                     className="text-sm text-madagascar-green hover:underline"
                   >
-                    Forgot password?
+                    Mot de passe oublié ?
                   </Link>
                 </div>
                 <Input
@@ -113,7 +113,7 @@ const Login = () => {
                   htmlFor="remember"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  Remember me
+                  Se souvenir de moi
                 </label>
               </div>
             </CardContent>
@@ -126,18 +126,18 @@ const Login = () => {
                 {isLoading ? (
                   <div className="flex items-center">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Signing in...
+                    Connexion en cours...
                   </div>
                 ) : (
                   <>
-                    <LogIn className="mr-2 h-4 w-4" /> Sign In
+                    <LogIn className="mr-2 h-4 w-4" /> Se connecter
                   </>
                 )}
               </Button>
               <p className="text-sm text-center text-muted-foreground">
-                Don't have an account?{" "}
+                Vous n'avez pas de compte ?{" "}
                 <Link to="/register" className="text-madagascar-green hover:underline">
-                  Sign up
+                  S'inscrire
                 </Link>
               </p>
             </CardFooter>
@@ -146,14 +146,14 @@ const Login = () => {
         
         {/* Demo Credentials */}
         <div className="mt-6 p-4 bg-muted/50 rounded-md max-w-md w-full">
-          <h3 className="font-medium mb-2 text-center">Demo Credentials</h3>
-          <p className="text-sm text-muted-foreground mb-1">Admin login:</p>
+          <h3 className="font-medium mb-2 text-center">Identifiants de démonstration</h3>
+          <p className="text-sm text-muted-foreground mb-1">Connexion administrateur :</p>
           <code className="text-xs bg-muted p-1 rounded">
-            Email: admin@northgascartours.com | Password: admin
+            Email: admin@northgascartours.com | Mot de passe: admin
           </code>
-          <p className="text-sm text-muted-foreground mt-2 mb-1">User login:</p>
+          <p className="text-sm text-muted-foreground mt-2 mb-1">Connexion utilisateur :</p>
           <code className="text-xs bg-muted p-1 rounded">
-            Email: user@example.com | Password: password
+            Email: user@example.com | Mot de passe: password
           </code>
         </div>
       </div>

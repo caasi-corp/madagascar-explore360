@@ -14,19 +14,19 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({ vehicles }) => {
     <section className="section-padding bg-gradient-to-b from-madagascar-blue to-madagascar-blue/80 text-white">
       <div className="container mx-auto">
         <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">Explore Your Way</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">Explorez à Votre Façon</h2>
           <p className="text-lg text-white/80 max-w-2xl mx-auto">
-            Choose from our fleet of well-maintained vehicles for the perfect Madagascar adventure
+            Choisissez parmi notre flotte de véhicules bien entretenus pour votre aventure parfaite à Madagascar
           </p>
         </div>
         
         <Tabs defaultValue="all" className="w-full">
           <div className="flex justify-center mb-6">
             <TabsList className="bg-white/10">
-              <TabsTrigger value="all">All Vehicles</TabsTrigger>
+              <TabsTrigger value="all">Tous les véhicules</TabsTrigger>
               <TabsTrigger value="4x4">4x4</TabsTrigger>
-              <TabsTrigger value="car">Cars</TabsTrigger>
-              <TabsTrigger value="motorcycle">Motorcycles</TabsTrigger>
+              <TabsTrigger value="car">Voitures</TabsTrigger>
+              <TabsTrigger value="motorcycle">Motos</TabsTrigger>
               <TabsTrigger value="quad">Quads</TabsTrigger>
             </TabsList>
           </div>
@@ -67,7 +67,7 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({ vehicles }) => {
         <div className="mt-10 text-center">
           <Button asChild className="bg-white hover:bg-white/90 text-madagascar-blue">
             <a href="/services/car-rental">
-              View All Vehicles <ArrowRight size={16} className="ml-2" />
+              Voir tous les véhicules <ArrowRight size={16} className="ml-2" />
             </a>
           </Button>
         </div>

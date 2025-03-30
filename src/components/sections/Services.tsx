@@ -20,9 +20,9 @@ const Services: React.FC<ServicesProps> = ({ services }) => {
     <section className="section-padding">
       <div className="container mx-auto">
         <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">Our Services</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">Nos Services</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Complete travel solutions for your Madagascar adventure
+            Des solutions de voyage complètes pour votre aventure à Madagascar
           </p>
         </div>
         
@@ -37,7 +37,7 @@ const Services: React.FC<ServicesProps> = ({ services }) => {
                 <p className="text-muted-foreground mb-4">{service.description}</p>
                 <Button variant="link" asChild className="text-madagascar-green">
                   <a href={service.link}>
-                    Learn more <ArrowRight size={16} className="ml-1" />
+                    En savoir plus <ArrowRight size={16} className="ml-1" />
                   </a>
                 </Button>
               </CardContent>
