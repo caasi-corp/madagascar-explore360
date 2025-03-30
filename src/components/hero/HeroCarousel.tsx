@@ -29,7 +29,8 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           transform: `scale(${dronePosition.scale}) translate(${dronePosition.x}%, ${dronePosition.y}%)`,
-          transition: 'transform 2s ease-out',
+          transition: `transform 2s ease-out, filter 1.5s ease-out`,
+          filter: isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom') ? 'blur(8px)' : 'blur(0px)',
         }}
       />
       
@@ -41,8 +42,9 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           transform: `scale(${dronePosition.scale}) translate(${dronePosition.x}%, ${dronePosition.y}%)`,
-          transition: 'transform 2s ease-out',
+          transition: 'transform 2s ease-out, filter 1.5s ease-out',
           zIndex: isTransitioning ? 0 : 1,
+          filter: !isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom') ? 'blur(0px)' : '',
         }}
       />
       
