@@ -2,6 +2,7 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { cn } from "@/lib/utils"
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -147,6 +148,3 @@ export {
   SIDEBAR_WIDTH_MOBILE,
   SIDEBAR_WIDTH_ICON
 }
-
-// Import cn utility
-import { cn } from "@/lib/utils"
