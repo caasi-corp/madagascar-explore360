@@ -43,6 +43,7 @@ function App() {
         setInitError((error as Error).message || "Erreur lors de l'initialisation de la base de données");
       } finally {
         setIsInitializing(false);
+        console.log("Initialisation terminée, application prête");
       }
     };
     
@@ -50,6 +51,7 @@ function App() {
   }, []);
 
   if (isInitializing) {
+    console.log("Affichage de l'écran de chargement");
     return (
       <div className="h-screen w-screen flex flex-col items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-madagascar-green" />
@@ -59,6 +61,7 @@ function App() {
   }
 
   if (initError) {
+    console.log("Affichage de l'erreur d'initialisation:", initError);
     return (
       <Dialog open={!!initError}>
         <DialogContent>
@@ -76,6 +79,7 @@ function App() {
     );
   }
 
+  console.log("Rendu du routeur");
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import Layout from './components/Layout';
@@ -31,7 +30,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Index />
+        element: <Index />,
       },
       {
         path: 'tours',
@@ -120,5 +119,7 @@ const router = createBrowserRouter([
     ]
   }
 ]);
+
+console.log("Router created successfully");
 
 export default router;

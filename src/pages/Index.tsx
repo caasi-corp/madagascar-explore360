@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import Hero from '@/components/Hero';
 import { TourProps } from '@/components/TourCard';
@@ -168,7 +169,7 @@ const Index = () => {
   ];
 
   return (
-    <>
+    <div className="flex flex-col gap-12">
       {/* Hero Section */}
       <Hero />
       
@@ -186,7 +187,7 @@ const Index = () => {
       
       {/* Call To Action Section */}
       <CallToAction />
-    </>
+    </div>
   );
 };
 
