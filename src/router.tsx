@@ -82,7 +82,13 @@ const router = createBrowserRouter([
   },
   {
     path: '/admin',
-    element: <AdminDashboard />
+    element: <AdminLayout />,
+    children: [
+      {
+        index: true,
+        element: <AdminDashboard />
+      }
+    ]
   }
 ]);
 

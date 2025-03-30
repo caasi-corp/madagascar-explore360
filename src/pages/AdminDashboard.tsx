@@ -1,4 +1,3 @@
-
 import React from 'react';
 import AdminLayout from '@/components/AdminLayout';
 import {
@@ -35,7 +34,6 @@ import {
 } from 'lucide-react';
 
 const AdminDashboard = () => {
-  // Sample data
   const recentBookings = [
     {
       id: 'B001',
@@ -81,7 +79,6 @@ const AdminDashboard = () => {
         </Button>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -141,7 +138,6 @@ const AdminDashboard = () => {
         </Card>
       </div>
 
-      {/* Tabs for different metrics */}
       <Tabs defaultValue="overview" className="mb-6">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -206,7 +202,6 @@ const AdminDashboard = () => {
                 <CardDescription>Revenue for the past months</CardDescription>
               </CardHeader>
               <CardContent className="h-80">
-                {/* This would be replaced with a real chart component */}
                 <div className="h-full flex items-center justify-center bg-muted/20 rounded-md">
                   Chart placeholder (recharts would be implemented here)
                 </div>
