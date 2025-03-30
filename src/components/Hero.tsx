@@ -44,15 +44,15 @@ const Hero: React.FC<HeroProps> = ({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [dronePosition, setDronePosition] = useState({ x: 0, y: 0, scale: 1.05 });
 
-  // Effet de drone caméra - léger mouvement de flottement
+  // Effet de drone caméra - mouvement plus rapide
   useEffect(() => {
     const droneMoveInterval = setInterval(() => {
       setDronePosition({
-        x: Math.sin(Date.now() / 10000) * 1.5, // Mouvement horizontal lent
-        y: Math.cos(Date.now() / 12000) * 1.5, // Mouvement vertical lent et légèrement décalé
-        scale: 1.05 + (Math.sin(Date.now() / 8000) * 0.01), // Léger zoom in/out
+        x: Math.sin(Date.now() / 7000) * 2.2, // Mouvement horizontal plus rapide (était 10000 * 1.5)
+        y: Math.cos(Date.now() / 8000) * 2.2, // Mouvement vertical plus rapide (était 12000 * 1.5)
+        scale: 1.05 + (Math.sin(Date.now() / 6000) * 0.015), // Zoom légèrement plus prononcé (était 8000 * 0.01)
       });
-    }, 50); // Mise à jour fréquente pour un mouvement fluide
+    }, 40); // Mise à jour plus fréquente pour un mouvement plus fluide (était 50)
 
     return () => clearInterval(droneMoveInterval);
   }, []);
@@ -71,9 +71,9 @@ const Hero: React.FC<HeroProps> = ({
       setTimeout(() => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % natureImages.length);
         setIsTransitioning(false);
-      }, 1200); // Durée de transition plus longue (1.2s au lieu de 0.5s)
+      }, 1200); // Durée de transition reste la même pour permettre une transition complète
       
-    }, 10000); // Changement d'image toutes les 10 secondes (au lieu de 6s)
+    }, 10000); // Changement d'image toutes les 10 secondes
 
     return () => clearInterval(interval);
   }, [currentImageIndex, natureImages.length]);
@@ -85,18 +85,18 @@ const Hero: React.FC<HeroProps> = ({
   const getTransitionClasses = () => {
     switch (currentEffect) {
       case "zoom":
-        return "transform-origin-center transition-transform duration-2000 scale-110";
+        return "transform-origin-center transition-transform duration-1800 scale-110"; // Un peu plus rapide
       case "slide-left":
-        return "translate-x-full transition-transform duration-1500";
+        return "translate-x-full transition-transform duration-1200"; // Un peu plus rapide
       case "slide-right":
-        return "-translate-x-full transition-transform duration-1500";
+        return "-translate-x-full transition-transform duration-1200"; // Un peu plus rapide
       case "slide-up":
-        return "translate-y-full transition-transform duration-1500";
+        return "translate-y-full transition-transform duration-1200"; // Un peu plus rapide
       case "zoom-fade":
-        return "scale-110 opacity-0 transition-all duration-2000";
+        return "scale-110 opacity-0 transition-all duration-1800"; // Un peu plus rapide
       case "fade":
       default:
-        return "opacity-0 transition-opacity duration-1500";
+        return "opacity-0 transition-opacity duration-1200"; // Un peu plus rapide
     }
   };
 
