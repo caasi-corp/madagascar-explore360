@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { CalendarDays, MapPin, Star, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useRandomAnimation } from '@/lib/animation';
 
 export interface TourProps {
   id: string;
@@ -20,11 +21,19 @@ export interface TourProps {
 
 interface TourCardProps {
   tour: TourProps;
+  animationIndex?: number;
 }
 
-const TourCard: React.FC<TourCardProps> = ({ tour }) => {
+const TourCard: React.FC<TourCardProps> = ({ tour, animationIndex = 0 }) => {
+  // Utiliser une animation aléatoire avec un délai basé sur l'index
+  const animationClass = `opacity-0 ${useRandomAnimation(1)[0]}`;
+  const animationDelay = `${animationIndex * 150}ms`;
+  
   return (
-    <div className="group rounded-lg overflow-hidden shadow-md border border-border hover:shadow-xl transition-all duration-300 hover-scale bg-card">
+    <div 
+      className={`group rounded-lg overflow-hidden shadow-md border border-border hover:shadow-xl transition-all duration-300 hover-scale bg-card ${animationClass}`}
+      style={{ animationDelay, animationFillMode: 'forwards' }}
+    >
       <div className="relative overflow-hidden h-48 md:h-64">
         <img 
           src={tour.image} 
@@ -32,7 +41,7 @@ const TourCard: React.FC<TourCardProps> = ({ tour }) => {
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
         {tour.featured && (
-          <Badge className="absolute top-3 left-3 bg-madagascar-yellow text-madagascar-blue">
+          <Badge className="absolute top-3 left-3 bg-madagascar-yellow text-madagascar-blue animate-pulse">
             Featured
           </Badge>
         )}
