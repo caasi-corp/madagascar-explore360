@@ -49,7 +49,7 @@ const Register = () => {
 
   return (
     <Layout>
-      <div className="min-h-[80vh] flex flex-col items-center justify-center p-4">
+      <div className="min-h-[80vh] flex flex-col items-center justify-center p-4 pt-24 mt-16">
         <Card className="w-full max-w-lg">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Créer un compte</CardTitle>
