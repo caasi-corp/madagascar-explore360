@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Layout from '@/components/Layout';
 import Hero from '@/components/Hero';
 import TourCard, { TourProps } from '@/components/TourCard';
 import { Button } from '@/components/ui/button';
@@ -27,7 +26,6 @@ const Tours = () => {
   });
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
-  // Sample tour data
   const tours: TourProps[] = [
     {
       id: '1',
@@ -163,7 +161,7 @@ const Tours = () => {
   };
 
   return (
-    <Layout>
+    <>
       <Hero 
         title="Découvrez Nos Circuits"
         subtitle="Explorez l'incroyable biodiversité, les paysages magnifiques et la culture unique de Madagascar"
@@ -305,7 +303,7 @@ const Tours = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 
