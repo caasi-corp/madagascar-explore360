@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -20,8 +19,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['Poppins', 'sans-serif'],
-				playfair: ['Playfair Display', 'serif'],
+				sans: ['Nunito', 'sans-serif'],
+				display: ['Cormorant', 'serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

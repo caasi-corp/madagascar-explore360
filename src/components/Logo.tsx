@@ -17,7 +17,7 @@ const Logo: React.FC<LogoProps> = ({ variant = 'default', size = 'md' }) => {
   };
 
   return (
-    <Link to="/" className={`flex items-center gap-2 font-montserrat font-bold ${textColor} ${sizeClasses[size]}`}>
+    <Link to="/" className={`flex items-center gap-2 font-display font-bold ${textColor} ${sizeClasses[size]}`}>
       <img 
         src="/lovable-uploads/f8c8f079-7776-45ac-a077-6570cfbb7fcf.png" 
         alt="North Gascar Tours Logo" 
