@@ -1,4 +1,3 @@
-
 import { IDBPDatabase } from 'idb';
 import { NorthGascarDB, Tour, Vehicle, User, Booking } from './schema';
 
@@ -178,21 +177,21 @@ export const seedData = async (db: IDBPDatabase<NorthGascarDB>) => {
   // Store data
   const tourStore = db.transaction('tours', 'readwrite').objectStore('tours');
   for (const tour of tours) {
-    tourStore.put(tour);
+    await tourStore.put(tour);
   }
   
   const vehicleStore = db.transaction('vehicles', 'readwrite').objectStore('vehicles');
   for (const vehicle of vehicles) {
-    vehicleStore.put(vehicle);
+    await vehicleStore.put(vehicle);
   }
   
   const userStore = db.transaction('users', 'readwrite').objectStore('users');
   for (const user of users) {
-    userStore.put(user);
+    await userStore.put(user);
   }
   
   const bookingStore = db.transaction('bookings', 'readwrite').objectStore('bookings');
   for (const booking of bookings) {
-    bookingStore.put(booking);
+    await bookingStore.put(booking);
   }
 };

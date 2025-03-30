@@ -7,13 +7,15 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { LogIn, User, Lock, Eye, EyeOff } from 'lucide-react';
+import { LogIn, User, Lock, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { userAPI } from '@/lib/store';
+import { resetDB } from '@/lib/db/db';
 
 const Login = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -45,9 +47,11 @@ const Login = () => {
     setIsLoading(true);
     
     try {
+      console.log("Tentative de connexion avec:", formData.email, formData.password);
       const user = await userAPI.authenticate(formData.email, formData.password);
       
       if (user) {
+        console.log("Utilisateur authentifié:", user);
         localStorage.setItem('userId', user.id);
         localStorage.setItem('userRole', user.role);
         
@@ -59,6 +63,7 @@ const Login = () => {
           navigate('/user/dashboard');
         }
       } else {
+        console.log("Échec d'authentification: utilisateur non trouvé ou mot de passe incorrect");
         toast.error('Email ou mot de passe invalide');
       }
     } catch (error) {
@@ -67,6 +72,27 @@ const Login = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleResetDatabase = async () => {
+    try {
+      setIsResetting(true);
+      await resetDB();
+      toast.success("Base de données réinitialisée avec succès. Veuillez vous reconnecter.");
+    } catch (error) {
+      console.error("Erreur lors de la réinitialisation de la base de données:", error);
+      toast.error("Erreur lors de la réinitialisation de la base de données");
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
+  const handleDemoLogin = (email: string, password: string) => {
+    setFormData({
+      email,
+      password,
+      remember: false
+    });
   };
 
   return (
@@ -177,17 +203,50 @@ const Login = () => {
           </form>
         </Card>
         
-        {/* Demo Credentials */}
+        {/* Demo Credentials and Database Reset */}
         <div className="mt-6 p-4 bg-muted/50 rounded-md max-w-md w-full">
           <h3 className="font-medium mb-2 text-center">Identifiants de démonstration</h3>
-          <p className="text-sm text-muted-foreground mb-1">Connexion administrateur :</p>
-          <code className="text-xs bg-muted p-1 rounded block">
-            Email: admin@northgascartours.com | Mot de passe: Admin123!
-          </code>
-          <p className="text-sm text-muted-foreground mt-2 mb-1">Connexion utilisateur :</p>
-          <code className="text-xs bg-muted p-1 rounded block">
-            Email: user@northgascartours.com | Mot de passe: User123!
-          </code>
+          <div 
+            className="text-sm bg-muted p-2 rounded block mb-2 cursor-pointer hover:bg-muted/70 transition-colors"
+            onClick={() => handleDemoLogin('admin@northgascartours.com', 'Admin123!')}
+          >
+            <p className="text-sm text-muted-foreground mb-1">Connexion administrateur :</p>
+            <code className="text-xs block">
+              Email: admin@northgascartours.com | Mot de passe: Admin123!
+            </code>
+          </div>
+          <div 
+            className="text-sm bg-muted p-2 rounded block mb-4 cursor-pointer hover:bg-muted/70 transition-colors"
+            onClick={() => handleDemoLogin('user@northgascartours.com', 'User123!')}
+          >
+            <p className="text-sm text-muted-foreground mb-1">Connexion utilisateur :</p>
+            <code className="text-xs block">
+              Email: user@northgascartours.com | Mot de passe: User123!
+            </code>
+          </div>
+          
+          <div className="flex justify-center">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleResetDatabase}
+              disabled={isResetting}
+              className="text-xs"
+            >
+              {isResetting ? (
+                <>
+                  <RefreshCw className="mr-1 h-3 w-3 animate-spin" /> Réinitialisation...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="mr-1 h-3 w-3" /> Réinitialiser la base de données
+                </>
+              )}
+            </Button>
+          </div>
+          <p className="text-xs text-center mt-2 text-muted-foreground">
+            Utilisez ce bouton si vous rencontrez des problèmes de connexion
+          </p>
         </div>
       </div>
     </Layout>

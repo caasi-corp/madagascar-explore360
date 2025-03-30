@@ -71,3 +71,21 @@ export const getDB = async () => {
   }
   return dbPromise;
 };
+
+/**
+ * Resets the database by deleting it and reinitializing
+ */
+export const resetDB = async () => {
+  // Close any existing connections
+  if (dbPromise) {
+    const db = await dbPromise;
+    db.close();
+    dbPromise = null;
+  }
+  
+  // Delete the database
+  await indexedDB.deleteDatabase('north-gascar-db');
+  
+  // Reinitialize
+  return initDB();
+};

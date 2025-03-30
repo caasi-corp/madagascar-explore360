@@ -18,15 +18,39 @@ export const userAPI = {
   
   getByEmail: async (email: string) => {
     const db = await getDB();
-    return db.getFromIndex('users', 'by-email', email);
+    try {
+      // Console log pour debug
+      console.log("Recherche d'utilisateur par email:", email);
+      const allUsers = await db.getAll('users');
+      console.log("Tous les utilisateurs:", allUsers);
+      
+      const user = await db.getFromIndex('users', 'by-email', email);
+      console.log("Utilisateur trouvé par email:", user);
+      return user;
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'utilisateur par email:", error);
+      // Méthode alternative de recherche si l'index ne fonctionne pas correctement
+      const allUsers = await db.getAll('users');
+      return allUsers.find(user => user.email === email);
+    }
   },
   
   authenticate: async (email: string, password: string) => {
-    const user = await userAPI.getByEmail(email);
-    if (user && user.password === password) { // In a real app, use proper password comparison
-      return { id: user.id, email: user.email, role: user.role };
+    try {
+      console.log("Tentative d'authentification pour:", email);
+      const user = await userAPI.getByEmail(email);
+      console.log("Utilisateur récupéré:", user);
+      
+      if (user && user.password === password) {
+        console.log("Authentification réussie");
+        return { id: user.id, email: user.email, role: user.role };
+      }
+      console.log("Échec d'authentification: mot de passe incorrect ou utilisateur non trouvé");
+      return null;
+    } catch (error) {
+      console.error("Erreur lors de l'authentification:", error);
+      return null;
     }
-    return null;
   },
   
   register: async (userData: Omit<User, 'id' | 'role'>) => {
