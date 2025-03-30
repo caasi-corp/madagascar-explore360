@@ -28,14 +28,14 @@ const Services: React.FC<ServicesProps> = ({ services }) => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((service, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
+            <Card key={index} variant="glass" className="hover-scale">
               <CardContent className="p-6 text-center">
-                <div className="mb-4 mx-auto bg-madagascar-green/10 w-16 h-16 rounded-full flex items-center justify-center">
+                <div className="mb-4 mx-auto bg-madagascar-green/10 w-16 h-16 rounded-full flex items-center justify-center glass-shimmer">
                   {service.icon}
                 </div>
                 <h3 className="text-xl font-bold mb-2">{service.title}</h3>
                 <p className="text-muted-foreground mb-4">{service.description}</p>
-                <Button variant="link" asChild className="text-madagascar-green">
+                <Button variant="glass" asChild className="text-madagascar-green">
                   <a href={service.link}>
                     En savoir plus <ArrowRight size={16} className="ml-1" />
                   </a>

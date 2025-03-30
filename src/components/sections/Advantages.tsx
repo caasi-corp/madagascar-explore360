@@ -24,8 +24,8 @@ const Advantages: React.FC<AdvantagesProps> = ({ advantages }) => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {advantages.map((advantage, index) => (
-            <div key={index} className="text-center p-6 bg-card rounded-lg shadow-md hover:shadow-xl transition-shadow">
-              <div className="mx-auto mb-4 bg-madagascar-blue/10 w-16 h-16 rounded-full flex items-center justify-center">
+            <div key={index} className="text-center p-6 glass-card rounded-lg hover-scale">
+              <div className="mx-auto mb-4 bg-madagascar-blue/10 w-16 h-16 rounded-full flex items-center justify-center glass-shimmer">
                 {advantage.icon}
               </div>
               <h3 className="text-xl font-bold mb-2">{advantage.title}</h3>

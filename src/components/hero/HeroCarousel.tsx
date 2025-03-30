@@ -49,11 +49,11 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
       />
       
       <div className="absolute bottom-4 right-4 z-20">
-        <div className="flex gap-2">
+        <div className="flex gap-2 glass-effect p-2 rounded-full">
           {images.map((_, index) => (
             <button
               key={index}
-              className={`w-3 h-3 rounded-full ${
+              className={`w-3 h-3 rounded-full glass-shimmer ${
                 index === currentImageIndex ? 'bg-northgascar-teal' : 'bg-white/50'
               } transition-all duration-300`}
               onClick={() => changeImage(index)}
