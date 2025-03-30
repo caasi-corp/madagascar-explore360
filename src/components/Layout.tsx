@@ -10,12 +10,10 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  console.log("Layout rendering, children:", !!children);
-  
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-grow mt-16">
+      <main className="flex-grow">
         {children || <Outlet />}
       </main>
       <WhatsAppChat />
