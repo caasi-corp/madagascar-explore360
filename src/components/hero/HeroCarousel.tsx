@@ -3,11 +3,7 @@ import React from 'react';
 import { getTransitionClasses } from './HeroTransitionEffects';
 import { useHeroDroneEffect } from './HeroDroneEffect';
 import { useImageTransition } from './useImageTransition';
-
-interface HeroCarouselProps {
-  images: string[];
-  backgroundImage?: string;
-}
+import { HeroCarouselProps } from './HeroCarouselProps';
 
 const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) => {
   const { 

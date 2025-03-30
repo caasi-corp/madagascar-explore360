@@ -1,23 +1,12 @@
 
 import { useState, useEffect } from 'react';
 import { transitionEffects } from './HeroTransitionEffects';
-
-interface UseImageTransitionProps {
-  images: string[];
-  transitionInterval?: number;
-}
-
-interface ImageTransitionState {
-  currentImageIndex: number;
-  previousImageIndex: number;
-  currentEffect: string;
-  isTransitioning: boolean;
-}
+import { UseImageTransitionProps, ImageTransitionState, ImageTransitionResult } from './ImageTransitionTypes';
 
 export const useImageTransition = ({ 
   images, 
   transitionInterval = 10000 
-}: UseImageTransitionProps) => {
+}: UseImageTransitionProps): ImageTransitionResult => {
   const [transitionState, setTransitionState] = useState<ImageTransitionState>({
     currentImageIndex: 0,
     previousImageIndex: -1,

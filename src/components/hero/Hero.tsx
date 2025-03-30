@@ -2,14 +2,7 @@
 import React from 'react';
 import HeroCarousel from './HeroCarousel';
 import HeroSearch from './HeroSearch';
-
-interface HeroProps {
-  title?: string;
-  subtitle?: string;
-  showSearch?: boolean;
-  backgroundImage?: string;
-  height?: string;
-}
+import { HeroProps } from './HeroProps';
 
 const Hero: React.FC<HeroProps> = ({
   title = "Excursions personnalisées dans le nord de Madagascar",
