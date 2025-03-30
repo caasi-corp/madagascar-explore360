@@ -1,7 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
-import { transitionEffects, getTransitionClasses } from './HeroTransitionEffects';
+import React from 'react';
+import { getTransitionClasses } from './HeroTransitionEffects';
 import { useHeroDroneEffect } from './HeroDroneEffect';
+import { useImageTransition } from './useImageTransition';
 
 interface HeroCarouselProps {
   images: string[];
@@ -9,33 +10,15 @@ interface HeroCarouselProps {
 }
 
 const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [previousImageIndex, setPreviousImageIndex] = useState(-1);
-  const [currentEffect, setCurrentEffect] = useState("fade");
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const { 
+    currentImageIndex, 
+    previousImageIndex, 
+    currentEffect, 
+    isTransitioning,
+    changeImage 
+  } = useImageTransition({ images });
   
   const dronePosition = useHeroDroneEffect();
-
-  // Effet de transition d'image
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Choisir un nouvel effet de transition aléatoire
-      const newEffect = transitionEffects[Math.floor(Math.random() * transitionEffects.length)];
-      setCurrentEffect(newEffect);
-      
-      // Mettre à jour les indices d'image et déclencher la transition
-      setPreviousImageIndex(currentImageIndex);
-      setIsTransitioning(true);
-      
-      setTimeout(() => {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-        setIsTransitioning(false);
-      }, 1200); // Durée de transition reste la même pour permettre une transition complète
-      
-    }, 10000); // Changement d'image toutes les 10 secondes
-
-    return () => clearInterval(interval);
-  }, [currentImageIndex, images.length]);
 
   const currentImage = backgroundImage || images[currentImageIndex];
   const previousImage = previousImageIndex >= 0 ? images[previousImageIndex] : currentImage;
@@ -75,15 +58,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
               className={`w-3 h-3 rounded-full ${
                 index === currentImageIndex ? 'bg-northgascar-teal' : 'bg-white/50'
               } transition-all duration-300`}
-              onClick={() => {
-                setPreviousImageIndex(currentImageIndex);
-                setIsTransitioning(true);
-                setTimeout(() => {
-                  setCurrentImageIndex(index);
-                  setIsTransitioning(false);
-                }, 1200);
-                setCurrentEffect(transitionEffects[Math.floor(Math.random() * transitionEffects.length)]);
-              }}
+              onClick={() => changeImage(index)}
             />
           ))}
         </div>
