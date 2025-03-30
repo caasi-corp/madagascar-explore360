@@ -7,13 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { LogIn } from 'lucide-react';
+import { LogIn, User, Lock, Eye, EyeOff } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { userAPI } from '@/lib/store';
 
 const Login = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -33,6 +34,10 @@ const Login = () => {
       ...prevState,
       remember: checked,
     }));
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,18 +83,24 @@ const Login = () => {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  placeholder="nom@exemple.com"
-                  type="email"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  autoCorrect="off"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <User size={16} className="text-gray-400" />
+                  </div>
+                  <Input
+                    id="email"
+                    name="email"
+                    placeholder="nom@exemple.com"
+                    type="email"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    autoCorrect="off"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="pl-10"
+                    required
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -101,14 +112,29 @@ const Login = () => {
                     Mot de passe oublié ?
                   </Link>
                 </div>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock size={16} className="text-gray-400" />
+                  </div>
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="pl-10"
+                    required
+                  />
+                  <div 
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? 
+                      <EyeOff size={16} className="text-gray-400" /> : 
+                      <Eye size={16} className="text-gray-400" />
+                    }
+                  </div>
+                </div>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox 
@@ -155,12 +181,12 @@ const Login = () => {
         <div className="mt-6 p-4 bg-muted/50 rounded-md max-w-md w-full">
           <h3 className="font-medium mb-2 text-center">Identifiants de démonstration</h3>
           <p className="text-sm text-muted-foreground mb-1">Connexion administrateur :</p>
-          <code className="text-xs bg-muted p-1 rounded">
-            Email: admin@northgascartours.com | Mot de passe: admin
+          <code className="text-xs bg-muted p-1 rounded block">
+            Email: admin@northgascartours.com | Mot de passe: Admin123!
           </code>
           <p className="text-sm text-muted-foreground mt-2 mb-1">Connexion utilisateur :</p>
-          <code className="text-xs bg-muted p-1 rounded">
-            Email: user@example.com | Mot de passe: password
+          <code className="text-xs bg-muted p-1 rounded block">
+            Email: user@northgascartours.com | Mot de passe: User123!
           </code>
         </div>
       </div>
