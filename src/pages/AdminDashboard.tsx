@@ -42,11 +42,19 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <>
-      <DashboardHeader />
-      <StatsCards />
-      <DashboardTabs recentBookings={recentBookings} />
-    </>
+    <div className="space-y-6">
+      <div className="animation-delay-300 animate-fade-in">
+        <DashboardHeader />
+      </div>
+      
+      <div className="animation-delay-600 animate-fade-in">
+        <StatsCards />
+      </div>
+      
+      <div className="animate-fade-in">
+        <DashboardTabs recentBookings={recentBookings} />
+      </div>
+    </div>
   );
 };
 
