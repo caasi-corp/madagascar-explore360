@@ -28,11 +28,9 @@ const AdminLayout: React.FC = () => {
     localStorage.setItem('theme', newTheme);
   };
 
-  console.log("AdminLayout rendering");
-
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full">
+      <div className="flex min-h-screen">
         <AdminSidebar />
         <main className="flex-1 flex flex-col">
           <AdminHeader toggleTheme={toggleTheme} theme={theme} />

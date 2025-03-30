@@ -21,8 +21,6 @@ import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import TermsOfService from './pages/legal/TermsOfService';
 import Sitemap from './pages/legal/Sitemap';
 
-console.log("Creating router");
-
 const router = createBrowserRouter([
   {
     path: '/',

@@ -24,8 +24,6 @@ function App() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [initError, setInitError] = useState<string | null>(null);
 
-  console.log("App component rendering");
-
   useEffect(() => {
     // Initialiser la base de données au chargement de l'application
     const initialize = async () => {

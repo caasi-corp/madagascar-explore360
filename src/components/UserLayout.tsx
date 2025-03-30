@@ -6,8 +6,6 @@ import WhatsAppChat from './WhatsAppChat';
 import { Outlet } from 'react-router-dom';
 
 const UserLayout: React.FC = () => {
-  console.log("UserLayout rendering");
-  
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
