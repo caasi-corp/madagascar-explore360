@@ -42,7 +42,22 @@ const Hero: React.FC<HeroProps> = ({
   const [previousImageIndex, setPreviousImageIndex] = useState(-1);
   const [currentEffect, setCurrentEffect] = useState("fade");
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [dronePosition, setDronePosition] = useState({ x: 0, y: 0, scale: 1.05 });
 
+  // Effet de drone caméra - léger mouvement de flottement
+  useEffect(() => {
+    const droneMoveInterval = setInterval(() => {
+      setDronePosition({
+        x: Math.sin(Date.now() / 10000) * 1.5, // Mouvement horizontal lent
+        y: Math.cos(Date.now() / 12000) * 1.5, // Mouvement vertical lent et légèrement décalé
+        scale: 1.05 + (Math.sin(Date.now() / 8000) * 0.01), // Léger zoom in/out
+      });
+    }, 50); // Mise à jour fréquente pour un mouvement fluide
+
+    return () => clearInterval(droneMoveInterval);
+  }, []);
+
+  // Effet de transition d'image
   useEffect(() => {
     const interval = setInterval(() => {
       // Choisir un nouvel effet de transition aléatoire
@@ -56,9 +71,9 @@ const Hero: React.FC<HeroProps> = ({
       setTimeout(() => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % natureImages.length);
         setIsTransitioning(false);
-      }, 500); // Durée de la transition, synchronisée avec les animations CSS
+      }, 1200); // Durée de transition plus longue (1.2s au lieu de 0.5s)
       
-    }, 6000); // Changement d'image toutes les 6 secondes
+    }, 10000); // Changement d'image toutes les 10 secondes (au lieu de 6s)
 
     return () => clearInterval(interval);
   }, [currentImageIndex, natureImages.length]);
@@ -70,18 +85,18 @@ const Hero: React.FC<HeroProps> = ({
   const getTransitionClasses = () => {
     switch (currentEffect) {
       case "zoom":
-        return "transform-origin-center transition-transform duration-1000 scale-110";
+        return "transform-origin-center transition-transform duration-2000 scale-110";
       case "slide-left":
-        return "translate-x-full transition-transform duration-500";
+        return "translate-x-full transition-transform duration-1500";
       case "slide-right":
-        return "-translate-x-full transition-transform duration-500";
+        return "-translate-x-full transition-transform duration-1500";
       case "slide-up":
-        return "translate-y-full transition-transform duration-500";
+        return "translate-y-full transition-transform duration-1500";
       case "zoom-fade":
-        return "scale-110 opacity-0 transition-all duration-1000";
+        return "scale-110 opacity-0 transition-all duration-2000";
       case "fade":
       default:
-        return "opacity-0 transition-opacity duration-500";
+        return "opacity-0 transition-opacity duration-1500";
     }
   };
 
@@ -89,23 +104,27 @@ const Hero: React.FC<HeroProps> = ({
     <div 
       className={`relative ${height} flex items-center overflow-hidden`}
     >
-      {/* Couche d'image précédente */}
+      {/* Couche d'image précédente avec effet drone */}
       <div 
-        className={`absolute inset-0 w-full h-full transition-all duration-500 ${isTransitioning ? getTransitionClasses() : ''}`}
+        className={`absolute inset-0 w-full h-full transition-all duration-1500 ${isTransitioning ? getTransitionClasses() : ''}`}
         style={{
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${previousImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          transform: `scale(${dronePosition.scale}) translate(${dronePosition.x}%, ${dronePosition.y}%)`,
+          transition: 'transform 2s ease-out',
         }}
       />
       
-      {/* Couche d'image actuelle */}
+      {/* Couche d'image actuelle avec effet drone */}
       <div 
-        className={`absolute inset-0 w-full h-full ${isTransitioning ? 'opacity-100' : 'opacity-100'} transition-all duration-500`}
+        className={`absolute inset-0 w-full h-full ${isTransitioning ? 'opacity-100' : 'opacity-100'} transition-all duration-1500`}
         style={{
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${currentImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          transform: `scale(${dronePosition.scale}) translate(${dronePosition.x}%, ${dronePosition.y}%)`,
+          transition: 'transform 2s ease-out',
           zIndex: isTransitioning ? 0 : 1,
         }}
       />
@@ -124,7 +143,7 @@ const Hero: React.FC<HeroProps> = ({
                 setTimeout(() => {
                   setCurrentImageIndex(index);
                   setIsTransitioning(false);
-                }, 500);
+                }, 1200);
                 setCurrentEffect(transitionEffects[Math.floor(Math.random() * transitionEffects.length)]);
               }}
             />
