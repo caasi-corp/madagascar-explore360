@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import Layout from './components/Layout';
@@ -63,10 +62,6 @@ const router = createBrowserRouter([
         element: <Register />
       },
       {
-        path: 'user-dashboard',
-        element: <UserDashboard />
-      },
-      {
         path: 'privacy-policy',
         element: <PrivacyPolicy />
       },
@@ -77,6 +72,16 @@ const router = createBrowserRouter([
       {
         path: 'sitemap',
         element: <Sitemap />
+      }
+    ]
+  },
+  {
+    path: '/user',
+    element: <UserLayout />,
+    children: [
+      {
+        path: 'dashboard',
+        element: <UserDashboard />
       }
     ]
   },

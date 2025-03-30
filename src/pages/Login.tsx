@@ -44,7 +44,7 @@ const Login = () => {
       if (formData.email === 'admin@northgascartours.com' && formData.password === 'admin') {
         localStorage.setItem('userRole', 'admin');
         toast.success('Bienvenue, Admin !');
-        navigate('/admin/dashboard');
+        navigate('/admin');
       } else if (formData.email && formData.password) {
         localStorage.setItem('userRole', 'user');
         toast.success('Connexion réussie !');
