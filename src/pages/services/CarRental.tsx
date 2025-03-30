@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -33,15 +34,16 @@ import {
   FormItem,
   FormLabel,
 } from '@/components/ui/form';
+import { DateRange } from 'react-day-picker';
 
-const vehicles = [
+const vehicles: VehicleProps[] = [
   {
     id: 'v1',
     name: 'Toyota Land Cruiser',
     type: '4x4',
     pricePerDay: 89,
     seats: 7,
-    transmission: 'Automatique',
+    transmission: 'Automatic',
     fuelType: 'Diesel',
     image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf',
     features: ['Climatisation', 'GPS', 'Porte-bagages', '4x4', 'Bluetooth', 'Ports USB'],
@@ -53,7 +55,7 @@ const vehicles = [
     type: 'motorcycle',
     pricePerDay: 45,
     seats: 2,
-    transmission: 'Manuelle',
+    transmission: 'Manual',
     fuelType: 'Essence',
     image: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39',
     features: ['Casque inclus', 'Sacoches', 'Capacité tout-terrain', 'Économe en carburant'],
@@ -65,7 +67,7 @@ const vehicles = [
     type: 'quad',
     pricePerDay: 65,
     seats: 1,
-    transmission: 'Automatique',
+    transmission: 'Automatic',
     fuelType: 'Essence',
     image: 'https://images.unsplash.com/photo-1566845735839-6e25c92269a1',
     features: ['Casque inclus', 'Coffre de rangement', '4x4', 'Garde au sol élevée'],
@@ -77,7 +79,7 @@ const vehicles = [
     type: 'car',
     pricePerDay: 55,
     seats: 5,
-    transmission: 'Automatique',
+    transmission: 'Automatic',
     fuelType: 'Essence',
     image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588',
     features: ['Climatisation', 'Bluetooth', 'Économe en carburant', 'Ports USB'],
@@ -89,7 +91,7 @@ const vehicles = [
     type: '4x4',
     pricePerDay: 85,
     seats: 7,
-    transmission: 'Automatique',
+    transmission: 'Automatic',
     fuelType: 'Diesel',
     image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70',
     features: ['Climatisation', 'GPS', 'Porte-bagages', '4x4', 'Bluetooth'],
@@ -101,7 +103,7 @@ const vehicles = [
     type: 'car',
     pricePerDay: 40,
     seats: 5,
-    transmission: 'Manuelle',
+    transmission: 'Manual',
     fuelType: 'Essence',
     image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d',
     features: ['Climatisation', 'Bluetooth', 'Économe en carburant'],
@@ -123,10 +125,7 @@ const formSchema = z.object({
 });
 
 const CarRental = () => {
-  const [date, setDate] = useState<{
-    from: Date | undefined;
-    to: Date | undefined;
-  }>({
+  const [date, setDate] = useState<DateRange>({
     from: new Date(),
     to: new Date(new Date().setDate(new Date().getDate() + 3)),
   });
@@ -260,15 +259,18 @@ const CarRental = () => {
                             defaultMonth={date.from}
                             selected={date}
                             onSelect={(newDate) => {
-                              setDate(newDate);
-                              if (newDate?.from) {
-                                form.setValue("pickupDate", newDate.from);
-                              }
-                              if (newDate?.to) {
-                                form.setValue("dropoffDate", newDate.to);
+                              if (newDate) {
+                                setDate(newDate);
+                                if (newDate.from) {
+                                  form.setValue("pickupDate", newDate.from);
+                                }
+                                if (newDate.to) {
+                                  form.setValue("dropoffDate", newDate.to);
+                                }
                               }
                             }}
                             numberOfMonths={2}
+                            className="pointer-events-auto"
                           />
                         </PopoverContent>
                       </Popover>
@@ -328,8 +330,8 @@ const CarRental = () => {
                               </FormControl>
                               <SelectContent>
                                 <SelectItem value="">Toutes les transmissions</SelectItem>
-                                <SelectItem value="Automatique">Automatique</SelectItem>
-                                <SelectItem value="Manuelle">Manuelle</SelectItem>
+                                <SelectItem value="Automatic">Automatique</SelectItem>
+                                <SelectItem value="Manual">Manuelle</SelectItem>
                               </SelectContent>
                             </Select>
                           </FormItem>
@@ -451,7 +453,7 @@ const CarRental = () => {
                   <div className="flex flex-wrap gap-2 mb-4">
                     <div className="bg-gray-100 dark:bg-gray-800 rounded-full px-2 py-1 text-xs flex items-center">
                       <Settings size={12} className="mr-1" />
-                      {vehicle.transmission}
+                      {vehicle.transmission === 'Automatic' ? 'Automatique' : 'Manuelle'}
                     </div>
                     <div className="bg-gray-100 dark:bg-gray-800 rounded-full px-2 py-1 text-xs">
                       {vehicle.fuelType}
