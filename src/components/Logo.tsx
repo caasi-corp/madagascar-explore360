@@ -11,9 +11,9 @@ const Logo: React.FC<LogoProps> = ({ variant = 'default', size = 'md' }) => {
   const textColor = variant === 'white' ? 'text-white' : 'text-northgascar-navy dark:text-white';
   
   const sizeClasses = {
-    sm: 'text-lg md:text-xl h-8',
-    md: 'text-xl md:text-2xl h-10',
-    lg: 'text-2xl md:text-3xl h-12',
+    sm: 'text-xl md:text-2xl h-9',
+    md: 'text-2xl md:text-3xl h-12',
+    lg: 'text-3xl md:text-4xl h-14',
   };
 
   return (
