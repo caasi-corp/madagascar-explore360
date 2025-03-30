@@ -2,6 +2,8 @@
 import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import Layout from './components/Layout';
+import UserLayout from './components/UserLayout';
+import AdminLayout from './components/AdminLayout';
 import Index from './pages/Index';
 import Tours from './pages/Tours';
 import Login from './pages/Login';

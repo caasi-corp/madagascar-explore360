@@ -1,53 +1,20 @@
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AdminSidebar from './AdminSidebar';
+import React from 'react';
 import AdminHeader from './AdminHeader';
+import AdminSidebar from './AdminSidebar';
+import Footer from './Footer';
+import { Outlet } from 'react-router-dom';
 
-interface AdminLayoutProps {
-  children: React.ReactNode;
-}
-
-const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const navigate = useNavigate();
-  
-  // Check user role and redirect if not admin
-  useEffect(() => {
-    const userRole = localStorage.getItem('userRole');
-    if (userRole !== 'admin') {
-      navigate('/login');
-    }
-  }, [navigate]);
-  
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-    } else if (prefersDark) {
-      setTheme('dark');
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-  
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    document.documentElement.classList.toggle('dark');
-    localStorage.setItem('theme', newTheme);
-  };
-
+const AdminLayout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-screen bg-gray-100">
       <AdminSidebar />
-      <div className="ml-64">
-        <AdminHeader toggleTheme={toggleTheme} theme={theme} />
-        <main className="p-6">
-          {children}
+      <div className="flex flex-col flex-1">
+        <AdminHeader />
+        <main className="flex-grow p-6">
+          <Outlet />
         </main>
+        <Footer />
       </div>
     </div>
   );
