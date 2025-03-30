@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { LogIn } from 'lucide-react';
 import Layout from '@/components/Layout';
+import { userAPI } from '@/lib/store';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -34,27 +35,33 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Mock login functionality - replace with actual authentication later
-    setTimeout(() => {
-      // For demonstration purposes, use email admin@northgascartours.com and password admin to access admin
-      if (formData.email === 'admin@northgascartours.com' && formData.password === 'admin') {
-        localStorage.setItem('userRole', 'admin');
-        toast.success('Bienvenue, Admin !');
-        navigate('/admin');
-      } else if (formData.email && formData.password) {
-        localStorage.setItem('userRole', 'user');
-        toast.success('Connexion réussie !');
-        navigate('/user/dashboard');
+    try {
+      const user = await userAPI.authenticate(formData.email, formData.password);
+      
+      if (user) {
+        localStorage.setItem('userId', user.id);
+        localStorage.setItem('userRole', user.role);
+        
+        if (user.role === 'admin') {
+          toast.success('Bienvenue, Admin !');
+          navigate('/admin');
+        } else {
+          toast.success('Connexion réussie !');
+          navigate('/user/dashboard');
+        }
       } else {
         toast.error('Email ou mot de passe invalide');
       }
-      
+    } catch (error) {
+      console.error("Erreur de connexion:", error);
+      toast.error('Erreur lors de la connexion');
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import Layout from './components/Layout';
@@ -9,6 +10,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import UserDashboard from './pages/UserDashboard';
+import UserSettings from './pages/UserSettings';
 import NotFound from './pages/NotFound';
 import CarRental from './pages/services/CarRental';
 import FlightBooking from './pages/services/FlightBooking';
@@ -82,6 +84,26 @@ const router = createBrowserRouter([
       {
         path: 'dashboard',
         element: <UserDashboard />
+      },
+      {
+        path: 'settings',
+        element: <UserSettings />
+      },
+      {
+        path: 'bookings',
+        element: <UserDashboard />  // À remplacer plus tard par un composant BookingList
+      },
+      {
+        path: 'wishlist',
+        element: <UserDashboard />  // À remplacer plus tard par un composant Wishlist
+      },
+      {
+        path: 'payments',
+        element: <UserDashboard />  // À remplacer plus tard par un composant PaymentMethods
+      },
+      {
+        path: 'notifications',
+        element: <UserDashboard />  // À remplacer plus tard par un composant Notifications
       }
     ]
   },

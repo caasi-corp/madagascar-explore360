@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   Card, 
@@ -23,57 +23,78 @@ import {
   CalendarDays,
   ArrowRight,
 } from 'lucide-react';
+import { userAPI, bookingAPI, Tour, tourAPI, Booking } from '@/lib/store';
+import { toast } from 'sonner';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState<{firstName: string, lastName: string} | null>(null);
+  const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
+  const [recentlyViewed, setRecentlyViewed] = useState<Tour[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Check if user is logged in
+  // Vérifier si l'utilisateur est connecté et charger les données
   useEffect(() => {
-    const userRole = localStorage.getItem('userRole');
-    if (!userRole) {
-      navigate('/login');
-    }
+    const fetchData = async () => {
+      try {
+        const userId = localStorage.getItem('userId');
+        const userRole = localStorage.getItem('userRole');
+        
+        if (!userId || !userRole) {
+          navigate('/login');
+          return;
+        }
+        
+        setIsLoading(true);
+        
+        // Charger les informations de l'utilisateur
+        const userData = await userAPI.getById(userId);
+        if (userData) {
+          setUser({
+            firstName: userData.firstName,
+            lastName: userData.lastName
+          });
+        }
+        
+        // Charger les réservations de l'utilisateur
+        const userBookings = await bookingAPI.getByUserId(userId);
+        // Filtrer pour n'obtenir que les réservations à venir
+        const upcoming = userBookings.filter(booking => 
+          new Date(booking.startDate) >= new Date()
+        );
+        setUpcomingBookings(upcoming);
+        
+        // Charger les circuits récemment consultés (simulé)
+        const allTours = await tourAPI.getAll();
+        setRecentlyViewed(allTours.slice(0, 3));
+      } catch (error) {
+        console.error("Erreur lors du chargement des données:", error);
+        toast.error("Une erreur s'est produite lors du chargement des données");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchData();
   }, [navigate]);
   
-  // Sample upcoming bookings data
-  const upcomingBookings = [
-    {
-      id: 'B123',
-      title: 'Avenue of the Baobabs Tour',
-      startDate: '2023-08-25',
-      endDate: '2023-08-27',
-      status: 'Confirmed'
-    },
-    {
-      id: 'B124',
-      title: 'Nosy Be Island Resort',
-      startDate: '2023-09-15',
-      endDate: '2023-09-20',
-      status: 'Pending'
-    }
-  ];
-  
-  // Sample recently viewed tours
-  const recentlyViewed = [
-    {
-      id: '1',
-      title: 'Isalo National Park Adventure',
-      image: 'https://images.unsplash.com/photo-1504623953583-4ae307ea839f',
-      price: 499
-    },
-    {
-      id: '2',
-      title: 'Lemur Trekking in Andasibe',
-      image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027',
-      price: 349
-    },
-    {
-      id: '3',
-      title: 'Nosy Be Island Paradise',
-      image: 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57',
-      price: 599
-    }
-  ];
+  const handleLogout = () => {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userRole');
+    navigate('/');
+    toast.success("Déconnexion réussie");
+  };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 mt-16 flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-madagascar-green mx-auto mb-4"></div>
+          <p>Chargement de vos données...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 mt-16">
@@ -84,31 +105,31 @@ const UserDashboard = () => {
             <CardHeader className="text-center">
               <Avatar className="w-20 h-20 mx-auto">
                 <AvatarImage src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarFallback>{user ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` : 'UT'}</AvatarFallback>
               </Avatar>
-              <CardTitle>John Doe</CardTitle>
-              <CardDescription>Member since Aug 2023</CardDescription>
+              <CardTitle>{user ? `${user.firstName} ${user.lastName}` : 'Utilisateur'}</CardTitle>
+              <CardDescription>Membre depuis {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <nav>
                 <div className="border-t">
                   <Link to="/user/dashboard" className="flex items-center p-3 text-sm hover:bg-muted">
-                    <User className="mr-2 h-4 w-4" /> Profile
+                    <User className="mr-2 h-4 w-4" /> Profil
                   </Link>
                 </div>
                 <div className="border-t">
                   <Link to="/user/bookings" className="flex items-center p-3 text-sm hover:bg-muted">
-                    <CalendarDays className="mr-2 h-4 w-4" /> My Bookings
+                    <CalendarDays className="mr-2 h-4 w-4" /> Mes Réservations
                   </Link>
                 </div>
                 <div className="border-t">
                   <Link to="/user/wishlist" className="flex items-center p-3 text-sm hover:bg-muted">
-                    <Calendar className="mr-2 h-4 w-4" /> Wishlist
+                    <Calendar className="mr-2 h-4 w-4" /> Liste de souhaits
                   </Link>
                 </div>
                 <div className="border-t">
                   <Link to="/user/payments" className="flex items-center p-3 text-sm hover:bg-muted">
-                    <CreditCard className="mr-2 h-4 w-4" /> Payment Methods
+                    <CreditCard className="mr-2 h-4 w-4" /> Moyens de paiement
                   </Link>
                 </div>
                 <div className="border-t">
@@ -118,7 +139,7 @@ const UserDashboard = () => {
                 </div>
                 <div className="border-t">
                   <Link to="/user/settings" className="flex items-center p-3 text-sm hover:bg-muted">
-                    <Settings className="mr-2 h-4 w-4" /> Settings
+                    <Settings className="mr-2 h-4 w-4" /> Paramètres
                   </Link>
                 </div>
               </nav>
@@ -127,12 +148,9 @@ const UserDashboard = () => {
               <Button 
                 variant="outline" 
                 className="w-full" 
-                onClick={() => {
-                  localStorage.removeItem('userRole');
-                  navigate('/');
-                }}
+                onClick={handleLogout}
               >
-                Log out
+                Déconnexion
               </Button>
             </CardFooter>
           </Card>
@@ -140,13 +158,13 @@ const UserDashboard = () => {
         
         {/* Main Content */}
         <div className="flex-1">
-          <h1 className="text-2xl font-bold mb-6">Welcome back, John!</h1>
+          <h1 className="text-2xl font-bold mb-6">Bienvenue, {user ? user.firstName : 'Voyageur'} !</h1>
           
           <Tabs defaultValue="upcoming" className="w-full">
             <TabsList className="mb-4">
-              <TabsTrigger value="upcoming">Upcoming Trips</TabsTrigger>
-              <TabsTrigger value="history">Trip History</TabsTrigger>
-              <TabsTrigger value="recommendations">For You</TabsTrigger>
+              <TabsTrigger value="upcoming">Voyages à venir</TabsTrigger>
+              <TabsTrigger value="history">Historique</TabsTrigger>
+              <TabsTrigger value="recommendations">Pour vous</TabsTrigger>
             </TabsList>
             
             {/* Upcoming Trips */}
@@ -156,15 +174,15 @@ const UserDashboard = () => {
                   {upcomingBookings.map((booking) => (
                     <Card key={booking.id}>
                       <CardHeader>
-                        <CardTitle className="text-lg">{booking.title}</CardTitle>
-                        <CardDescription>Booking #{booking.id}</CardDescription>
+                        <CardTitle className="text-lg">{booking.tourId ? "Circuit réservé" : booking.vehicleId ? "Location de véhicule" : "Réservation"}</CardTitle>
+                        <CardDescription>Réservation #{booking.id.slice(0, 6)}</CardDescription>
                         <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                             booking.status === 'Confirmed'
                               ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
                               : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
                           }`}
                         >
-                          {booking.status}
+                          {booking.status === 'Confirmed' ? 'Confirmée' : booking.status === 'Pending' ? 'En attente' : 'Annulée'}
                         </div>
                       </CardHeader>
                       <CardContent>
@@ -172,23 +190,23 @@ const UserDashboard = () => {
                           <div className="flex items-center">
                             <CalendarDays className="mr-2 h-4 w-4 text-madagascar-green" />
                             <span className="text-sm">
-                              {booking.startDate} - {booking.endDate}
+                              {new Date(booking.startDate).toLocaleDateString('fr-FR')} - {new Date(booking.endDate).toLocaleDateString('fr-FR')}
                             </span>
                           </div>
                           <div className="flex items-center">
                             <Clock className="mr-2 h-4 w-4 text-madagascar-green" />
                             <span className="text-sm">
                               {new Date(booking.startDate) > new Date() 
-                                ? `${Math.ceil((new Date(booking.startDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days to go` 
-                                : 'Starting today!'
+                                ? `${Math.ceil((new Date(booking.startDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} jours restants` 
+                                : 'Commence aujourd'hui!'
                               }
                             </span>
                           </div>
                         </div>
                       </CardContent>
                       <CardFooter>
-                        <Button variant="outline" className="mr-2">Manage Booking</Button>
-                        <Button className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">View Details</Button>
+                        <Button variant="outline" className="mr-2">Gérer la réservation</Button>
+                        <Button className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">Voir les détails</Button>
                       </CardFooter>
                     </Card>
                   ))}
@@ -196,18 +214,18 @@ const UserDashboard = () => {
               ) : (
                 <Card>
                   <CardContent className="p-8 text-center">
-                    <h3 className="text-lg font-semibold mb-2">No upcoming trips</h3>
-                    <p className="text-muted-foreground mb-4">You don't have any upcoming trips planned yet.</p>
+                    <h3 className="text-lg font-semibold mb-2">Aucun voyage à venir</h3>
+                    <p className="text-muted-foreground mb-4">Vous n'avez pas encore planifié de voyages.</p>
                     <Button asChild className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
                       <Link to="/tours">
-                        Explore Tours
+                        Explorer les circuits
                       </Link>
                     </Button>
                   </CardContent>
                 </Card>
               )}
               
-              <h2 className="text-xl font-semibold mb-4">Recently Viewed</h2>
+              <h2 className="text-xl font-semibold mb-4">Récemment consultés</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {recentlyViewed.map((item) => (
                   <Link to={`/tours/${item.id}`} key={item.id}>
@@ -219,7 +237,7 @@ const UserDashboard = () => {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-3 flex flex-col justify-end">
                         <h3 className="text-white font-medium">{item.title}</h3>
-                        <p className="text-white/90">${item.price}</p>
+                        <p className="text-white/90">{item.price} €</p>
                       </div>
                     </div>
                   </Link>
@@ -231,12 +249,12 @@ const UserDashboard = () => {
             <TabsContent value="history">
               <Card>
                 <CardHeader>
-                  <CardTitle>Your Travel History</CardTitle>
-                  <CardDescription>View all your past trips and adventures</CardDescription>
+                  <CardTitle>Votre historique de voyages</CardTitle>
+                  <CardDescription>Consultez tous vos voyages et aventures passés</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-center p-6 text-muted-foreground">
-                    You haven't completed any trips yet.
+                    Vous n'avez pas encore effectué de voyages.
                   </p>
                 </CardContent>
               </Card>
@@ -246,28 +264,28 @@ const UserDashboard = () => {
             <TabsContent value="recommendations">
               <Card>
                 <CardHeader>
-                  <CardTitle>Recommended For You</CardTitle>
-                  <CardDescription>Tours and destinations you might like</CardDescription>
+                  <CardTitle>Recommandés pour vous</CardTitle>
+                  <CardDescription>Circuits et destinations qui pourraient vous plaire</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex items-center gap-4 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                       <img 
                         src="https://images.unsplash.com/photo-1482938289607-e9573fc25ebb"
-                        alt="Baobab Trees"
+                        alt="Baobabs"
                         className="w-20 h-20 object-cover rounded-md"
                       />
                       <div className="flex-grow">
-                        <h3 className="font-semibold">Avenue of the Baobabs Tour</h3>
+                        <h3 className="font-semibold">Allée des Baobabs</h3>
                         <div className="flex items-center text-sm text-muted-foreground">
                           <MapPin size={14} className="mr-1" /> Morondava
                         </div>
                         <p className="text-sm text-muted-foreground line-clamp-1">
-                          Experience the iconic Avenue of the Baobabs, one of Madagascar's most famous landmarks.
+                          Découvrez l'emblématique Allée des Baobabs, l'un des sites les plus célèbres de Madagascar.
                         </p>
                       </div>
                       <div className="text-right">
-                        <div className="font-bold text-madagascar-green">$299</div>
+                        <div className="font-bold text-madagascar-green">299 €</div>
                         <Button size="sm" variant="outline" className="mt-1">
                           <ArrowRight size={14} />
                         </Button>
@@ -281,16 +299,16 @@ const UserDashboard = () => {
                         className="w-20 h-20 object-cover rounded-md"
                       />
                       <div className="flex-grow">
-                        <h3 className="font-semibold">Ranomafana National Park Expedition</h3>
+                        <h3 className="font-semibold">Expédition au Parc National de Ranomafana</h3>
                         <div className="flex items-center text-sm text-muted-foreground">
                           <MapPin size={14} className="mr-1" /> Ranomafana
                         </div>
                         <p className="text-sm text-muted-foreground line-clamp-1">
-                          Explore the lush rainforests of Ranomafana and spot rare species of lemurs, birds and chameleons.
+                          Explorez les forêts luxuriantes de Ranomafana et observez des espèces rares de lémuriens, d'oiseaux et de caméléons.
                         </p>
                       </div>
                       <div className="text-right">
-                        <div className="font-bold text-madagascar-green">$389</div>
+                        <div className="font-bold text-madagascar-green">389 €</div>
                         <Button size="sm" variant="outline" className="mt-1">
                           <ArrowRight size={14} />
                         </Button>
@@ -301,7 +319,7 @@ const UserDashboard = () => {
                 <CardFooter>
                   <Button asChild className="w-full bg-madagascar-green hover:bg-madagascar-green/80 text-white">
                     <Link to="/tours">
-                      See All Tours
+                      Voir tous les circuits
                     </Link>
                   </Button>
                 </CardFooter>

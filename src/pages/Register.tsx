@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from "sonner";
 import { UserPlus } from 'lucide-react';
 import Layout from '@/components/Layout';
+import { userAPI } from '@/lib/store';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const Register = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
@@ -38,13 +39,26 @@ const Register = () => {
     
     setIsLoading(true);
     
-    // Mock registration functionality - replace with actual implementation later
-    setTimeout(() => {
-      toast.success('Compte créé avec succès !');
-      localStorage.setItem('userRole', 'user');
-      navigate('/user/dashboard');
+    try {
+      const newUser = await userAPI.register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password
+      });
+      
+      if (newUser) {
+        localStorage.setItem('userId', newUser.id);
+        localStorage.setItem('userRole', newUser.role);
+        toast.success('Compte créé avec succès !');
+        navigate('/user/dashboard');
+      }
+    } catch (error) {
+      console.error("Erreur d'inscription:", error);
+      toast.error("Une erreur s'est produite lors de l'inscription");
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (

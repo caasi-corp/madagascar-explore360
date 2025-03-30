@@ -1,4 +1,3 @@
-
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 
 interface Tour {
@@ -181,10 +180,10 @@ const seedInitialData = async (db: IDBPDatabase<NorthGascarDB>) => {
   const tours: Tour[] = [
     {
       id: '1',
-      title: 'Avenue of the Baobabs Tour',
-      description: 'Experience the iconic Avenue of the Baobabs, one of Madagascar\'s most famous landmarks.',
+      title: 'Allée des Baobabs Tour',
+      description: "Découvrez l'emblématique Allée des Baobabs, l'un des sites les plus célèbres de Madagascar.",
       location: 'Morondava',
-      duration: '2 Days',
+      duration: '2 Jours',
       price: 299,
       rating: 4.9,
       image: 'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb',
@@ -193,63 +192,63 @@ const seedInitialData = async (db: IDBPDatabase<NorthGascarDB>) => {
     },
     {
       id: '2',
-      title: 'Lemur Trekking in Andasibe',
-      description: 'Trek through the Andasibe National Park and encounter various species of lemurs in their natural habitat.',
+      title: 'Trek aux Lémuriens à Andasibe',
+      description: 'Parcourez le Parc National d\'Andasibe et rencontrez différentes espèces de lémuriens dans leur habitat naturel.',
       location: 'Andasibe',
-      duration: '3 Days',
+      duration: '3 Jours',
       price: 349,
       rating: 4.8,
       image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027',
       featured: true,
-      category: 'Wildlife',
+      category: 'Faune',
     },
     {
       id: '3',
-      title: 'Isalo National Park Adventure',
-      description: 'Discover the stunning landscapes of Isalo National Park with its canyons, waterfalls and natural pools.',
+      title: 'Aventure au Parc National d\'Isalo',
+      description: 'Découvrez les paysages étonnants du Parc National d\'Isalo avec ses canyons, cascades et piscines naturelles.',
       location: 'Isalo',
-      duration: '4 Days',
+      duration: '4 Jours',
       price: 499,
       rating: 4.7,
       image: 'https://images.unsplash.com/photo-1469041797191-50ace28483c3',
       featured: true,
-      category: 'Adventure',
+      category: 'Aventure',
     },
     {
       id: '4',
-      title: 'Nosy Be Island Paradise',
-      description: 'Relax on the beautiful beaches of Nosy Be, Madagascar\'s premier beach destination.',
+      title: 'Paradis de l\'île Nosy Be',
+      description: 'Relaxez-vous sur les magnifiques plages de Nosy Be, la principale destination balnéaire de Madagascar.',
       location: 'Nosy Be',
-      duration: '5 Days',
+      duration: '5 Jours',
       price: 599,
       rating: 4.9,
       image: 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57',
       featured: false,
-      category: 'Beach',
+      category: 'Plage',
     },
     {
       id: '5',
-      title: 'Ranomafana National Park Expedition',
-      description: 'Explore the lush rainforests of Ranomafana and spot rare species of lemurs, birds and chameleons.',
+      title: 'Expédition au Parc National de Ranomafana',
+      description: 'Explorez les forêts luxuriantes de Ranomafana et observez des espèces rares de lémuriens, d\'oiseaux et de caméléons.',
       location: 'Ranomafana',
-      duration: '3 Days',
+      duration: '3 Jours',
       price: 389,
       rating: 4.6,
       image: 'https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a',
       featured: false,
-      category: 'Wildlife',
+      category: 'Faune',
     },
     {
       id: '6',
-      title: 'Tsingy de Bemaraha Trek',
-      description: 'Journey through the spectacular limestone formations of the Tsingy de Bemaraha National Park.',
+      title: 'Trek au Tsingy de Bemaraha',
+      description: 'Voyagez à travers les spectaculaires formations calcaires du Parc National du Tsingy de Bemaraha.',
       location: 'Bemaraha',
-      duration: '4 Days',
+      duration: '4 Jours',
       price: 649,
       rating: 4.9,
       image: 'https://images.unsplash.com/photo-1504623953583-4ae307ea839f',
       featured: false,
-      category: 'Adventure',
+      category: 'Aventure',
     },
   ];
   
@@ -264,7 +263,7 @@ const seedInitialData = async (db: IDBPDatabase<NorthGascarDB>) => {
       transmission: 'Automatic',
       fuelType: 'Diesel',
       image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf',
-      features: ['Air Conditioning', 'GPS Navigation', 'Roof Rack', '4x4 Drive', 'Bluetooth', 'USB Ports'],
+      features: ['Climatisation', 'GPS', 'Galerie de toit', '4x4', 'Bluetooth', 'Ports USB'],
       availability: true,
     },
     {
@@ -276,7 +275,7 @@ const seedInitialData = async (db: IDBPDatabase<NorthGascarDB>) => {
       transmission: 'Manual',
       fuelType: 'Petrol',
       image: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39',
-      features: ['Helmet Included', 'Saddlebags', 'Off-road Capability', 'Fuel Efficient'],
+      features: ['Casque inclus', 'Sacoches', 'Capacité tout-terrain', 'Économe en carburant'],
       availability: true,
     },
     {
@@ -288,20 +287,62 @@ const seedInitialData = async (db: IDBPDatabase<NorthGascarDB>) => {
       transmission: 'Automatic',
       fuelType: 'Petrol',
       image: 'https://images.unsplash.com/photo-1566845735839-6e25c92269a1',
-      features: ['Helmet Included', 'Storage Box', '4x4 Drive', 'High Ground Clearance'],
+      features: ['Casque inclus', 'Coffre de rangement', 'Transmission 4x4', 'Garde au sol élevée'],
       availability: true,
     },
   ];
   
-  // Add admin user
-  const adminUser: User = {
-    id: 'admin1',
-    firstName: 'Admin',
-    lastName: 'User',
-    email: 'admin@northgascartours.com',
-    password: 'admin', // In a real app, this would be hashed
-    role: 'admin',
-  };
+  // Add users
+  const users: User[] = [
+    {
+      id: 'admin1',
+      firstName: 'Admin',
+      lastName: 'User',
+      email: 'admin@northgascartours.com',
+      password: 'admin',
+      role: 'admin',
+    },
+    {
+      id: 'user1',
+      firstName: 'Jean',
+      lastName: 'Dupont',
+      email: 'user@example.com',
+      password: 'password',
+      role: 'user',
+    },
+    {
+      id: 'user2',
+      firstName: 'Marie',
+      lastName: 'Martin',
+      email: 'marie@example.com',
+      password: 'password',
+      role: 'user',
+    }
+  ];
+  
+  // Add some sample bookings
+  const bookings: Booking[] = [
+    {
+      id: 'b1',
+      userId: 'user1',
+      tourId: '1',
+      startDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 15 days from now
+      endDate: new Date(Date.now() + 17 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 17 days from now
+      status: 'Confirmed',
+      totalPrice: 299,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 'b2',
+      userId: 'user1',
+      vehicleId: 'v1',
+      startDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
+      endDate: new Date(Date.now() + 35 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 35 days from now
+      status: 'Pending',
+      totalPrice: 89 * 5, // 5 days rental
+      createdAt: new Date().toISOString(),
+    }
+  ];
 
   // Store data
   const tourStore = db.transaction('tours', 'readwrite').objectStore('tours');
@@ -315,7 +356,14 @@ const seedInitialData = async (db: IDBPDatabase<NorthGascarDB>) => {
   }
   
   const userStore = db.transaction('users', 'readwrite').objectStore('users');
-  userStore.put(adminUser);
+  for (const user of users) {
+    userStore.put(user);
+  }
+  
+  const bookingStore = db.transaction('bookings', 'readwrite').objectStore('bookings');
+  for (const booking of bookings) {
+    bookingStore.put(booking);
+  }
 };
 
 // Tours API
