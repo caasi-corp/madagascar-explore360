@@ -172,7 +172,7 @@ const AdminSidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="fixed top-0 left-0 bottom-0 w-64 bg-card border-r border-border overflow-y-auto">
+    <aside className="fixed top-0 left-0 bottom-0 w-64 bg-card border-r border-border overflow-y-auto z-40">
       <div className="p-5 border-b border-border">
         <Logo />
       </div>
