@@ -9,7 +9,7 @@ const UserLayout: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-grow">
+      <main className="flex-grow mt-16">
         <div className="container mx-auto px-4 py-8">
           <Outlet />
         </div>

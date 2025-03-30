@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import Hero from '@/components/Hero';
 import { TourProps } from '@/components/TourCard';
 import { VehicleProps } from '@/components/VehicleCard';
@@ -18,6 +19,10 @@ import Advantages from '@/components/sections/Advantages';
 import CallToAction from '@/components/sections/CallToAction';
 
 const Index = () => {
+  useEffect(() => {
+    console.log('Index page rendering');
+  }, []);
+
   // Sample tour data
   const featuredTours: TourProps[] = [
     {
