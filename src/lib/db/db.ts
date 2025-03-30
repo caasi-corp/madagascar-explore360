@@ -1,6 +1,5 @@
-
 import { openDB, IDBPDatabase } from 'idb';
-import { NorthGascarDB, Tour, Vehicle, User, Booking } from './schema';
+import { NorthGascarDB } from './schema';
 import { seedData } from './seed';
 
 let dbPromise: Promise<IDBPDatabase<NorthGascarDB>>;
