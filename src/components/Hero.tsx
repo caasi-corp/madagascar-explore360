@@ -14,7 +14,7 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({
-  title = "Découvrez les Trésors Cachés de Madagascar",
+  title = "Excursions personnalisées dans le nord de Madagascar",
   subtitle = "Vivez l'expérience d'une biodiversité unique et de paysages à couper le souffle avec nos guides locaux experts",
   showSearch = true,
   backgroundImage = "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb",
