@@ -198,7 +198,7 @@ const UserDashboard = () => {
                             <span className="text-sm">
                               {new Date(booking.startDate) > new Date() 
                                 ? `${Math.ceil((new Date(booking.startDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} jours restants` 
-                                : 'Commence aujourd'hui!'
+                                : "Commence aujourd'hui!"
                               }
                             </span>
                           </div>
