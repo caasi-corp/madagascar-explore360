@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Search, MapPin, Calendar, Users, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format, addDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
@@ -13,6 +12,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { DateRange } from 'react-day-picker';
 
 const destinations = [
   { name: 'Nosy Be', type: 'plages' },
@@ -27,10 +27,7 @@ const destinations = [
 
 const HeroSearch = () => {
   const [destination, setDestination] = useState('');
-  const [dateRange, setDateRange] = useState<{
-    from: Date | undefined;
-    to: Date | undefined;
-  }>({
+  const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
     to: undefined,
   });
