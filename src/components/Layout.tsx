@@ -1,6 +1,6 @@
 
 import React from 'react';
-import Navbar from './Navbar';
+import Navbar from './navbar';  // Updated import path
 import Footer from './Footer';
 import WhatsAppChat from './WhatsAppChat';
 import { Outlet } from 'react-router-dom';
