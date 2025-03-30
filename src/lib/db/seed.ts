@@ -1,3 +1,4 @@
+
 import { IDBPDatabase } from 'idb';
 import { NorthGascarDB, Tour, Vehicle, User, Booking } from './schema';
 
@@ -197,29 +198,40 @@ export const seedData = async (db: IDBPDatabase<NorthGascarDB>) => {
       },
     ];
 
-    // Store data with proper error handling - these are less critical
+    // Store tours data
     try {
-      await db.transaction('tours', 'readwrite', store => {
-        tours.forEach(tour => store.put(tour));
-      });
+      const toursTx = db.transaction('tours', 'readwrite');
+      const toursStore = toursTx.objectStore('tours');
+      for (const tour of tours) {
+        await toursStore.put(tour);
+      }
+      await toursTx.done;
       console.log("Tours ajoutés avec succès");
     } catch (e) {
       console.error("Erreur lors de l'ajout des tours:", e);
     }
     
+    // Store vehicles data
     try {
-      await db.transaction('vehicles', 'readwrite', store => {
-        vehicles.forEach(vehicle => store.put(vehicle));
-      });
+      const vehiclesTx = db.transaction('vehicles', 'readwrite');
+      const vehiclesStore = vehiclesTx.objectStore('vehicles');
+      for (const vehicle of vehicles) {
+        await vehiclesStore.put(vehicle);
+      }
+      await vehiclesTx.done;
       console.log("Véhicules ajoutés avec succès");
     } catch (e) {
       console.error("Erreur lors de l'ajout des véhicules:", e);
     }
     
+    // Store bookings data
     try {
-      await db.transaction('bookings', 'readwrite', store => {
-        bookings.forEach(booking => store.put(booking));
-      });
+      const bookingsTx = db.transaction('bookings', 'readwrite');
+      const bookingsStore = bookingsTx.objectStore('bookings');
+      for (const booking of bookings) {
+        await bookingsStore.put(booking);
+      }
+      await bookingsTx.done;
       console.log("Réservations ajoutées avec succès");
     } catch (e) {
       console.error("Erreur lors de l'ajout des réservations:", e);
