@@ -126,7 +126,7 @@
 
   /* Glass effect classes - CORRIGÉ pour éviter les problèmes au focus/clic */
   .glass-card {
-    @apply bg-white/80 dark:bg-black/50 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg;
+    @apply bg-black/60 dark:bg-black/70 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg;
   }
 
   .glass-effect {
@@ -134,12 +134,12 @@
   }
 
   .glass-button {
-    @apply backdrop-blur-md bg-white/30 dark:bg-white/10 border border-white/40 dark:border-white/20 shadow-md 
-           hover:bg-white/40 dark:hover:bg-white/20 transition-all duration-300;
+    @apply backdrop-blur-md bg-black/30 dark:bg-black/40 border border-white/20 dark:border-white/10 shadow-md 
+           hover:bg-black/40 dark:hover:bg-black/50 text-white transition-all duration-300;
   }
 
   .glass-button:focus {
-    @apply bg-white/40 dark:bg-white/20 outline-none ring-2 ring-primary/50;
+    @apply bg-black/40 dark:bg-black/50 outline-none ring-2 ring-white/20;
   }
 
   .glass-label {
@@ -147,14 +147,14 @@
   }
 
   .glass-input {
-    @apply bg-white/30 dark:bg-black/20 backdrop-blur-md border border-white/30 dark:border-white/10 text-foreground
-           focus:ring-2 focus:ring-primary/50 focus:border-primary/50 focus:bg-white/40 dark:focus:bg-black/30 focus:outline-none;
+    @apply bg-black/30 dark:bg-black/40 backdrop-blur-md border border-white/20 dark:border-white/10 text-white
+           focus:ring-2 focus:ring-white/20 focus:border-white/20 focus:bg-black/40 dark:focus:bg-black/50 focus:outline-none;
   }
 
   /* Correction pour les popovers et dropdowns avec effet glass */
   .glass-popover {
-    @apply backdrop-blur-md bg-white/90 dark:bg-black/80 border border-white/20 dark:border-white/10 shadow-lg 
-           text-foreground dark:text-foreground z-50;
+    @apply backdrop-blur-md bg-black/80 dark:bg-black/90 border border-white/20 dark:border-white/10 shadow-lg 
+           text-white dark:text-white z-50;
   }
 
   .glass-navbar {

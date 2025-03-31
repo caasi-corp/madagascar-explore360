@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Calendar as CalendarIcon, ChevronDown } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronDown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import {
@@ -33,20 +33,39 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ dateRange, setDateRan
     return 'Sélectionner des dates';
   };
 
+  const clearDates = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDateRange({ from: undefined, to: undefined });
+  };
+
+  const hasSelectedDates = dateRange.from || dateRange.to;
+
   return (
     <div className="relative">
       <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-northgascar-teal" size={18} />
       <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
         <PopoverTrigger asChild>
-          <Button
-            variant="glass"
-            className="w-full pl-10 justify-between font-normal"
-          >
-            {formatDateRange()}
-            <ChevronDown className="h-4 w-4 opacity-50" />
-          </Button>
+          <div className="relative">
+            <Button
+              variant="glass"
+              className="w-full pl-10 pr-8 h-10 justify-between font-normal text-foreground focus:text-foreground active:text-foreground bg-black/30 dark:bg-black/40 border-white/20"
+            >
+              <span className="truncate">{formatDateRange()}</span>
+              <ChevronDown className="h-4 w-4 opacity-50 absolute right-3" />
+              
+              {hasSelectedDates && (
+                <button 
+                  className="absolute right-8 top-1/2 -translate-y-1/2 text-white/70 hover:text-white"
+                  onClick={clearDates}
+                  aria-label="Effacer les dates"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </Button>
+          </div>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 glass-popover" align="start">
+        <PopoverContent className="w-auto p-0 glass-popover border-white/20 bg-black/80 backdrop-blur-md" align="start">
           <div className="p-3">
             <CalendarComponent
               initialFocus
@@ -56,8 +75,15 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ dateRange, setDateRan
               onSelect={setDateRange}
               numberOfMonths={2}
               disabled={(date) => date < new Date()}
-              className="pointer-events-auto"
+              className="pointer-events-auto text-white"
               locale={fr}
+              styles={{
+                month: { color: 'white' },
+                caption: { color: 'white' },
+                day_today: { color: 'white', backgroundColor: 'rgba(255,255,255,0.1)' },
+                day_selected: { backgroundColor: '#42C1D9', color: 'white' },
+                day_outside: { color: 'rgba(255,255,255,0.4)' }
+              }}
             />
             <div className="flex justify-end gap-2 pt-2">
               <Button 
@@ -66,12 +92,14 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ dateRange, setDateRan
                 onClick={() => {
                   setDateRange({ from: undefined, to: undefined });
                 }}
+                className="border-white/30 text-white hover:bg-white/10"
               >
                 Effacer
               </Button>
               <Button 
                 size="sm"
                 onClick={() => setIsCalendarOpen(false)}
+                className="bg-northgascar-teal hover:bg-northgascar-teal/80 text-white"
               >
                 Appliquer
               </Button>

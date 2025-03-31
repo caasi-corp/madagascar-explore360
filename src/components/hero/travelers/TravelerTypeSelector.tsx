@@ -1,6 +1,7 @@
 
 import React from 'react';
-import TravelerCountButton from './TravelerCountButton';
+import { Button } from '@/components/ui/button';
+import { Minus, Plus } from 'lucide-react';
 
 interface TravelerTypeSelectorProps {
   type: string;
@@ -26,21 +27,33 @@ const TravelerTypeSelector: React.FC<TravelerTypeSelectorProps> = ({
   return (
     <div className="flex items-center justify-between">
       <div>
-        <p className="font-medium">{label}</p>
-        <p className="text-xs text-muted-foreground">{ageInfo}</p>
+        <h4 className="font-medium text-white">{label}</h4>
+        <p className="text-xs text-white/70">{ageInfo}</p>
       </div>
-      <div className="flex items-center">
-        <TravelerCountButton 
+      <div className="flex items-center gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 rounded-full border-white/30 text-white hover:bg-white/10"
           onClick={onDecrease}
           disabled={count <= minCount}
-          isIncrement={false}
-        />
-        <span className="w-10 text-center">{count}</span>
-        <TravelerCountButton 
+        >
+          <Minus className="h-3 w-3" />
+          <span className="sr-only">Diminuer {label}</span>
+        </Button>
+        <span className="w-6 text-center text-white">{count}</span>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 rounded-full border-white/30 text-white hover:bg-white/10"
           onClick={onIncrease}
           disabled={count >= maxCount}
-          isIncrement={true}
-        />
+        >
+          <Plus className="h-3 w-3" />
+          <span className="sr-only">Augmenter {label}</span>
+        </Button>
       </div>
     </div>
   );

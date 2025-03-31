@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Users, ChevronDown } from 'lucide-react';
+import { Users, ChevronDown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -40,21 +40,44 @@ const TravelersSelector: React.FC<TravelersSelectorProps> = ({ travelers, setTra
   const increaseInfants = () => {
     setTravelers(updateInfants(travelers, true));
   };
+  
+  const resetTravelers = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setTravelers({
+      adults: 1,
+      children: 0,
+      infants: 0,
+    });
+  };
+
+  const hasNonDefaultTravelers = travelers.adults > 1 || travelers.children > 0 || travelers.infants > 0;
 
   return (
     <div className="relative">
       <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-northgascar-teal" size={18} />
       <Popover open={isTravelersOpen} onOpenChange={setIsTravelersOpen}>
         <PopoverTrigger asChild>
-          <Button 
-            variant="glass"
-            className="w-full pl-10 justify-between font-normal"
-          >
-            {formatTravelers(travelers)}
-            <ChevronDown className="h-4 w-4 opacity-50" />
-          </Button>
+          <div className="relative">
+            <Button 
+              variant="glass"
+              className="w-full pl-10 pr-8 h-10 justify-between font-normal text-foreground focus:text-foreground active:text-foreground bg-black/30 dark:bg-black/40 border-white/20"
+            >
+              <span className="truncate">{formatTravelers(travelers)}</span>
+              <ChevronDown className="h-4 w-4 opacity-50 absolute right-3" />
+              
+              {hasNonDefaultTravelers && (
+                <button 
+                  className="absolute right-8 top-1/2 -translate-y-1/2 text-white/70 hover:text-white"
+                  onClick={resetTravelers}
+                  aria-label="Réinitialiser les voyageurs"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </Button>
+          </div>
         </PopoverTrigger>
-        <PopoverContent className="w-80 p-4 glass-popover" align="start">
+        <PopoverContent className="w-80 p-4 glass-popover border-white/20 bg-black/80 backdrop-blur-md" align="start">
           <div className="space-y-4">
             <TravelerTypeSelector
               type="adults"
@@ -87,7 +110,7 @@ const TravelersSelector: React.FC<TravelersSelectorProps> = ({ travelers, setTra
               maxCount={4}
             />
             <Button 
-              className="w-full"
+              className="w-full bg-northgascar-teal hover:bg-northgascar-teal/80 text-white"
               onClick={() => setIsTravelersOpen(false)}
             >
               Appliquer
