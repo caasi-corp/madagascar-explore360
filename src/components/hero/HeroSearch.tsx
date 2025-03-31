@@ -119,7 +119,7 @@ const HeroSearch = () => {
                 />
               </div>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0 max-h-[300px] overflow-auto" align="start">
+            <PopoverContent className="w-full p-0 max-h-[300px] overflow-auto glass-popover" align="start">
               <div className="py-2">
                 {filteredDestinations.length > 0 ? (
                   filteredDestinations.map((dest, index) => (
@@ -156,7 +156,7 @@ const HeroSearch = () => {
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 glass-popover" align="start">
               <div className="p-3">
                 <CalendarComponent
                   initialFocus
@@ -204,7 +204,7 @@ const HeroSearch = () => {
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-4" align="start">
+            <PopoverContent className="w-80 p-4 glass-popover" align="start">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
