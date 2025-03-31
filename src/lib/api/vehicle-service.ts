@@ -3,7 +3,7 @@ import { Vehicle } from '../db/schema';
 import { vehicleAPI } from './vehicleAPI';
 
 /**
- * Types for vehicle filtering and searching
+ * Types pour le filtrage et la recherche de véhicules
  */
 export interface VehicleSearchParams {
   pickupLocation?: string;
@@ -18,55 +18,66 @@ export interface VehicleSearchParams {
 }
 
 /**
- * Vehicle service that provides methods for fetching and filtering vehicles
+ * Service de véhicules qui fournit des méthodes pour récupérer et filtrer les véhicules
  */
 export class VehicleService {
   /**
-   * Get all available vehicles
+   * Récupérer tous les véhicules disponibles
    */
   static async getAvailableVehicles(): Promise<Vehicle[]> {
     try {
       const vehicles = await vehicleAPI.getAvailable();
-      console.log('Available vehicles fetched:', vehicles);
       return vehicles;
     } catch (error) {
-      console.error("Error fetching available vehicles:", error);
+      console.error("Erreur lors de la récupération des véhicules disponibles:", error);
       return [];
     }
   }
 
   /**
-   * Get a specific vehicle by its ID
+   * Récupérer un véhicule spécifique par son ID
    */
   static async getVehicleById(id: string): Promise<Vehicle | null> {
     try {
+      if (!id) return null;
       const vehicle = await vehicleAPI.getById(id);
-      return vehicle || null;
+      return vehicle;
     } catch (error) {
-      console.error(`Error fetching vehicle with ID ${id}:`, error);
+      console.error(`Erreur lors de la récupération du véhicule avec l'ID ${id}:`, error);
       return null;
     }
   }
 
   /**
-   * Get vehicles filtered by type
+   * Récupérer les véhicules filtrés par type
    */
   static async getVehiclesByType(type: string): Promise<Vehicle[]> {
     try {
+      if (!type) return this.getAvailableVehicles();
       const vehicles = await vehicleAPI.getByType(type);
       return vehicles;
     } catch (error) {
-      console.error(`Error fetching vehicles of type ${type}:`, error);
+      console.error(`Erreur lors de la récupération des véhicules de type ${type}:`, error);
       return [];
     }
   }
 
   /**
-   * Filter vehicles based on search parameters
+   * Filtrer les véhicules en fonction des paramètres de recherche
    */
   static async filterVehicles(params: VehicleSearchParams): Promise<Vehicle[]> {
     try {
+      // Si aucun paramètre de filtrage n'est fourni, retourne tous les véhicules disponibles
+      if (!params || Object.keys(params).length === 0) {
+        return this.getAvailableVehicles();
+      }
+      
       const availableVehicles = await this.getAvailableVehicles();
+      
+      if (!availableVehicles.length) {
+        console.warn("Aucun véhicule disponible à filtrer");
+        return [];
+      }
       
       return availableVehicles.filter(vehicle => {
         return (
@@ -79,23 +90,22 @@ export class VehicleService {
         );
       });
     } catch (error) {
-      console.error("Error filtering vehicles:", error);
+      console.error("Erreur lors du filtrage des véhicules:", error);
       return [];
     }
   }
 
   /**
-   * Get featured vehicles (for homepage display)
+   * Récupérer les véhicules mis en avant (pour l'affichage sur la page d'accueil)
    */
   static async getFeaturedVehicles(limit: number = 3): Promise<Vehicle[]> {
     try {
       const availableVehicles = await this.getAvailableVehicles();
-      console.log('Featured vehicles (before slice):', availableVehicles);
-      // Return the first few vehicles, but in a real implementation
-      // you might have a "featured" field on the vehicle
+      // Retourne les premiers véhicules, mais dans une implémentation réelle
+      // vous pourriez avoir un champ "featured" sur le véhicule
       return availableVehicles.slice(0, limit);
     } catch (error) {
-      console.error("Error fetching featured vehicles:", error);
+      console.error("Erreur lors de la récupération des véhicules mis en avant:", error);
       return [];
     }
   }

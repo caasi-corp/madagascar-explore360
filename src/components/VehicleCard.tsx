@@ -1,11 +1,9 @@
 
 import React from 'react';
-import { Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AnimatedContainer } from '@/components/ui/animated-container';
 import { AnimatedBadge } from '@/components/ui/animated-badge';
-import { ProgressiveImage } from '@/components/ui/progressive-image';
 
 export interface VehicleProps {
   id: string;
@@ -31,12 +29,15 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
   index = 0,
   showCta = true
 }) => {
-  console.log('VehicleCard rendering:', vehicle);
+  // Image par défaut si l'URL est vide ou invalide
+  const defaultImage = '/placeholder.svg';
+  const imageUrl = vehicle.image && vehicle.image.trim() !== '' ? vehicle.image : defaultImage;
   
-  // Vérifier que l'URL de l'image existe et la nettoyer
-  let imageUrl = vehicle.image && vehicle.image.trim() !== '' 
-    ? vehicle.image.split('?')[0] 
-    : 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf'; // Image par défaut
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.target as HTMLImageElement;
+    target.onerror = null; // Empêcher les boucles infinies
+    target.src = defaultImage;
+  };
 
   return (
     <AnimatedContainer
@@ -49,11 +50,8 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
           src={imageUrl} 
           alt={vehicle.name} 
           className="w-full h-full object-cover"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.onerror = null;
-            target.src = '/placeholder.svg';
-          }}
+          onError={handleImageError}
+          loading={index < 3 ? "eager" : "lazy"}
         />
         
         <AnimatedBadge

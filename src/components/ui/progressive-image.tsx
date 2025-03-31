@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { getImageThumbnail, optimizeImageUrl, generateSrcSet } from '@/lib/imageOptimizer';
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -35,44 +34,38 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
   const [isError, setIsError] = useState(false);
   const isMobile = useIsMobile();
   
-  // Nettoyage de l'URL source avant optimisation
+  // Nettoyer l'URL et utiliser une URL directe sans optimisation qui peut échouer
   const cleanSrc = src ? src.split('?')[0] : '';
-  const thumbnailSrc = getImageThumbnail(cleanSrc);
-  const optimizedSrc = optimizeImageUrl(cleanSrc, isMobile ? Math.min(width, 600) : width);
-  const srcSet = generateSrcSet(cleanSrc);
   
-  const loadingType = priority ? "eager" : "lazy";
-  
-  // Handle image load complete
+  // Gérer le chargement de l'image
   const handleImageLoaded = () => {
     setIsLoaded(true);
     if (onLoad) onLoad();
   };
   
-  // Handle image load error
+  // Gérer les erreurs de chargement
   const handleError = () => {
     console.warn(`Failed to load image: ${src}`);
     setIsError(true);
   };
   
   useEffect(() => {
-    // Reset states when src changes
+    // Réinitialiser les états lors du changement de source
     setIsLoaded(false);
     setIsError(false);
     
-    // Preload high-priority images
+    // Précharger les images prioritaires
     if (priority && cleanSrc) {
       const img = new Image();
-      img.src = optimizedSrc;
+      img.src = cleanSrc;
       img.onload = handleImageLoaded;
       img.onerror = handleError;
     }
     
-    // Cleanup function
     return () => {
-      // No cleanup needed for Image objects, they get garbage collected
+      // Pas besoin de nettoyage pour les objets Image
     };
-  }, [cleanSrc, optimizedSrc, priority]);
+  }, [cleanSrc, priority]);
   
   return (
     <div 
@@ -85,40 +78,22 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
         aspectRatio: width && height ? `${width} / ${height}` : undefined 
       }}
     >
-      {/* Thumbnail/blur image */}
-      {!isLoaded && !isError && (
-        <img
-          src={thumbnailSrc}
-          alt=""
-          className={cn(
-            "absolute inset-0 w-full h-full object-cover blur-sm transition-opacity duration-300",
-            className
-          )}
-          aria-hidden="true"
-          width={width}
-          height={height}
-        />
-      )}
-      
-      {/* Loading skeleton */}
+      {/* Image de préchargement/flou */}
       {!isLoaded && !isError && (
         <Skeleton className="absolute inset-0 w-full h-full" />
       )}
       
-      {/* Actual image */}
+      {/* Image principale */}
       {!isError ? (
         <img
-          src={optimizedSrc}
-          srcSet={srcSet}
-          sizes={sizes}
+          src={cleanSrc}
           alt={alt}
           width={width}
           height={height}
           onLoad={handleImageLoaded}
           onError={handleError}
-          loading={loadingType}
+          loading={priority ? "eager" : "lazy"}
           decoding="async"
-          fetchPriority={priority ? "high" : "auto"}
           className={cn(
             "w-full h-full object-cover transition-opacity duration-500",
             !isLoaded ? "opacity-0" : "opacity-100",

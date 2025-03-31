@@ -11,9 +11,7 @@ interface VehicleListProps {
 }
 
 const VehicleList: React.FC<VehicleListProps> = ({ vehicles }) => {
-  console.log('VehicleList - vehicles:', vehicles);
-  
-  if (vehicles.length === 0) {
+  if (!vehicles || vehicles.length === 0) {
     return (
       <div className="text-center py-10">
         <p className="text-lg text-gray-600 dark:text-gray-400">
@@ -29,19 +27,23 @@ const VehicleList: React.FC<VehicleListProps> = ({ vehicles }) => {
     });
   };
   
+  // Image par défaut en cas d'erreur
+  const defaultImage = '/placeholder.svg';
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       {vehicles.map((vehicle) => (
         <Card key={vehicle.id} className="overflow-hidden">
           <div className="aspect-video w-full overflow-hidden">
             <img 
-              src={vehicle.image ? `${vehicle.image.split('?')[0]}` : '/placeholder.svg'} 
+              src={vehicle.image || defaultImage} 
               alt={vehicle.name} 
               className="w-full h-full object-cover"
+              loading="lazy"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.onerror = null;
-                target.src = '/placeholder.svg';
+                target.src = defaultImage;
               }}
             />
           </div>

@@ -16,13 +16,13 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({ vehicles: propVehicles 
   const { data: apiVehicles, isLoading, isError } = useQuery({
     queryKey: ['vehicles', 'featured'],
     queryFn: () => VehicleService.getFeaturedVehicles(3),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 2,
     // Only fetch if no vehicles are provided as props
     enabled: !propVehicles || propVehicles.length === 0,
   });
-
-  console.log('VehicleSection - propVehicles:', propVehicles);
-  console.log('VehicleSection - apiVehicles:', apiVehicles);
   
+  // Utiliser les véhicules des props si disponibles, sinon utiliser ceux de l'API
   const vehicles = propVehicles && propVehicles.length > 0 ? propVehicles : apiVehicles || [];
 
   return (
@@ -60,7 +60,7 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({ vehicles: propVehicles 
         ) : vehicles.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {vehicles.map((vehicle, index) => (
-              <VehicleCard key={vehicle.id} vehicle={vehicle} index={index} />
+              <VehicleCard key={vehicle.id || index} vehicle={vehicle} index={index} />
             ))}
           </div>
         ) : (
