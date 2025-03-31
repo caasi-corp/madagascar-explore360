@@ -7,95 +7,38 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-
-interface TravelerCount {
-  adults: number;
-  children: number;
-  infants: number;
-}
-
-interface TravelersSelectorProps {
-  travelers: TravelerCount;
-  setTravelers: (travelers: TravelerCount) => void;
-}
+import TravelerTypeSelector from './travelers/TravelerTypeSelector';
+import { useTravelerFormatter } from './travelers/useTravelerFormatter';
+import { updateAdults, updateChildren, updateInfants } from './travelers/travelerUpdaters';
+import { TravelerCount, TravelersSelectorProps } from './travelers/types';
 
 const TravelersSelector: React.FC<TravelersSelectorProps> = ({ travelers, setTravelers }) => {
   const [isTravelersOpen, setIsTravelersOpen] = useState(false);
-
-  // Format travelers for display
-  const formatTravelers = () => {
-    const { adults, children, infants } = travelers;
-    const totalTravelers = adults + children + infants;
-    
-    if (totalTravelers === 1) {
-      return '1 voyageur';
-    }
-    
-    let display = `${totalTravelers} voyageurs`;
-    
-    if (children > 0 || infants > 0) {
-      display += ` (${adults} adulte${adults > 1 ? 's' : ''}`;
-      if (children > 0) display += `, ${children} enfant${children > 1 ? 's' : ''}`;
-      if (infants > 0) display += `, ${infants} bébé${infants > 1 ? 's' : ''}`;
-      display += ')';
-    }
-    
-    return display;
-  };
+  const { formatTravelers } = useTravelerFormatter();
 
   // Helper functions to update traveler counts
   const decreaseAdults = () => {
-    if (travelers.adults <= 1) return;
-    const newTravelers = { 
-      ...travelers, 
-      adults: Math.max(1, travelers.adults - 1) 
-    };
-    setTravelers(newTravelers);
+    setTravelers(updateAdults(travelers, false));
   };
 
   const increaseAdults = () => {
-    if (travelers.adults >= 10) return;
-    const newTravelers = { 
-      ...travelers, 
-      adults: Math.min(10, travelers.adults + 1) 
-    };
-    setTravelers(newTravelers);
+    setTravelers(updateAdults(travelers, true));
   };
 
   const decreaseChildren = () => {
-    if (travelers.children <= 0) return;
-    const newTravelers = { 
-      ...travelers, 
-      children: Math.max(0, travelers.children - 1) 
-    };
-    setTravelers(newTravelers);
+    setTravelers(updateChildren(travelers, false));
   };
 
   const increaseChildren = () => {
-    if (travelers.children >= 6) return;
-    const newTravelers = { 
-      ...travelers, 
-      children: Math.min(6, travelers.children + 1) 
-    };
-    setTravelers(newTravelers);
+    setTravelers(updateChildren(travelers, true));
   };
 
   const decreaseInfants = () => {
-    if (travelers.infants <= 0) return;
-    const newTravelers = { 
-      ...travelers, 
-      infants: Math.max(0, travelers.infants - 1) 
-    };
-    setTravelers(newTravelers);
+    setTravelers(updateInfants(travelers, false));
   };
 
   const increaseInfants = () => {
-    if (travelers.infants >= 4) return;
-    const newTravelers = { 
-      ...travelers, 
-      infants: Math.min(4, travelers.infants + 1) 
-    };
-    setTravelers(newTravelers);
+    setTravelers(updateInfants(travelers, true));
   };
 
   return (
@@ -107,93 +50,42 @@ const TravelersSelector: React.FC<TravelersSelectorProps> = ({ travelers, setTra
             variant="glass"
             className="w-full pl-10 justify-between font-normal"
           >
-            {formatTravelers()}
+            {formatTravelers(travelers)}
             <ChevronDown className="h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-80 p-4 glass-popover" align="start">
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Adultes</p>
-                <p className="text-xs text-muted-foreground">13+ ans</p>
-              </div>
-              <div className="flex items-center">
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="h-8 w-8 rounded-full"
-                  onClick={decreaseAdults}
-                  disabled={travelers.adults <= 1}
-                >
-                  -
-                </Button>
-                <span className="w-10 text-center">{travelers.adults}</span>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="h-8 w-8 rounded-full"
-                  onClick={increaseAdults}
-                  disabled={travelers.adults >= 10}
-                >
-                  +
-                </Button>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Enfants</p>
-                <p className="text-xs text-muted-foreground">2-12 ans</p>
-              </div>
-              <div className="flex items-center">
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="h-8 w-8 rounded-full"
-                  onClick={decreaseChildren}
-                  disabled={travelers.children <= 0}
-                >
-                  -
-                </Button>
-                <span className="w-10 text-center">{travelers.children}</span>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="h-8 w-8 rounded-full"
-                  onClick={increaseChildren}
-                  disabled={travelers.children >= 6}
-                >
-                  +
-                </Button>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Bébés</p>
-                <p className="text-xs text-muted-foreground">0-2 ans</p>
-              </div>
-              <div className="flex items-center">
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="h-8 w-8 rounded-full"
-                  onClick={decreaseInfants}
-                  disabled={travelers.infants <= 0}
-                >
-                  -
-                </Button>
-                <span className="w-10 text-center">{travelers.infants}</span>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="h-8 w-8 rounded-full"
-                  onClick={increaseInfants}
-                  disabled={travelers.infants >= 4}
-                >
-                  +
-                </Button>
-              </div>
-            </div>
+            <TravelerTypeSelector
+              type="adults"
+              label="Adultes"
+              ageInfo="13+ ans"
+              count={travelers.adults}
+              onDecrease={decreaseAdults}
+              onIncrease={increaseAdults}
+              minCount={1}
+              maxCount={10}
+            />
+            <TravelerTypeSelector
+              type="children"
+              label="Enfants"
+              ageInfo="2-12 ans"
+              count={travelers.children}
+              onDecrease={decreaseChildren}
+              onIncrease={increaseChildren}
+              minCount={0}
+              maxCount={6}
+            />
+            <TravelerTypeSelector
+              type="infants"
+              label="Bébés"
+              ageInfo="0-2 ans"
+              count={travelers.infants}
+              onDecrease={decreaseInfants}
+              onIncrease={increaseInfants}
+              minCount={0}
+              maxCount={4}
+            />
             <Button 
               className="w-full"
               onClick={() => setIsTravelersOpen(false)}
