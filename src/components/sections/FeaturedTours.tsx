@@ -6,6 +6,7 @@ import TourCard, { TourProps } from '@/components/TourCard';
 import { AnimatedContainer } from '@/components/ui/animated-container';
 import { optimizeImageUrl } from '@/lib/imageOptimizer';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface FeaturedToursProps {
   tours: TourProps[];
@@ -13,6 +14,17 @@ interface FeaturedToursProps {
 
 const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const isMobile = useIsMobile();
+  const [displayCount, setDisplayCount] = useState(4);
+  
+  useEffect(() => {
+    // Nombre de tours à afficher en fonction de la taille de l'écran
+    if (isMobile) {
+      setDisplayCount(2);
+    } else {
+      setDisplayCount(4);
+    }
+  }, [isMobile]);
   
   // Simuler un chargement progressif
   useEffect(() => {
@@ -33,9 +45,12 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
     startDate: tour.startDate || new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')
   }));
   
+  // Prendre seulement le nombre de tours à afficher
+  const toursToDisplay = enhancedTours.slice(0, displayCount);
+  
   return (
     <section className="section-padding bg-muted/30">
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4">
         <AnimatedContainer className="text-center mb-10" onlyWhenVisible={true}>
           <div className="inline-flex items-center gap-2 text-madagascar-yellow font-medium mb-3">
             <Sparkles className="h-5 w-5" />
@@ -50,7 +65,7 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {isLoading ? (
             // Afficher des skeletons pendant le chargement
-            Array(4).fill(0).map((_, index) => (
+            Array(displayCount).fill(0).map((_, index) => (
               <div key={index} className="space-y-3">
                 <Skeleton className="h-48 w-full rounded-t-lg" />
                 <Skeleton className="h-6 w-3/4" />
@@ -60,7 +75,7 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
             ))
           ) : (
             // Afficher les tours une fois chargés
-            enhancedTours.map((tour, index) => (
+            toursToDisplay.map((tour, index) => (
               <AnimatedContainer 
                 key={tour.id} 
                 className="hover-scale" 

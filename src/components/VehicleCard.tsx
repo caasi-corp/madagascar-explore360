@@ -30,17 +30,28 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
   index = 0,
   showCta = true
 }) => {
+  // Vérifier que l'URL de l'image existe
+  const imageUrl = vehicle.image && vehicle.image.trim() !== '' 
+    ? vehicle.image 
+    : 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf'; // Image par défaut
+
   return (
     <AnimatedContainer
-      className="rounded-lg border overflow-hidden bg-card hover:shadow-lg transition-shadow"
+      className="rounded-lg border overflow-hidden bg-card hover:shadow-lg transition-shadow h-full flex flex-col"
       delay={index * 150}
       onlyWhenVisible={true}
     >
-      <div className="relative h-48">
+      <div className="relative h-48 w-full">
         <img 
-          src={vehicle.image} 
+          src={imageUrl} 
           alt={vehicle.name} 
           className="w-full h-full object-cover"
+          loading="lazy"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf';
+            target.onerror = null; // Éviter les boucles infinies
+          }}
         />
         <AnimatedBadge
           className={`absolute top-4 right-4 ${
@@ -54,11 +65,13 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
         </AnimatedBadge>
       </div>
       
-      <div className="p-5">
+      <div className="p-5 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-bold text-xl">{vehicle.name}</h3>
           <AnimatedBadge variant="outline" delay={(index * 150) + 300}>
-            {vehicle.type}
+            {vehicle.type === 'car' ? 'Voiture' : 
+             vehicle.type === '4x4' ? '4x4' : 
+             vehicle.type === 'motorcycle' ? 'Moto' : 'Quad'}
           </AnimatedBadge>
         </div>
         
@@ -73,7 +86,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
           </div>
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground">Transmission:</span>
-            <span className="font-medium">{vehicle.transmission}</span>
+            <span className="font-medium">{vehicle.transmission === 'Automatic' ? 'Automatique' : 'Manuelle'}</span>
           </div>
           <div className="flex items-center gap-2 col-span-2">
             <span className="text-muted-foreground">Carburant:</span>
@@ -81,10 +94,10 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
           </div>
         </div>
         
-        <div className="mt-4">
+        <div className="mt-auto">
           <p className="text-sm font-medium mb-2">Caractéristiques:</p>
           <div className="flex flex-wrap gap-2">
-            {vehicle.features.map((feature, i) => (
+            {vehicle.features.slice(0, 4).map((feature, i) => (
               <AnimatedBadge 
                 key={feature} 
                 variant="secondary" 
@@ -94,6 +107,15 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                 {feature}
               </AnimatedBadge>
             ))}
+            {vehicle.features.length > 4 && (
+              <AnimatedBadge 
+                variant="secondary" 
+                className="text-xs"
+                delay={(index * 150) + 800}
+              >
+                +{vehicle.features.length - 4}
+              </AnimatedBadge>
+            )}
           </div>
         </div>
         
