@@ -8,6 +8,7 @@ import TourEditor from '../pages/admin/TourEditor';
 import BookingsManagement from '../pages/admin/BookingsManagement';
 import CustomersManagement from '../pages/admin/CustomersManagement';
 import VehiclesManagement from '../pages/admin/VehiclesManagement';
+import VehicleEditor from '../pages/admin/VehicleEditor';
 import HotelsManagement from '../pages/admin/HotelsManagement';
 import FlightsManagement from '../pages/admin/FlightsManagement';
 import ReportsPage from '../pages/admin/ReportsPage';
@@ -59,11 +60,11 @@ export const adminRoutes: RouteObject = {
     },
     {
       path: 'vehicles/new',
-      element: <AdminDashboard /> // Placeholder, will be replaced with VehicleEditor
+      element: <VehicleEditor />
     },
     {
       path: 'vehicles/edit/:id',
-      element: <AdminDashboard /> // Placeholder, will be replaced with VehicleEditor
+      element: <VehicleEditor />
     },
     {
       path: 'vehicles/bookings',
