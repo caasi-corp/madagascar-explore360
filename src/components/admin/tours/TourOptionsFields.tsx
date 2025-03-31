@@ -3,7 +3,7 @@ import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { UseFormReturn } from 'react-hook-form';
-import { TourFormValues } from '@/pages/admin/TourEditor';
+import { TourFormValues } from '@/hooks/useTourEditorForm';
 
 interface TourOptionsFieldsProps {
   form: UseFormReturn<TourFormValues>;

@@ -3,7 +3,7 @@ import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UseFormReturn } from 'react-hook-form';
-import { TourFormValues } from '@/pages/admin/TourEditor';
+import { TourFormValues } from '@/hooks/useTourEditorForm';
 
 interface TourCategorySelectProps {
   form: UseFormReturn<TourFormValues>;

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Save } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { TourFormValues } from '@/pages/admin/TourEditor';
+import { TourFormValues } from '@/hooks/useTourEditorForm';
 import { UseFormReturn } from 'react-hook-form';
 
 interface SavedDataAlertProps {
