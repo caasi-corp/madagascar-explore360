@@ -24,16 +24,14 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
     } else {
       setDisplayCount(4);
     }
-  }, [isMobile]);
-  
-  // Simuler un chargement progressif
-  useEffect(() => {
+    
+    // Simuler un chargement progressif
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 300);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [isMobile]);
   
   // Ajouter des détails supplémentaires aux tours pour l'affichage
   const enhancedTours = tours.map(tour => ({
@@ -47,6 +45,10 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
   
   // Prendre seulement le nombre de tours à afficher
   const toursToDisplay = enhancedTours.slice(0, displayCount);
+  
+  if (tours.length === 0) {
+    return null;
+  }
   
   return (
     <section className="section-padding bg-muted/30">
@@ -62,20 +64,22 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
           </p>
         </AnimatedContainer>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {isLoading ? (
-            // Afficher des skeletons pendant le chargement
-            Array(displayCount).fill(0).map((_, index) => (
+        {isLoading ? (
+          // Afficher des skeletons pendant le chargement
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array(isMobile ? 2 : 4).fill(0).map((_, index) => (
               <div key={index} className="space-y-3">
                 <Skeleton className="h-48 w-full rounded-t-lg" />
                 <Skeleton className="h-6 w-3/4" />
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-2/3" />
               </div>
-            ))
-          ) : (
-            // Afficher les tours une fois chargés
-            toursToDisplay.map((tour, index) => (
+            ))}
+          </div>
+        ) : (
+          // Afficher les tours une fois chargés
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {toursToDisplay.map((tour, index) => (
               <AnimatedContainer 
                 key={tour.id} 
                 className="hover-scale" 
@@ -88,9 +92,9 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
                   animationIndex={index}
                 />
               </AnimatedContainer>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
         
         <AnimatedContainer className="mt-10 text-center" delay={600} onlyWhenVisible={true}>
           <Button asChild className="bg-madagascar-green hover:bg-madagascar-green/80 text-white group">

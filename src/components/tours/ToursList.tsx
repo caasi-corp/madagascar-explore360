@@ -1,5 +1,5 @@
 
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import TourCard, { TourProps } from '@/components/TourCard';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import {
   PaginationNext, 
   PaginationPrevious 
 } from '@/components/ui/pagination';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ToursListProps {
   tours: TourProps[];
@@ -20,7 +21,13 @@ interface ToursListProps {
 // Using React.memo to prevent unnecessary re-renders
 const ToursList: React.FC<ToursListProps> = memo(({ tours, resetFilters }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const toursPerPage = 8;
+  const isMobile = useIsMobile();
+  const [toursPerPage, setToursPerPage] = useState(8);
+  
+  // Ajuster le nombre de tours par page selon la taille de l'écran
+  useEffect(() => {
+    setToursPerPage(isMobile ? 4 : 8);
+  }, [isMobile]);
   
   // Calculate pagination
   const indexOfLastTour = currentPage * toursPerPage;
@@ -39,18 +46,23 @@ const ToursList: React.FC<ToursListProps> = memo(({ tours, resetFilters }) => {
     language: tour.language || undefined,
     startDate: tour.startDate || undefined
   }));
+  
+  // Réinitialiser la page courante si le nombre de tours change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [tours.length]);
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">
+        <h2 className="text-xl sm:text-2xl font-bold">
           {tours.length} {tours.length === 1 ? 'Circuit' : 'Circuits'} Disponible{tours.length > 1 ? 's' : ''}
         </h2>
       </div>
       
       {tours.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {enhancedTours.map((tour) => (
               <Link to={`/tours/${tour.id}`} key={tour.id} className="block transition-transform hover:scale-[1.02]">
                 <TourCard tour={tour} />
@@ -58,7 +70,7 @@ const ToursList: React.FC<ToursListProps> = memo(({ tours, resetFilters }) => {
             ))}
           </div>
           
-          {/* Pagination */}
+          {/* Pagination - simplifiée sur mobile */}
           {totalPages > 1 && (
             <Pagination className="mt-8">
               <PaginationContent>
@@ -68,16 +80,26 @@ const ToursList: React.FC<ToursListProps> = memo(({ tours, resetFilters }) => {
                   </PaginationItem>
                 )}
                 
-                {[...Array(totalPages)].map((_, i) => (
-                  <PaginationItem key={i}>
-                    <PaginationLink
-                      isActive={currentPage === i + 1}
-                      onClick={() => paginate(i + 1)}
-                    >
-                      {i + 1}
+                {isMobile ? (
+                  // Version simplifiée pour mobile
+                  <PaginationItem>
+                    <PaginationLink isActive={true}>
+                      {currentPage} / {totalPages}
                     </PaginationLink>
                   </PaginationItem>
-                ))}
+                ) : (
+                  // Version complète pour desktop
+                  [...Array(totalPages)].map((_, i) => (
+                    <PaginationItem key={i}>
+                      <PaginationLink
+                        isActive={currentPage === i + 1}
+                        onClick={() => paginate(i + 1)}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))
+                )}
                 
                 {currentPage < totalPages && (
                   <PaginationItem>

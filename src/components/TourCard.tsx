@@ -31,7 +31,8 @@ interface TourCardProps {
 const TourCard: React.FC<TourCardProps> = ({ tour, className, animationIndex = 0 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   
-  // Optimiser les URL d'images
+  // Optimiser les URL d'images avec une priorité plus élevée pour les premières cartes
+  const loadPriority = animationIndex < 2 ? 'eager' : 'lazy';
   const thumbnailUrl = getImageThumbnail(tour.image);
   const fullImageUrl = optimizeImageUrl(tour.image);
   
@@ -50,7 +51,7 @@ const TourCard: React.FC<TourCardProps> = ({ tour, className, animationIndex = 0
   
   return (
     <Card className={`overflow-hidden hover:shadow-lg transition-all hover:translate-y-[-5px] ${className}`}>
-      <div className="relative h-48 overflow-hidden bg-gray-200">
+      <div className="relative h-36 sm:h-48 overflow-hidden bg-gray-200">
         {/* Image de préchargement (miniature floue) */}
         <img
           src={thumbnailUrl}
@@ -66,8 +67,9 @@ const TourCard: React.FC<TourCardProps> = ({ tour, className, animationIndex = 0
           className={`w-full h-full object-cover transition-opacity duration-500 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
           style={{ position: 'absolute', top: 0, left: 0 }}
           onLoad={() => setImageLoaded(true)}
-          loading="lazy"
+          loading={loadPriority}
           decoding="async"
+          fetchPriority={loadPriority === 'eager' ? 'high' : 'auto'}
         />
         
         {/* Badges */}
@@ -90,35 +92,35 @@ const TourCard: React.FC<TourCardProps> = ({ tour, className, animationIndex = 0
         </div>
       </div>
       
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg md:text-xl line-clamp-2">{tour.title}</CardTitle>
+      <CardHeader className="pb-1 pt-3 px-3 sm:pb-2 sm:px-4 sm:pt-4">
+        <CardTitle className="text-base sm:text-lg md:text-xl line-clamp-2">{tour.title}</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-3 pt-0">
-        <CardDescription className="line-clamp-2">
+      <CardContent className="grid gap-2 sm:gap-3 pt-0 px-3 sm:px-4">
+        <CardDescription className="line-clamp-2 text-xs sm:text-sm">
           {tour.description}
         </CardDescription>
         
-        <div className="grid grid-cols-2 gap-2 mt-1">
-          <div className="flex items-center text-sm text-muted-foreground">
-            <MapPin className="mr-1.5 h-4 w-4 flex-shrink-0" />
+        <div className="grid grid-cols-2 gap-1 sm:gap-2 mt-1">
+          <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
+            <MapPin className="mr-1 h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
             <span className="truncate">{tour.location}</span>
           </div>
-          <div className="flex items-center text-sm text-muted-foreground">
-            <Clock className="mr-1.5 h-4 w-4 flex-shrink-0" />
+          <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
+            <Clock className="mr-1 h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
             <span>{tour.duration}</span>
           </div>
           
           {tour.groupSize && (
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Users className="mr-1.5 h-4 w-4 flex-shrink-0" />
+            <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
+              <Users className="mr-1 h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
               <span>Max {tour.groupSize} pers.</span>
             </div>
           )}
           
           {tour.startDate && (
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Calendar className="mr-1.5 h-4 w-4 flex-shrink-0" />
-              <span className="truncate">Prochain départ: {tour.startDate}</span>
+            <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
+              <Calendar className="mr-1 h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="truncate">Départ: {tour.startDate}</span>
             </div>
           )}
         </div>
@@ -126,20 +128,20 @@ const TourCard: React.FC<TourCardProps> = ({ tour, className, animationIndex = 0
         {tour.language && tour.language.length > 0 && (
           <div className="flex items-center gap-1 mt-1 flex-wrap">
             {tour.language.map((lang, index) => (
-              <Badge key={index} variant="outline" className="bg-muted/50 text-xs">
+              <Badge key={index} variant="outline" className="bg-muted/50 text-xs px-1 py-0 h-5">
                 {lang}
               </Badge>
             ))}
           </div>
         )}
       </CardContent>
-      <CardFooter className="flex items-center justify-between pt-2">
+      <CardFooter className="flex items-center justify-between pt-1 pb-3 px-3 sm:pt-2 sm:pb-4 sm:px-4">
         <div className="flex items-center">
-          <Star className="mr-1 h-5 w-5 text-yellow-500 fill-yellow-500" />
-          <span className="text-sm font-medium">{tour.rating}</span>
+          <Star className="mr-1 h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 fill-yellow-500" />
+          <span className="text-xs sm:text-sm font-medium">{tour.rating}</span>
         </div>
         <div>
-          <span className="text-xl font-bold">€{formattedPrice}</span>
+          <span className="text-base sm:text-lg font-bold">€{formattedPrice}</span>
         </div>
       </CardFooter>
     </Card>
