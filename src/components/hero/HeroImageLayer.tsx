@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { getTransitionClasses } from './HeroTransitionEffects';
+import { ProgressiveImage } from '../ui/progressive-image';
 
 interface HeroImageLayerProps {
   image: string;
@@ -23,25 +24,35 @@ const HeroImageLayer: React.FC<HeroImageLayerProps> = ({
   isVisible,
   isPrevious = false
 }) => {
+  // Utiliser une image progressive avec un fond de dégradé glacé
   return (
     <div 
       className={`absolute inset-0 w-full h-full transition-all duration-1500 ${
         isTransitioning ? getTransitionClasses(currentEffect) : ''} ${
         isVisible ? 'opacity-100' : 'opacity-0'}`}
       style={{
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${image})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        overflow: 'hidden',
         transform: `scale(${dronePosition.scale}) translate(${dronePosition.x}%, ${dronePosition.y}%)`,
         transition: `transform 2s ease-out, filter 1.5s ease-out, opacity 0.5s ease-in`,
         filter: isPrevious 
           ? (isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom') ? 'blur(8px)' : 'blur(0px)') 
           : (!isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom') ? 'blur(0px)' : ''),
         zIndex: isPrevious ? 0 : (isTransitioning ? 0 : 1),
-        width: '100%', 
-        height: '100%'
       }}
-    />
+    >
+      {/* Une couche d'overlay pour l'effet glacé */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60 z-10"></div>
+      
+      {/* Image progressive optimisée */}
+      <ProgressiveImage 
+        src={image} 
+        alt="Paysage Madagascar"
+        className="w-full h-full object-cover"
+        containerClassName="w-full h-full"
+        priority={true}
+        sizes="100vw"
+      />
+    </div>
   );
 };
 

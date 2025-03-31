@@ -6,10 +6,10 @@ import { AnimatedContainer } from '@/components/ui/animated-container';
 
 const CallToAction: React.FC = () => {
   return (
-    <section className="py-16 px-4 bg-madagascar-green/10">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-madagascar-green/5 to-madagascar-blue/5">
       <div className="container mx-auto text-center">
         <AnimatedContainer 
-          className="glass-card p-8 rounded-2xl max-w-4xl mx-auto overflow-hidden relative group"
+          className="backdrop-blur-md bg-white/10 dark:bg-black/30 p-8 sm:p-10 rounded-2xl max-w-4xl mx-auto overflow-hidden relative group border border-white/20 shadow-xl"
           onlyWhenVisible={true}
         >
           {/* Effet de brillance au survol */}
@@ -29,7 +29,7 @@ const CallToAction: React.FC = () => {
                 asChild 
                 size="lg" 
                 variant="glass" 
-                className="text-white hover:translate-y-[-5px] transition-transform duration-300 hover:shadow-lg active:shadow-md active:translate-y-[-2px] focus:outline-none"
+                className="bg-madagascar-green hover:bg-madagascar-green/80 text-white hover:translate-y-[-5px] transition-transform duration-300 hover:shadow-lg active:shadow-md active:translate-y-[-2px] focus:outline-none"
               >
                 <a href="/tours">
                   <Calendar className="mr-2 h-5 w-5 animate-float" /> Réserver un Circuit
@@ -42,7 +42,7 @@ const CallToAction: React.FC = () => {
                 asChild 
                 size="lg" 
                 variant="glass"
-                className="hover:translate-y-[-5px] transition-transform duration-300 hover:shadow-lg active:shadow-md active:translate-y-[-2px] focus:outline-none"
+                className="bg-madagascar-blue/80 hover:bg-madagascar-blue text-white hover:translate-y-[-5px] transition-transform duration-300 hover:shadow-lg active:shadow-md active:translate-y-[-2px] focus:outline-none"
               >
                 <a href="/contact">
                   <MapPin className="mr-2 h-5 w-5 animate-float" /> Nous Contacter

@@ -21,9 +21,9 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
   const dronePosition = useHeroDroneEffect();
   const { isMobile, isTablet } = useBreakpoint();
   
-  // Optimize image sizes based on device
+  // Optimiser les tailles d'images en fonction de l'appareil
   const imageSizes = isMobile 
-    ? [600, 800] 
+    ? [400, 800] 
     : isTablet 
       ? [800, 1200] 
       : [1200, 1600, 2000];

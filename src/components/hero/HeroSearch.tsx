@@ -44,8 +44,8 @@ const HeroSearch = () => {
   };
 
   return (
-    <div className="glass-card p-3 sm:p-4 md:p-6 rounded-lg shadow-lg max-w-4xl mx-auto md:mx-0 animation-delay-600 animate-fade-in">
-      <div className={`grid grid-cols-1 ${isMobile ? 'gap-3' : 'lg:grid-cols-4 gap-4'}`}>
+    <div className="glass-card backdrop-blur-md bg-black/40 p-4 sm:p-6 rounded-xl shadow-xl max-w-4xl mx-auto md:mx-0 animation-delay-600 animate-fade-in border border-white/20">
+      <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'sm:grid-cols-2 lg:grid-cols-4 gap-4'}`}>
         {/* Destination Field */}
         <DestinationSelector 
           destination={destination} 
@@ -67,7 +67,7 @@ const HeroSearch = () => {
 
         {/* Search Button */}
         <Button 
-          className={`bg-northgascar-teal hover:bg-northgascar-teal/80 text-white ${isMobile ? 'h-10 mt-1' : 'h-10 lg:h-full'}`}
+          className={`bg-northgascar-teal hover:bg-northgascar-teal/90 text-white shadow-lg ${isMobile ? 'h-12 mt-2' : 'h-12 lg:h-full'}`}
           onClick={handleSearch}
         >
           <Search className="mr-2" size={18} />
