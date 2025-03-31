@@ -38,6 +38,8 @@ const HeroImageLayer: React.FC<HeroImageLayerProps> = ({
           ? (isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom') ? 'blur(8px)' : 'blur(0px)') 
           : (!isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom') ? 'blur(0px)' : ''),
         zIndex: isPrevious ? 0 : (isTransitioning ? 0 : 1),
+        width: '100%', 
+        height: '100%'
       }}
     />
   );

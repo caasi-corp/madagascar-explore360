@@ -32,7 +32,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
   
   const { imagesPreloaded, progress } = useImagePreloader({
     imageUrls: backgroundImage ? [backgroundImage] : images,
-    imageSizes,
+    imageSizes: imageSizes,
     onProgress: setLoadingProgress,
     priority: true
   });
@@ -51,8 +51,8 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
   }, [imagesPreloaded]);
   
   return (
-    <>
-      {!imagesPreloaded && <HeroLoadingSkeleton progress={loadingProgress} />}
+    <div className="absolute inset-0 w-full h-full overflow-hidden">
+      {!imagesPreloaded && <HeroLoadingSkeleton progress={progress} />}
       
       {imagesPreloaded && (
         <>
@@ -76,14 +76,16 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
           />
           
           {/* Navigation dots */}
-          <CarouselNavigation
-            images={images}
-            currentImageIndex={currentImageIndex}
-            onChangeImage={changeImage}
-          />
+          {images.length > 1 && (
+            <CarouselNavigation
+              images={images}
+              currentImageIndex={currentImageIndex}
+              onChangeImage={changeImage}
+            />
+          )}
         </>
       )}
-    </>
+    </div>
   );
 };
 

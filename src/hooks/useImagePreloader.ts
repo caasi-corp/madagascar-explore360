@@ -45,10 +45,15 @@ export const useImagePreloader = ({
     
     const preloadImages = async () => {
       // For priority loading, load the smallest size of each image first
-      if (priority && imageSizes.length > 1) {
+      if (priority && imageSizes.length > 1 && imageUrls.length > 0) {
         const smallestSize = Math.min(...imageSizes);
         const priorityPromises = imageUrls.map(url => {
           return new Promise((resolve, reject) => {
+            if (!url) {
+              updateProgress();
+              resolve(true);
+              return;
+            }
             const optimizedUrl = optimizeImageUrl(url, smallestSize);
             const img = new Image();
             img.onload = () => {
@@ -57,7 +62,8 @@ export const useImagePreloader = ({
             };
             img.onerror = () => {
               updateProgress();
-              reject(new Error(`Failed to load image: ${optimizedUrl}`));
+              console.warn(`Failed to load image: ${optimizedUrl}`);
+              resolve(false); // Resolving instead of rejecting to not block other images
             };
             img.src = optimizedUrl;
           });
@@ -77,6 +83,11 @@ export const useImagePreloader = ({
           if (priority && size === Math.min(...imageSizes)) return Promise.resolve(true);
           
           return new Promise((resolve, reject) => {
+            if (!url) {
+              updateProgress();
+              resolve(true);
+              return;
+            }
             const optimizedUrl = optimizeImageUrl(url, size);
             const img = new Image();
             img.onload = () => {
@@ -85,7 +96,8 @@ export const useImagePreloader = ({
             };
             img.onerror = () => {
               updateProgress();
-              reject(new Error(`Failed to load image: ${optimizedUrl}`));
+              console.warn(`Failed to load image: ${optimizedUrl}`);
+              resolve(false); // Resolving instead of rejecting to not block other images
             };
             img.src = optimizedUrl;
           });

@@ -39,7 +39,6 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
   const optimizedSrc = optimizeImageUrl(src, isMobile ? Math.min(width, 600) : width);
   const srcSet = generateSrcSet(src);
   
-  const loadingPriority = priority ? "high" : "auto";
   const loadingType = priority ? "eager" : "lazy";
   
   // Handle image load complete
@@ -112,7 +111,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
           onError={handleError}
           loading={loadingType}
           decoding="async"
-          fetchPriority={loadingPriority as "high" | "low" | "auto"}
+          fetchPriority={priority ? "high" : "auto"}
           className={cn(
             "w-full h-full object-cover transition-opacity duration-500",
             !isLoaded ? "opacity-0" : "opacity-100",

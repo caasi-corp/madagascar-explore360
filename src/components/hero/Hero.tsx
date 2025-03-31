@@ -24,11 +24,11 @@ const Hero: React.FC<HeroProps> = ({
 
   return (
     <div 
-      className={`relative ${height} flex items-center overflow-hidden`}
+      className={`relative ${height} w-full flex items-center overflow-hidden`}
     >
       <HeroCarousel images={natureImages} backgroundImage={backgroundImage} />
       
-      <div className="container mx-auto px-4 z-10 text-center md:text-left">
+      <div className="container mx-auto px-4 z-10 text-center md:text-left relative">
         <h1 
           className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 md:mb-6 max-w-3xl animate-fade-in"
         >
@@ -39,7 +39,7 @@ const Hero: React.FC<HeroProps> = ({
         </p>
         
         {showSearch && (
-          <div className={`${isMobile ? 'mt-4' : 'mt-0'}`}>
+          <div className={`${isMobile ? 'mt-4' : 'mt-0'} w-full md:max-w-3xl`}>
             <HeroSearch />
           </div>
         )}
