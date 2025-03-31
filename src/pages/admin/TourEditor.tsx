@@ -13,6 +13,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { tourAPI } from '@/lib/store';
+import { Tour } from '@/lib/db/schema';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Clock, Save } from 'lucide-react';
@@ -80,15 +81,22 @@ const TourEditor: React.FC<TourEditorProps> = ({ useCategories = false }) => {
       tourAPI.getById(id)
         .then((tour) => {
           if (tour) {
-            // Convert numbers to strings for form fields
-            const formData = {
-              ...tour,
+            // Convert tour data to form format
+            const formData: TourFormValues = {
+              title: tour.title,
+              description: tour.description,
+              location: tour.location,
+              category: tour.category || 'adventure',
+              // Convert string to number for form fields
+              price: typeof tour.price === 'string' ? parseFloat(tour.price) : tour.price,
+              // Convert string to number for duration
+              duration: typeof tour.duration === 'string' ? parseInt(tour.duration) : parseInt(tour.duration.toString()),
               featured: tour.featured ? 'true' : 'false',
-              price: tour.price,
-              duration: tour.duration
+              difficulty: tour.difficulty || 'medium'
             };
+            
             form.reset(formData);
-            updateFormData(formData as TourFormValues);
+            updateFormData(formData);
           }
         })
         .catch((error) => {
@@ -108,20 +116,43 @@ const TourEditor: React.FC<TourEditorProps> = ({ useCategories = false }) => {
   const onSubmit = async (data: TourFormValues) => {
     setIsSubmitting(true);
     try {
-      const tourData = {
-        ...data,
-        featured: data.featured === 'true',
-        price: Number(data.price),
-        duration: Number(data.duration)
-      };
-
+      // Create partial tour data for update or complete tour data for new
       if (id && id !== 'new') {
+        // For updates, we only need to send the fields being updated
+        const tourData: Partial<Tour> = {
+          title: data.title,
+          description: data.description,
+          location: data.location,
+          category: data.category,
+          price: data.price,
+          // Convert number to string for API
+          duration: data.duration.toString(),
+          featured: data.featured === 'true',
+          difficulty: data.difficulty
+        };
+        
         await tourAPI.update(id, tourData);
         toast({
           title: 'Success',
           description: 'Tour updated successfully',
         });
       } else {
+        // For new tours, we need to provide all required fields
+        const tourData: Omit<Tour, 'id'> = {
+          title: data.title,
+          description: data.description,
+          location: data.location,
+          category: data.category,
+          price: data.price,
+          // Convert number to string for API
+          duration: data.duration.toString(),
+          featured: data.featured === 'true',
+          difficulty: data.difficulty,
+          // Default values for required fields
+          rating: 0,
+          image: 'placeholder.svg'
+        };
+        
         await tourAPI.add(tourData);
         toast({
           title: 'Success',

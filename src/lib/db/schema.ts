@@ -1,4 +1,3 @@
-
 /**
  * Database schema definitions for the application
  */
@@ -9,12 +8,13 @@ export interface Tour {
   title: string;
   description: string;
   location: string;
-  duration: string;
+  duration: string;  // Note: This is a string in the DB schema but number in the form
   price: number;
   rating: number;
   image: string;
   featured?: boolean;
   category?: string;
+  difficulty?: 'easy' | 'medium' | 'hard';
 }
 
 export interface Vehicle {
