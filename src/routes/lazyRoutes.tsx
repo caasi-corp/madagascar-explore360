@@ -1,4 +1,3 @@
-
 import React, { lazy, Suspense } from 'react';
 import { RouteObject } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -25,6 +24,7 @@ const PageLoader = () => (
 // Lazy-loaded components
 const Index = lazy(() => import('../pages/Index'));
 const Tours = lazy(() => import('../pages/Tours'));
+const TourDetails = lazy(() => import('../pages/TourDetails'));
 const CarRental = lazy(() => import('../pages/services/CarRental'));
 const FlightBooking = lazy(() => import('../pages/services/FlightBooking'));
 const HotelBooking = lazy(() => import('../pages/services/HotelBooking'));
@@ -59,6 +59,14 @@ export const lazyMainRoutes: RouteObject = {
       element: (
         <Suspense fallback={<PageLoader />}>
           <Tours />
+        </Suspense>
+      )
+    },
+    {
+      path: 'tours/:id',
+      element: (
+        <Suspense fallback={<PageLoader />}>
+          <TourDetails />
         </Suspense>
       )
     },

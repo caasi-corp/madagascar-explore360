@@ -4,6 +4,7 @@ import { RouteObject } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Index from '../pages/Index';
 import Tours from '../pages/Tours';
+import TourDetails from '../pages/TourDetails';
 import CarRental from '../pages/services/CarRental';
 import FlightBooking from '../pages/services/FlightBooking';
 import HotelBooking from '../pages/services/HotelBooking';
@@ -28,6 +29,10 @@ export const mainRoutes: RouteObject = {
     {
       path: 'tours',
       element: <Tours />
+    },
+    {
+      path: 'tours/:id',
+      element: <TourDetails />
     },
     {
       path: 'services/car-rental',
