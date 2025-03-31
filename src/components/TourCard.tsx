@@ -3,8 +3,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarDays, MapPin, Star, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useRandomAnimation } from '@/lib/animation';
+import { AnimatedContainer } from '@/components/ui/animated-container';
+import { AnimatedBadge } from '@/components/ui/animated-badge';
 
 export interface TourProps {
   id: string;
@@ -25,14 +25,13 @@ interface TourCardProps {
 }
 
 const TourCard: React.FC<TourCardProps> = ({ tour, animationIndex = 0 }) => {
-  // Utiliser une animation aléatoire avec un délai basé sur l'index
-  const animationClass = `opacity-0 ${useRandomAnimation(1)[0]}`;
-  const animationDelay = `${animationIndex * 150}ms`;
+  const baseDelay = animationIndex * 150;
   
   return (
-    <div 
-      className={`group rounded-lg overflow-hidden shadow-md border border-border hover:shadow-xl transition-all duration-300 hover-scale bg-card ${animationClass}`}
-      style={{ animationDelay, animationFillMode: 'forwards' }}
+    <AnimatedContainer 
+      className="group rounded-lg overflow-hidden shadow-md border border-border hover:shadow-xl transition-all duration-300 hover-scale bg-card"
+      delay={baseDelay}
+      onlyWhenVisible={true}
     >
       <div className="relative overflow-hidden h-48 md:h-64">
         <img 
@@ -41,14 +40,21 @@ const TourCard: React.FC<TourCardProps> = ({ tour, animationIndex = 0 }) => {
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
         {tour.featured && (
-          <Badge className="absolute top-3 left-3 bg-madagascar-yellow text-madagascar-blue animate-pulse">
+          <AnimatedBadge 
+            className="absolute top-3 left-3 bg-madagascar-yellow text-madagascar-blue animate-pulse"
+            delay={baseDelay + 200}
+          >
             À la une
-          </Badge>
+          </AnimatedBadge>
         )}
         {tour.category && (
-          <Badge variant="secondary" className="absolute top-3 right-3">
+          <AnimatedBadge 
+            variant="secondary" 
+            className="absolute top-3 right-3"
+            delay={baseDelay + 300}
+          >
             {tour.category}
-          </Badge>
+          </AnimatedBadge>
         )}
       </div>
       
@@ -84,7 +90,7 @@ const TourCard: React.FC<TourCardProps> = ({ tour, animationIndex = 0 }) => {
           </Button>
         </Link>
       </div>
-    </div>
+    </AnimatedContainer>
   );
 };
 
