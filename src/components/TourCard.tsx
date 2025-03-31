@@ -1,9 +1,9 @@
 
-import React, { useState } from 'react';
-import { optimizeImageUrl, getImageThumbnail } from '@/lib/imageOptimizer';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Clock, Star, Users, Calendar, Tag } from 'lucide-react';
+import { ProgressiveImage } from '@/components/ui/progressive-image';
 
 export interface TourProps {
   id: string;
@@ -29,12 +29,8 @@ interface TourCardProps {
 }
 
 const TourCard: React.FC<TourCardProps> = ({ tour, className, animationIndex = 0 }) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  
-  // Optimiser les URL d'images avec une priorité plus élevée pour les premières cartes
-  const loadPriority = animationIndex < 2 ? 'eager' : 'lazy';
-  const thumbnailUrl = getImageThumbnail(tour.image);
-  const fullImageUrl = optimizeImageUrl(tour.image);
+  // Priority loading for first few tours
+  const isPriority = animationIndex < 2;
   
   // Fonction pour déterminer la couleur du badge de difficulté
   const getDifficultyColor = () => {
@@ -52,24 +48,13 @@ const TourCard: React.FC<TourCardProps> = ({ tour, className, animationIndex = 0
   return (
     <Card className={`overflow-hidden hover:shadow-lg transition-all hover:translate-y-[-5px] ${className}`}>
       <div className="relative h-36 sm:h-48 overflow-hidden bg-gray-200">
-        {/* Image de préchargement (miniature floue) */}
-        <img
-          src={thumbnailUrl}
-          alt=""
-          className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`}
-          style={{ position: 'absolute', top: 0, left: 0 }}
-        />
-        
-        {/* Image principale */}
-        <img
-          src={fullImageUrl}
+        <ProgressiveImage 
+          src={tour.image}
           alt={tour.title}
-          className={`w-full h-full object-cover transition-opacity duration-500 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-          style={{ position: 'absolute', top: 0, left: 0 }}
-          onLoad={() => setImageLoaded(true)}
-          loading={loadPriority}
-          decoding="async"
-          fetchPriority={loadPriority === 'eager' ? 'high' : 'auto'}
+          className="w-full h-full object-cover"
+          containerClassName="w-full h-full"
+          priority={isPriority}
+          width={isPriority ? 800 : 400}
         />
         
         {/* Badges */}

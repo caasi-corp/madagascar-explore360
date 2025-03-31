@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AnimatedContainer } from '@/components/ui/animated-container';
 import { AnimatedBadge } from '@/components/ui/animated-badge';
+import { ProgressiveImage } from '@/components/ui/progressive-image';
 
 export interface VehicleProps {
   id: string;
@@ -42,17 +43,15 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
       onlyWhenVisible={true}
     >
       <div className="relative h-48 w-full">
-        <img 
+        <ProgressiveImage 
           src={imageUrl} 
           alt={vehicle.name} 
           className="w-full h-full object-cover"
-          loading="lazy"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf';
-            target.onerror = null; // Éviter les boucles infinies
-          }}
+          containerClassName="w-full h-full"
+          width={600}
+          priority={index < 2}
         />
+        
         <AnimatedBadge
           className={`absolute top-4 right-4 ${
             vehicle.availability 

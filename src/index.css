@@ -199,4 +199,47 @@
       left: 200%;
     }
   }
+  
+  /* Image optimization and progressive loading */
+  @keyframes image-fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  .image-progressive-loading {
+    animation: image-fade-in 0.5s ease-in;
+  }
+
+  /* Style pour les images en cours de chargement */
+  .img-loading {
+    filter: blur(5px);
+    transition: filter 0.3s ease-out;
+    min-height: 60px;
+  }
+
+  .img-loaded {
+    filter: blur(0);
+  }
+  
+  /* Préférence d'optimisation pour les images */
+  img {
+    text-rendering: optimizeSpeed;
+    image-rendering: optimizeQuality;
+  }
+
+  /* Add support for native lazy loading */
+  img[loading="lazy"] {
+    @apply bg-muted/30;
+  }
+
+  /* Remove animation for users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .image-progressive-loading {
+      animation: none;
+    }
+    
+    .img-loading {
+      filter: none;
+    }
+  }
 }

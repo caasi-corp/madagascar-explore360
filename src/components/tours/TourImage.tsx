@@ -7,6 +7,7 @@ import {
   CarouselNext,
   CarouselPrevious
 } from "@/components/ui/carousel";
+import { ProgressiveImage } from '@/components/ui/progressive-image';
 
 interface TourImageProps {
   image: string;
@@ -27,10 +28,13 @@ const TourImage: React.FC<TourImageProps> = ({ image, images = [], title, featur
             {allImages.map((img, index) => (
               <CarouselItem key={index}>
                 <div className="relative rounded-lg overflow-hidden h-80">
-                  <img 
+                  <ProgressiveImage 
                     src={img} 
                     alt={`${title} - Image ${index + 1}`} 
                     className="w-full h-full object-cover"
+                    containerClassName="w-full h-full"
+                    width={1200}
+                    priority={index === 0}
                   />
                 </div>
               </CarouselItem>
@@ -41,10 +45,13 @@ const TourImage: React.FC<TourImageProps> = ({ image, images = [], title, featur
         </Carousel>
       ) : (
         <div className="relative rounded-lg overflow-hidden h-80">
-          <img 
+          <ProgressiveImage 
             src={image} 
             alt={title} 
             className="w-full h-full object-cover"
+            containerClassName="w-full h-full"
+            width={1200}
+            priority={true}
           />
         </div>
       )}
