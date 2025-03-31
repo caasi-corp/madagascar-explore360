@@ -27,7 +27,7 @@ const Advantages: React.FC<AdvantagesProps> = ({ advantages }) => {
           {advantages.map((advantage, index) => (
             <AnimatedContainer 
               key={index} 
-              className="text-center p-6 glass-card rounded-lg hover-scale"
+              className="text-center p-6 glass-card rounded-lg"
               delay={index * 200}
               onlyWhenVisible={true}
             >

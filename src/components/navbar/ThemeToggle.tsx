@@ -17,8 +17,8 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, toggleTheme, isScrolle
       size="icon" 
       className={`rounded-full ${
         isScrolled || theme === 'dark'
-          ? 'text-foreground hover:text-madagascar-green'
-          : 'text-white hover:text-madagascar-yellow'
+          ? 'text-foreground'
+          : 'text-white'
       }`}
     >
       {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}

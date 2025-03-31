@@ -31,7 +31,7 @@ const Services: React.FC<ServicesProps> = ({ services }) => {
           {services.map((service, index) => (
             <AnimatedContainer
               key={service.title}
-              className="bg-card hover:bg-card/80 rounded-lg p-6 text-center hover-scale transition-all duration-300 shadow-sm hover:shadow-md"
+              className="bg-card rounded-lg p-6 text-center transition-all duration-300 shadow-sm"
               delay={index * 150}
               onlyWhenVisible={true}
             >
@@ -42,7 +42,7 @@ const Services: React.FC<ServicesProps> = ({ services }) => {
               <p className="text-muted-foreground mb-4">{service.description}</p>
               <a 
                 href={service.link}
-                className="text-madagascar-green hover:text-madagascar-green/80 font-medium inline-flex items-center"
+                className="text-madagascar-green font-medium inline-flex items-center"
               >
                 En savoir plus →
               </a>

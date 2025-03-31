@@ -33,10 +33,10 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({ vehicles: propVehicles 
             </p>
           </div>
           <div className="w-full lg:w-auto">
-            <Button variant="outline" className="group" asChild>
-              <a href="/services/car-rental" className="flex items-center gap-2">
+            <Button variant="outline" className="flex items-center gap-2" asChild>
+              <a href="/services/car-rental">
                 <span>Voir Tous Les Véhicules</span>
-                <Car className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <Car className="w-4 h-4 transition-transform" />
               </a>
             </Button>
           </div>

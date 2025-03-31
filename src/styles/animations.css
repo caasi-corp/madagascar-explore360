@@ -1,3 +1,4 @@
+
 /* Animations de base pour certains éléments */
 
 .glass-card {
@@ -6,39 +7,24 @@
   transition: all 0.3s ease;
 }
 
-.glass-card:hover {
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+/* Effet de verre sans survol */
+.glass-button {
+  @apply backdrop-blur-md bg-black/30 dark:bg-black/40 border border-white/20 dark:border-white/10 shadow-md 
+         text-white transition-all duration-300;
 }
 
-.hover-scale {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.glass-button:focus, 
+.glass-button:active {
+  @apply bg-black/40 dark:bg-black/50 outline-none ring-2 ring-white/20 text-white;
 }
 
-.hover-scale:hover {
-  transform: translateY(-5px) scale(1.01);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+/* Fix pour l'effet blanc sur les boutons au clic */
+button:focus {
+  outline: none;
 }
 
-.glass-shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.glass-shimmer::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 100%;
-  background: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  animation: shimmer 2s linear infinite;
+button:active {
+  transform: scale(0.98);
 }
 
 /* Animation pour les éléments qui apparaissent quand on scrolle */
@@ -227,7 +213,7 @@
 /* Nouvelles animations pour les boutons glass */
 .glass-button {
   @apply backdrop-blur-md bg-white/30 dark:bg-white/10 border border-white/40 dark:border-white/20 shadow-md 
-         hover:bg-white/40 dark:hover:bg-white/20 transition-all duration-300;
+         bg-white/40 dark:bg-white/20 transition-all duration-300;
 }
 
 .glass-button:focus, 
@@ -254,6 +240,7 @@ button:active {
   }
 }
 
-.bounce-on-hover:hover {
-  animation: gentle-bounce 1s infinite ease-in-out;
+.bounce-on-hover {
+  /* Suppression de l'animation au survol */
+  animation: none;
 }
