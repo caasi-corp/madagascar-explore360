@@ -1,6 +1,6 @@
 
 /**
- * Utilitaire pour l'optimisation des images
+ * Utilitaire amélioré pour l'optimisation des images
  */
 
 // Constants for image optimization
@@ -8,20 +8,59 @@ const DEFAULT_QUALITY = 80;
 const DEFAULT_WIDTH = 800;
 const DEFAULT_THUMBNAIL_WIDTH = 20;
 const DEFAULT_BLUR_AMOUNT = 10;
+const IMAGE_PLACEHOLDER = '/placeholder.svg';
+
+// Type for supported image formats
+type ImageFormat = 'webp' | 'avif' | 'jpeg' | 'png' | 'auto';
+
+/**
+ * Checks if the browser supports a specific image format
+ */
+const supportsFormat = (format: ImageFormat): boolean => {
+  if (typeof document === 'undefined') return false;
+  
+  const formats = {
+    webp: 'image/webp',
+    avif: 'image/avif',
+    jpeg: 'image/jpeg',
+    png: 'image/png'
+  };
+  
+  if (format === 'auto') return true;
+  
+  const canvas = document.createElement('canvas');
+  if (!canvas || typeof canvas.toDataURL !== 'function') return false;
+  
+  return canvas.toDataURL(formats[format]).indexOf(`data:${formats[format]}`) === 0;
+};
+
+// Choose best format based on browser support
+const getBestFormat = (): ImageFormat => {
+  if (supportsFormat('avif')) return 'avif';
+  if (supportsFormat('webp')) return 'webp';
+  return 'jpeg';
+};
 
 /**
  * Optimizes image URLs by adding parameters for size, quality, and format
  * @param url - The original image URL
  * @param width - The desired width of the image
  * @param quality - The quality setting (0-100)
+ * @param format - The image format (webp, avif, jpeg, png, auto)
  * @returns Optimized image URL
  */
-export const optimizeImageUrl = (url: string, width = DEFAULT_WIDTH, quality = DEFAULT_QUALITY): string => {
-  if (!url) return '';
+export const optimizeImageUrl = (
+  url: string, 
+  width = DEFAULT_WIDTH, 
+  quality = DEFAULT_QUALITY,
+  format: ImageFormat = 'auto'
+): string => {
+  if (!url) return IMAGE_PLACEHOLDER;
   
   // For Unsplash images, add optimization parameters
   if (url.includes('unsplash.com')) {
-    return `${url}?w=${width}&q=${quality}&auto=format&fit=crop`;
+    const bestFormat = format === 'auto' ? getBestFormat() : format;
+    return `${url}?w=${width}&q=${quality}&fm=${bestFormat}&fit=crop`;
   }
   
   // For other sources, return the original URL
@@ -34,7 +73,7 @@ export const optimizeImageUrl = (url: string, width = DEFAULT_WIDTH, quality = D
  * @returns Thumbnail URL for progressive loading
  */
 export const getImageThumbnail = (url: string): string => {
-  if (!url) return '';
+  if (!url) return IMAGE_PLACEHOLDER;
   
   if (url.includes('unsplash.com')) {
     return `${url}?w=${DEFAULT_THUMBNAIL_WIDTH}&blur=${DEFAULT_BLUR_AMOUNT}&q=30`;
@@ -46,7 +85,7 @@ export const getImageThumbnail = (url: string): string => {
  * Creates a placeholder URL when no image is available
  */
 export const getPlaceholder = (): string => {
-  return '/placeholder.svg';
+  return IMAGE_PLACEHOLDER;
 };
 
 /**
@@ -66,6 +105,8 @@ export const getImageProps = (url: string, alt: string = '', width = DEFAULT_WID
     decoding: "async" as const,
     fetchPriority: width > 400 ? "high" : "auto",
     className: "image-progressive-loading",
+    width,
+    height: "auto",
   };
 };
 
@@ -83,4 +124,18 @@ export const getResponsiveImageUrls = (url: string) => {
     large: optimizeImageUrl(url, 1200, 85),
     thumbnail: getImageThumbnail(url),
   };
+};
+
+/**
+ * Generate srcset attribute for responsive images
+ * @param url - The original image URL
+ * @param sizes - Array of widths to generate
+ * @returns srcset attribute string
+ */
+export const generateSrcSet = (url: string, sizes: number[] = [400, 800, 1200]): string => {
+  if (!url) return '';
+  
+  return sizes
+    .map(size => `${optimizeImageUrl(url, size)} ${size}w`)
+    .join(', ');
 };

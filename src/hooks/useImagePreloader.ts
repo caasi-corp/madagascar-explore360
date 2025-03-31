@@ -1,32 +1,71 @@
 
 /**
- * Hook pour précharger les images et améliorer l'expérience utilisateur
+ * Hook pour précharger les images critiques afin d'améliorer l'expérience utilisateur
  */
 import { useState, useEffect } from 'react';
+import { optimizeImageUrl } from '@/lib/imageOptimizer';
 
-export const useImagePreloader = (imageUrls: string[]): { imagesPreloaded: boolean } => {
+interface PreloaderProps {
+  imageUrls: string[];
+  imageSizes?: number[];
+  onProgress?: (progress: number) => void;
+}
+
+export const useImagePreloader = ({
+  imageUrls,
+  imageSizes = [600],
+  onProgress
+}: PreloaderProps): { 
+  imagesPreloaded: boolean;
+  progress: number;
+} => {
   const [imagesPreloaded, setImagesPreloaded] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
   
   useEffect(() => {
     let isMounted = true;
+    let loadedCount = 0;
+    
+    const updateProgress = () => {
+      loadedCount++;
+      const currentProgress = Math.round((loadedCount / (imageUrls.length * imageSizes.length)) * 100);
+      
+      if (isMounted) {
+        setProgress(currentProgress);
+        if (onProgress) onProgress(currentProgress);
+        
+        if (loadedCount === imageUrls.length * imageSizes.length) {
+          setImagesPreloaded(true);
+        }
+      }
+    };
     
     const preloadImages = async () => {
-      const promises = imageUrls.map((url) => {
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.onload = resolve;
-          img.onerror = reject;
-          img.src = url;
+      const preloadPromises = imageUrls.flatMap((url) => {
+        return imageSizes.map((size) => {
+          return new Promise((resolve, reject) => {
+            const optimizedUrl = optimizeImageUrl(url, size);
+            const img = new Image();
+            img.onload = () => {
+              updateProgress();
+              resolve(true);
+            };
+            img.onerror = () => {
+              updateProgress();
+              reject(new Error(`Failed to load image: ${optimizedUrl}`));
+            };
+            img.src = optimizedUrl;
+          });
         });
       });
 
       try {
-        await Promise.all(promises);
-        if (isMounted) {
+        await Promise.allSettled(preloadPromises);
+        if (isMounted && loadedCount === imageUrls.length * imageSizes.length) {
           setImagesPreloaded(true);
         }
       } catch (error) {
-        console.error('Erreur lors du préchargement des images:', error);
+        console.error('Error during image preloading:', error);
         if (isMounted) {
           // Considérer comme préchargé même en cas d'erreur pour ne pas bloquer l'UI
           setImagesPreloaded(true);
@@ -34,12 +73,17 @@ export const useImagePreloader = (imageUrls: string[]): { imagesPreloaded: boole
       }
     };
 
-    preloadImages();
+    if (imageUrls.length > 0) {
+      preloadImages();
+    } else {
+      setImagesPreloaded(true);
+      setProgress(100);
+    }
     
     return () => {
       isMounted = false;
     };
-  }, [imageUrls]);
+  }, [imageUrls, imageSizes, onProgress]);
 
-  return { imagesPreloaded };
+  return { imagesPreloaded, progress };
 };

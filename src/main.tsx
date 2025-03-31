@@ -17,7 +17,30 @@ linkPreconnect.rel = 'preconnect';
 linkPreconnect.href = 'https://images.unsplash.com';
 document.head.appendChild(linkPreconnect);
 
-createRoot(document.getElementById("root")!).render(
+// Ajouter un preload pour les polices principales
+const fontPreload = document.createElement('link');
+fontPreload.rel = 'preload';
+fontPreload.as = 'style';
+fontPreload.href = 'https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Cormorant:wght@400;500;600;700&display=swap';
+document.head.appendChild(fontPreload);
+
+// Détecter le support de JavaScript
+document.documentElement.classList.remove('no-js');
+document.documentElement.classList.add('js');
+
+// Mettre en place le chargement rapide
+const rootElement = document.getElementById("root");
+
+if (!rootElement) {
+  throw new Error("Root element not found");
+}
+
+// Définir un message d'erreur global pour faciliter le débogage
+window.addEventListener('error', (event) => {
+  console.error('Global error caught:', event.error);
+});
+
+createRoot(rootElement).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>

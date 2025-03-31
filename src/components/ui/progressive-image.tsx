@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { getImageThumbnail, optimizeImageUrl } from '@/lib/imageOptimizer';
+import { getImageThumbnail, optimizeImageUrl, generateSrcSet } from '@/lib/imageOptimizer';
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ProgressiveImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
@@ -12,7 +13,9 @@ interface ProgressiveImageProps extends React.ImgHTMLAttributes<HTMLImageElement
   className?: string;
   containerClassName?: string;
   priority?: boolean;
+  sizes?: string;
   onLoad?: () => void;
+  fallbackSrc?: string;
 }
 
 export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
@@ -23,14 +26,18 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
   className = "",
   containerClassName = "",
   priority = false,
+  sizes = "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
   onLoad,
+  fallbackSrc = '/placeholder.svg',
   ...props
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
+  const isMobile = useIsMobile();
   
   const thumbnailSrc = getImageThumbnail(src);
-  const optimizedSrc = optimizeImageUrl(src, width);
+  const optimizedSrc = optimizeImageUrl(src, isMobile ? Math.min(width, 600) : width);
+  const srcSet = generateSrcSet(src);
   
   const loadingPriority = priority ? "high" : "auto";
   const loadingType = priority ? "eager" : "lazy";
@@ -51,7 +58,15 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
     // Reset states when src changes
     setIsLoaded(false);
     setIsError(false);
-  }, [src]);
+    
+    // Preload high-priority images
+    if (priority && src) {
+      const img = new Image();
+      img.src = optimizedSrc;
+      img.onload = handleImageLoaded;
+      img.onerror = handleError;
+    }
+  }, [src, optimizedSrc, priority]);
   
   return (
     <div 
@@ -59,7 +74,10 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
         "relative overflow-hidden bg-muted/30", 
         containerClassName
       )}
-      style={{ height: height || 'auto' }}
+      style={{ 
+        height: height || 'auto',
+        aspectRatio: width && height ? `${width} / ${height}` : undefined 
+      }}
     >
       {/* Thumbnail/blur image */}
       {!isLoaded && !isError && (
@@ -71,6 +89,8 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
             className
           )}
           aria-hidden="true"
+          width={width}
+          height={height}
         />
       )}
       
@@ -83,6 +103,8 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
       {!isError ? (
         <img
           src={optimizedSrc}
+          srcSet={srcSet}
+          sizes={sizes}
           alt={alt}
           width={width}
           height={height}
@@ -100,7 +122,13 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground">
-          <span className="text-sm">Image non disponible</span>
+          <img 
+            src={fallbackSrc} 
+            alt={alt || "Image non disponible"}
+            className="max-w-full max-h-full object-contain"
+            width={width}
+            height={height}
+          />
         </div>
       )}
     </div>
