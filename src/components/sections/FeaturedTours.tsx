@@ -23,10 +23,14 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
     return () => clearTimeout(timer);
   }, []);
   
-  // Optimiser les URL d'images
-  const optimizedTours = tours.map(tour => ({
+  // Ajouter des détails supplémentaires aux tours pour l'affichage
+  const enhancedTours = tours.map(tour => ({
     ...tour,
-    image: optimizeImageUrl(tour.image)
+    image: optimizeImageUrl(tour.image),
+    groupSize: tour.groupSize || Math.floor(Math.random() * 10) + 5,
+    difficulty: tour.difficulty || ['Facile', 'Modéré', 'Difficile'][Math.floor(Math.random() * 3)] as 'Facile' | 'Modéré' | 'Difficile',
+    language: tour.language || ['Français', 'Anglais', 'Malgache'].slice(0, Math.floor(Math.random() * 3) + 1),
+    startDate: tour.startDate || new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR')
   }));
   
   return (
@@ -43,7 +47,7 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
           </p>
         </AnimatedContainer>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {isLoading ? (
             // Afficher des skeletons pendant le chargement
             Array(4).fill(0).map((_, index) => (
@@ -56,7 +60,7 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
             ))
           ) : (
             // Afficher les tours une fois chargés
-            optimizedTours.map((tour, index) => (
+            enhancedTours.map((tour, index) => (
               <AnimatedContainer 
                 key={tour.id} 
                 className="hover-scale" 

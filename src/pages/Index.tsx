@@ -19,7 +19,7 @@ import Advantages from '@/components/sections/Advantages';
 import CallToAction from '@/components/sections/CallToAction';
 
 const Index = () => {
-  // Sample tour data
+  // Sample tour data with enhanced information
   const featuredTours: TourProps[] = [
     {
       id: '1',
@@ -32,6 +32,10 @@ const Index = () => {
       image: 'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb',
       featured: true,
       category: 'Nature',
+      groupSize: 12,
+      difficulty: 'Facile',
+      language: ['Français', 'Anglais'],
+      startDate: '15/05/2025',
     },
     {
       id: '2',
@@ -44,6 +48,10 @@ const Index = () => {
       image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027',
       featured: true,
       category: 'Faune',
+      groupSize: 8,
+      difficulty: 'Modéré',
+      language: ['Français', 'Anglais', 'Malgache'],
+      startDate: '02/06/2025',
     },
     {
       id: '3',
@@ -56,6 +64,10 @@ const Index = () => {
       image: 'https://images.unsplash.com/photo-1469041797191-50ace28483c3',
       featured: true,
       category: 'Aventure',
+      groupSize: 10,
+      difficulty: 'Modéré',
+      language: ['Français', 'Anglais'],
+      startDate: '10/06/2025',
     },
     {
       id: '4',
@@ -66,8 +78,12 @@ const Index = () => {
       price: 599,
       rating: 4.9,
       image: 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57',
-      featured: false,
+      featured: true,
       category: 'Plage',
+      groupSize: 14,
+      difficulty: 'Facile',
+      language: ['Français', 'Anglais', 'Italien'],
+      startDate: '22/06/2025',
     },
   ];
 

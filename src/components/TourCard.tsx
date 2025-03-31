@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { optimizeImageUrl, getImageThumbnail } from '@/lib/imageOptimizer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Clock, Star } from 'lucide-react';
+import { MapPin, Clock, Star, Users, Calendar, Tag } from 'lucide-react';
 
 export interface TourProps {
   id: string;
@@ -15,6 +16,10 @@ export interface TourProps {
   image: string;
   featured: boolean;
   category?: string;
+  startDate?: string;
+  groupSize?: number;
+  difficulty?: 'Facile' | 'Modéré' | 'Difficile';
+  language?: string[];
 }
 
 interface TourCardProps {
@@ -30,8 +35,21 @@ const TourCard: React.FC<TourCardProps> = ({ tour, className, animationIndex = 0
   const thumbnailUrl = getImageThumbnail(tour.image);
   const fullImageUrl = optimizeImageUrl(tour.image);
   
+  // Fonction pour déterminer la couleur du badge de difficulté
+  const getDifficultyColor = () => {
+    switch (tour.difficulty) {
+      case 'Facile': return 'bg-green-500 hover:bg-green-600';
+      case 'Modéré': return 'bg-yellow-500 hover:bg-yellow-600';
+      case 'Difficile': return 'bg-red-500 hover:bg-red-600';
+      default: return '';
+    }
+  };
+
+  // Formater le prix avec séparateur de milliers
+  const formattedPrice = new Intl.NumberFormat('fr-FR').format(tour.price);
+  
   return (
-    <Card className={`overflow-hidden hover:shadow-lg transition-all ${className}`}>
+    <Card className={`overflow-hidden hover:shadow-lg transition-all hover:translate-y-[-5px] ${className}`}>
       <div className="relative h-48 overflow-hidden bg-gray-200">
         {/* Image de préchargement (miniature floue) */}
         <img
@@ -52,36 +70,76 @@ const TourCard: React.FC<TourCardProps> = ({ tour, className, animationIndex = 0
           decoding="async"
         />
         
-        {tour.featured && (
-          <Badge className="absolute top-2 right-2 bg-madagascar-yellow/90 hover:bg-madagascar-yellow text-black font-medium">
-            Populaire
-          </Badge>
-        )}
+        {/* Badges */}
+        <div className="absolute top-2 right-2 flex flex-col gap-2">
+          {tour.featured && (
+            <Badge className="bg-madagascar-yellow/90 hover:bg-madagascar-yellow text-black font-medium">
+              Populaire
+            </Badge>
+          )}
+          {tour.category && (
+            <Badge className="bg-madagascar-green/80 hover:bg-madagascar-green text-white">
+              {tour.category}
+            </Badge>
+          )}
+          {tour.difficulty && (
+            <Badge className={`${getDifficultyColor()} text-white`}>
+              {tour.difficulty}
+            </Badge>
+          )}
+        </div>
       </div>
       
-      <CardHeader>
-        <CardTitle>{tour.title}</CardTitle>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg md:text-xl line-clamp-2">{tour.title}</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-4">
-        <CardDescription>
+      <CardContent className="grid gap-3 pt-0">
+        <CardDescription className="line-clamp-2">
           {tour.description}
         </CardDescription>
-        <div className="flex items-center text-sm text-muted-foreground">
-          <MapPin className="mr-2 h-4 w-4" />
-          {tour.location}
+        
+        <div className="grid grid-cols-2 gap-2 mt-1">
+          <div className="flex items-center text-sm text-muted-foreground">
+            <MapPin className="mr-1.5 h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{tour.location}</span>
+          </div>
+          <div className="flex items-center text-sm text-muted-foreground">
+            <Clock className="mr-1.5 h-4 w-4 flex-shrink-0" />
+            <span>{tour.duration}</span>
+          </div>
+          
+          {tour.groupSize && (
+            <div className="flex items-center text-sm text-muted-foreground">
+              <Users className="mr-1.5 h-4 w-4 flex-shrink-0" />
+              <span>Max {tour.groupSize} pers.</span>
+            </div>
+          )}
+          
+          {tour.startDate && (
+            <div className="flex items-center text-sm text-muted-foreground">
+              <Calendar className="mr-1.5 h-4 w-4 flex-shrink-0" />
+              <span className="truncate">Prochain départ: {tour.startDate}</span>
+            </div>
+          )}
         </div>
-        <div className="flex items-center text-sm text-muted-foreground">
-          <Clock className="mr-2 h-4 w-4" />
-          {tour.duration}
-        </div>
+        
+        {tour.language && tour.language.length > 0 && (
+          <div className="flex items-center gap-1 mt-1 flex-wrap">
+            {tour.language.map((lang, index) => (
+              <Badge key={index} variant="outline" className="bg-muted/50 text-xs">
+                {lang}
+              </Badge>
+            ))}
+          </div>
+        )}
       </CardContent>
-      <CardFooter className="flex items-center justify-between">
+      <CardFooter className="flex items-center justify-between pt-2">
         <div className="flex items-center">
-          <Star className="mr-1 h-5 w-5 text-yellow-500" />
+          <Star className="mr-1 h-5 w-5 text-yellow-500 fill-yellow-500" />
           <span className="text-sm font-medium">{tour.rating}</span>
         </div>
         <div>
-          <span className="text-xl font-bold">€{tour.price}</span>
+          <span className="text-xl font-bold">€{formattedPrice}</span>
         </div>
       </CardFooter>
     </Card>

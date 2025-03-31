@@ -31,6 +31,15 @@ const ToursList: React.FC<ToursListProps> = memo(({ tours, resetFilters }) => {
   // Handle page changes
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+  // Enhance tours with missing properties if needed
+  const enhancedTours = currentTours.map(tour => ({
+    ...tour,
+    difficulty: tour.difficulty || undefined,
+    groupSize: tour.groupSize || undefined,
+    language: tour.language || undefined,
+    startDate: tour.startDate || undefined
+  }));
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -42,7 +51,7 @@ const ToursList: React.FC<ToursListProps> = memo(({ tours, resetFilters }) => {
       {tours.length > 0 ? (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {currentTours.map((tour) => (
+            {enhancedTours.map((tour) => (
               <Link to={`/tours/${tour.id}`} key={tour.id} className="block transition-transform hover:scale-[1.02]">
                 <TourCard tour={tour} />
               </Link>
