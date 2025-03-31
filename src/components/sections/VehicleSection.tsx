@@ -28,7 +28,7 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({ vehicles }) => {
   };
 
   return (
-    <section className="section-padding bg-gradient-to-b from-madagascar-blue to-madagascar-blue/80 text-white">
+    <section className="section-padding bg-madagascar-blue to-madagascar-blue/80 text-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-bold mb-3">Explorez à Votre Façon</h2>
@@ -38,13 +38,38 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({ vehicles }) => {
         </div>
         
         <Tabs defaultValue="all" className="w-full" onValueChange={handleTabChange}>
-          <div className="flex justify-center mb-6 overflow-x-auto pb-2">
-            <TabsList className="bg-white/10">
-              <TabsTrigger value="all">Tous les véhicules</TabsTrigger>
-              <TabsTrigger value="4x4">4x4</TabsTrigger>
-              <TabsTrigger value="car">Voitures</TabsTrigger>
-              <TabsTrigger value="motorcycle">Motos</TabsTrigger>
-              <TabsTrigger value="quad">Quads</TabsTrigger>
+          <div className="flex justify-center mb-6">
+            <TabsList className="bg-madagascar-blue/90 w-full max-w-3xl overflow-x-auto flex">
+              <TabsTrigger 
+                value="all" 
+                className="flex-1 text-white data-[state=active]:bg-white/10 data-[state=active]:text-white"
+              >
+                Tous les véhicules
+              </TabsTrigger>
+              <TabsTrigger 
+                value="4x4" 
+                className="flex-1 text-white data-[state=active]:bg-white/10 data-[state=active]:text-white"
+              >
+                4x4
+              </TabsTrigger>
+              <TabsTrigger 
+                value="car" 
+                className="flex-1 text-white data-[state=active]:bg-white/10 data-[state=active]:text-white"
+              >
+                Voitures
+              </TabsTrigger>
+              <TabsTrigger 
+                value="motorcycle" 
+                className="flex-1 text-white data-[state=active]:bg-white/10 data-[state=active]:text-white"
+              >
+                Motos
+              </TabsTrigger>
+              <TabsTrigger 
+                value="quad" 
+                className="flex-1 text-white data-[state=active]:bg-white/10 data-[state=active]:text-white"
+              >
+                Quads
+              </TabsTrigger>
             </TabsList>
           </div>
           
