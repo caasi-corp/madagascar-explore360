@@ -1,15 +1,34 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import TourCard, { TourProps } from '@/components/TourCard';
 import { AnimatedContainer } from '@/components/ui/animated-container';
+import { optimizeImageUrl } from '@/lib/imageOptimizer';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface FeaturedToursProps {
   tours: TourProps[];
 }
 
 const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Simuler un chargement progressif
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  // Optimiser les URL d'images
+  const optimizedTours = tours.map(tour => ({
+    ...tour,
+    image: optimizeImageUrl(tour.image)
+  }));
+  
   return (
     <section className="section-padding bg-muted/30">
       <div className="container mx-auto">
@@ -25,20 +44,33 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
         </AnimatedContainer>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {tours.map((tour, index) => (
-            <AnimatedContainer 
-              key={tour.id} 
-              className="hover-scale" 
-              delay={200 * (index + 1)}
-              onlyWhenVisible={true}
-              style={{ animationFillMode: 'both' }}
-            >
-              <TourCard 
-                tour={tour} 
-                animationIndex={index}
-              />
-            </AnimatedContainer>
-          ))}
+          {isLoading ? (
+            // Afficher des skeletons pendant le chargement
+            Array(4).fill(0).map((_, index) => (
+              <div key={index} className="space-y-3">
+                <Skeleton className="h-48 w-full rounded-t-lg" />
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
+            ))
+          ) : (
+            // Afficher les tours une fois chargés
+            optimizedTours.map((tour, index) => (
+              <AnimatedContainer 
+                key={tour.id} 
+                className="hover-scale" 
+                delay={100 * (index + 1)}
+                onlyWhenVisible={true}
+                style={{ animationFillMode: 'both' }}
+              >
+                <TourCard 
+                  tour={tour} 
+                  animationIndex={index}
+                />
+              </AnimatedContainer>
+            ))
+          )}
         </div>
         
         <AnimatedContainer className="mt-10 text-center" delay={600} onlyWhenVisible={true}>

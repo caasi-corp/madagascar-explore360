@@ -1,10 +1,8 @@
-
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { CalendarDays, MapPin, Star, Clock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { AnimatedContainer } from '@/components/ui/animated-container';
-import { AnimatedBadge } from '@/components/ui/animated-badge';
+import React, { useState } from 'react';
+import { optimizeImageUrl, getImageThumbnail } from '@/lib/imageOptimizer';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { MapPin, Clock, Star } from 'lucide-react';
 
 export interface TourProps {
   id: string;
@@ -15,82 +13,78 @@ export interface TourProps {
   price: number;
   rating: number;
   image: string;
-  featured?: boolean;
+  featured: boolean;
   category?: string;
 }
 
 interface TourCardProps {
   tour: TourProps;
+  className?: string;
   animationIndex?: number;
 }
 
-const TourCard: React.FC<TourCardProps> = ({ tour, animationIndex = 0 }) => {
-  const baseDelay = animationIndex * 150;
+const TourCard: React.FC<TourCardProps> = ({ tour, className, animationIndex = 0 }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  
+  // Optimiser les URL d'images
+  const thumbnailUrl = getImageThumbnail(tour.image);
+  const fullImageUrl = optimizeImageUrl(tour.image);
   
   return (
-    <AnimatedContainer 
-      className="group rounded-lg overflow-hidden shadow-md border border-border hover:shadow-xl transition-all duration-300 hover-scale bg-card"
-      delay={baseDelay}
-      onlyWhenVisible={true}
-    >
-      <div className="relative overflow-hidden h-48 md:h-64">
-        <img 
-          src={tour.image} 
-          alt={tour.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+    <Card className={`overflow-hidden hover:shadow-lg transition-all ${className}`}>
+      <div className="relative h-48 overflow-hidden bg-gray-200">
+        {/* Image de préchargement (miniature floue) */}
+        <img
+          src={thumbnailUrl}
+          alt=""
+          className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`}
+          style={{ position: 'absolute', top: 0, left: 0 }}
         />
+        
+        {/* Image principale */}
+        <img
+          src={fullImageUrl}
+          alt={tour.title}
+          className={`w-full h-full object-cover transition-opacity duration-500 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          style={{ position: 'absolute', top: 0, left: 0 }}
+          onLoad={() => setImageLoaded(true)}
+          loading="lazy"
+          decoding="async"
+        />
+        
         {tour.featured && (
-          <AnimatedBadge 
-            className="absolute top-3 left-3 bg-madagascar-yellow text-madagascar-blue animate-pulse"
-            delay={baseDelay + 200}
-          >
-            À la une
-          </AnimatedBadge>
-        )}
-        {tour.category && (
-          <AnimatedBadge 
-            variant="secondary" 
-            className="absolute top-3 right-3"
-            delay={baseDelay + 300}
-          >
-            {tour.category}
-          </AnimatedBadge>
+          <Badge className="absolute top-2 right-2 bg-madagascar-yellow/90 hover:bg-madagascar-yellow text-black font-medium">
+            Populaire
+          </Badge>
         )}
       </div>
       
-      <div className="p-4 md:p-5 space-y-3">
-        <div className="flex items-start justify-between">
-          <h3 className="font-bold text-lg md:text-xl line-clamp-2">{tour.title}</h3>
-          <div className="flex items-center gap-1 text-madagascar-yellow">
-            <Star size={16} className="fill-madagascar-yellow" />
-            <span className="font-medium">{tour.rating.toFixed(1)}</span>
-          </div>
-        </div>
-        
+      <CardHeader>
+        <CardTitle>{tour.title}</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        <CardDescription>
+          {tour.description}
+        </CardDescription>
         <div className="flex items-center text-sm text-muted-foreground">
-          <MapPin size={16} className="mr-1" />
-          <span>{tour.location}</span>
+          <MapPin className="mr-2 h-4 w-4" />
+          {tour.location}
         </div>
-        
-        <p className="text-foreground/80 text-sm line-clamp-2">{tour.description}</p>
-        
-        <div className="flex justify-between items-center text-sm pt-2">
-          <div className="flex items-center text-muted-foreground">
-            <Clock size={16} className="mr-1" />
-            <span>{tour.duration}</span>
-          </div>
-          <div className="font-bold text-lg text-madagascar-green">${tour.price}</div>
+        <div className="flex items-center text-sm text-muted-foreground">
+          <Clock className="mr-2 h-4 w-4" />
+          {tour.duration}
         </div>
-        
-        <Link to={`/tours/${tour.id}`}>
-          <Button 
-            className="w-full mt-2 bg-madagascar-green hover:bg-madagascar-green/80 text-white"
-          >
-            Voir Détails
-          </Button>
-        </Link>
-      </div>
-    </AnimatedContainer>
+      </CardContent>
+      <CardFooter className="flex items-center justify-between">
+        <div className="flex items-center">
+          <Star className="mr-1 h-5 w-5 text-yellow-500" />
+          <span className="text-sm font-medium">{tour.rating}</span>
+        </div>
+        <div>
+          <span className="text-xl font-bold">€{tour.price}</span>
+        </div>
+      </CardFooter>
+    </Card>
   );
 };
 
