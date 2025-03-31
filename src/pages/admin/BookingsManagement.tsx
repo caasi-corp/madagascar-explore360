@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -40,8 +39,12 @@ interface BookingType {
   endDate: string;
   totalPrice: number;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  paymentStatus: 'unpaid' | 'partial' | 'paid';
+  paymentStatus: 'unpaid' | 'partial' | 'paid' | 'refunded';
   bookingDate: string;
+}
+
+interface BookingsManagementProps {
+  vehiclesOnly?: boolean;
 }
 
 const DEMO_BOOKINGS: BookingType[] = [
@@ -124,9 +127,12 @@ const typeIcons = {
   flight: <Calendar className="h-4 w-4" />,
 };
 
-const BookingsManagement = () => {
+const BookingsManagement: React.FC<BookingsManagementProps> = ({ vehiclesOnly = false }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [bookings, setBookings] = useState(DEMO_BOOKINGS);
+  const [bookings, setBookings] = useState(vehiclesOnly 
+    ? DEMO_BOOKINGS.filter(booking => booking.type === 'vehicle')
+    : DEMO_BOOKINGS
+  );
   const navigate = useNavigate();
 
   const handleAddNew = () => {
@@ -170,7 +176,9 @@ const BookingsManagement = () => {
   return (
     <AnimatedContainer className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Gestion des Réservations</h1>
+        <h1 className="text-3xl font-bold">
+          {vehiclesOnly ? "Gestion des Réservations de Véhicules" : "Gestion des Réservations"}
+        </h1>
         <Button onClick={handleAddNew} className="bg-madagascar-green hover:bg-madagascar-green/80">
           <Plus className="mr-2 h-4 w-4" /> Ajouter une Réservation
         </Button>

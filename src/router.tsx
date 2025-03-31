@@ -30,6 +30,12 @@ import ReportsPage from './pages/admin/ReportsPage';
 import MessagesManagement from './pages/admin/MessagesManagement';
 import TourEditor from './pages/admin/TourEditor';
 
+// Update TourEditor interface to support useCategories prop
+const CategoriesEditor = () => <TourEditor useCategories={true} />;
+
+// Update BookingsManagement interface to support vehiclesOnly prop
+const VehicleBookings = () => <BookingsManagement vehiclesOnly={true} />;
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -142,7 +148,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'tours/categories',
-        element: <TourEditor useCategories={true} />
+        element: <CategoriesEditor />
       },
       {
         path: 'bookings',
@@ -166,7 +172,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'vehicles/bookings',
-        element: <BookingsManagement vehiclesOnly={true} />
+        element: <VehicleBookings />
       },
       {
         path: 'hotels',

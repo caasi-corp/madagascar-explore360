@@ -28,6 +28,7 @@ import {
   Building,
   Plane,
   DollarSign,
+  Star
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
