@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { optimizeImageUrl } from '@/lib/imageOptimizer';
 
-interface PreloaderProps {
+export interface PreloaderProps {
   imageUrls: string[];
   imageSizes?: number[];
   onProgress?: (progress: number) => void;

@@ -17,7 +17,11 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
   } = useImageTransition({ images });
   
   const dronePosition = useHeroDroneEffect();
-  const { imagesPreloaded } = useImagePreloader(backgroundImage ? [backgroundImage] : images);
+  // Fix: Pass an object with imageUrls property instead of just the array
+  const { imagesPreloaded } = useImagePreloader({
+    imageUrls: backgroundImage ? [backgroundImage] : images,
+    imageSizes: [800, 1200, 1600] // Added responsive image sizes
+  });
   const [isVisible, setIsVisible] = useState(false);
 
   const currentImage = backgroundImage || images[currentImageIndex];
