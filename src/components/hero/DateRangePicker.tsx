@@ -77,12 +77,10 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ dateRange, setDateRan
               disabled={(date) => date < new Date()}
               className="pointer-events-auto text-white"
               locale={fr}
-              styles={{
-                month: { color: 'white' },
-                caption: { color: 'white' },
-                day_today: { color: 'white', backgroundColor: 'rgba(255,255,255,0.1)' },
-                day_selected: { backgroundColor: '#42C1D9', color: 'white' },
-                day_outside: { color: 'rgba(255,255,255,0.4)' }
+              classNames={{
+                day_today: "bg-northgascar-teal/20 text-white",
+                day_selected: "bg-northgascar-teal !text-white hover:bg-northgascar-teal/80",
+                day_outside: "text-white/40 opacity-50"
               }}
             />
             <div className="flex justify-end gap-2 pt-2">
