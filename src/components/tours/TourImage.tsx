@@ -20,8 +20,12 @@ interface TourImageProps {
 const TourImage: React.FC<TourImageProps> = ({ image, images = [], title, featured }) => {
   const isMobile = useIsMobile();
   
+  // Nettoyer les URLs des images
+  const cleanMainImage = image ? image.split('?')[0] : '';
+  const cleanAdditionalImages = images.map(img => img ? img.split('?')[0] : '');
+  
   // Combine main image with additional images
-  const allImages = image ? [image, ...images] : images;
+  const allImages = cleanMainImage ? [cleanMainImage, ...cleanAdditionalImages] : cleanAdditionalImages;
   
   // Responsive image settings
   const imageHeight = isMobile ? "h-64" : "h-80";
@@ -54,7 +58,7 @@ const TourImage: React.FC<TourImageProps> = ({ image, images = [], title, featur
       ) : (
         <div className={`relative rounded-lg overflow-hidden ${imageHeight}`}>
           <ProgressiveImage 
-            src={image} 
+            src={cleanMainImage} 
             alt={title} 
             className="w-full h-full object-cover"
             containerClassName="w-full h-full"

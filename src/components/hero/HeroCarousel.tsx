@@ -30,8 +30,13 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
   
   const [loadingProgress, setLoadingProgress] = useState(0);
   
+  // Nettoyer les URLs des images avant le préchargement
+  const cleanImages = (backgroundImage ? [backgroundImage] : images).map(img => 
+    img ? img.split('?')[0] : ''
+  );
+  
   const { imagesPreloaded, progress } = useImagePreloader({
-    imageUrls: backgroundImage ? [backgroundImage] : images,
+    imageUrls: cleanImages,
     imageSizes: imageSizes,
     onProgress: setLoadingProgress,
     priority: true

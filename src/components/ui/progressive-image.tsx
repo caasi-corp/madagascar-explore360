@@ -35,9 +35,11 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
   const [isError, setIsError] = useState(false);
   const isMobile = useIsMobile();
   
-  const thumbnailSrc = getImageThumbnail(src);
-  const optimizedSrc = optimizeImageUrl(src, isMobile ? Math.min(width, 600) : width);
-  const srcSet = generateSrcSet(src);
+  // Nettoyage de l'URL source avant optimisation
+  const cleanSrc = src ? src.split('?')[0] : '';
+  const thumbnailSrc = getImageThumbnail(cleanSrc);
+  const optimizedSrc = optimizeImageUrl(cleanSrc, isMobile ? Math.min(width, 600) : width);
+  const srcSet = generateSrcSet(cleanSrc);
   
   const loadingType = priority ? "eager" : "lazy";
   
@@ -59,13 +61,18 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
     setIsError(false);
     
     // Preload high-priority images
-    if (priority && src) {
+    if (priority && cleanSrc) {
       const img = new Image();
       img.src = optimizedSrc;
       img.onload = handleImageLoaded;
       img.onerror = handleError;
     }
-  }, [src, optimizedSrc, priority]);
+    
+    // Cleanup function
+    return () => {
+      // No cleanup needed for Image objects, they get garbage collected
+    };
+  }, [cleanSrc, optimizedSrc, priority]);
   
   return (
     <div 

@@ -27,7 +27,17 @@ export const useImagePreloader = ({
   useEffect(() => {
     let isMounted = true;
     let loadedCount = 0;
-    const totalImages = imageUrls.length * imageSizes.length;
+    
+    // Nettoyage des URLs avant le préchargement
+    const cleanUrls = imageUrls.map(url => url ? url.split('?')[0] : '');
+    const totalImages = cleanUrls.length * imageSizes.length;
+    
+    // Si aucune image à charger, on considère le chargement comme terminé
+    if (totalImages === 0) {
+      setImagesPreloaded(true);
+      setProgress(100);
+      return;
+    }
     
     const updateProgress = () => {
       loadedCount++;
@@ -45,10 +55,10 @@ export const useImagePreloader = ({
     
     const preloadImages = async () => {
       // For priority loading, load the smallest size of each image first
-      if (priority && imageSizes.length > 1 && imageUrls.length > 0) {
+      if (priority && imageSizes.length > 1 && cleanUrls.length > 0) {
         const smallestSize = Math.min(...imageSizes);
-        const priorityPromises = imageUrls.map(url => {
-          return new Promise((resolve, reject) => {
+        const priorityPromises = cleanUrls.map(url => {
+          return new Promise((resolve) => {
             if (!url) {
               updateProgress();
               resolve(true);
@@ -77,12 +87,12 @@ export const useImagePreloader = ({
       }
       
       // Load all sizes of all images
-      const preloadPromises = imageUrls.flatMap((url) => {
+      const preloadPromises = cleanUrls.flatMap((url) => {
         return imageSizes.map((size) => {
           // Skip if we already loaded this size as priority
           if (priority && size === Math.min(...imageSizes)) return Promise.resolve(true);
           
-          return new Promise((resolve, reject) => {
+          return new Promise((resolve) => {
             if (!url) {
               updateProgress();
               resolve(true);
@@ -118,7 +128,7 @@ export const useImagePreloader = ({
       }
     };
 
-    if (imageUrls.length > 0) {
+    if (cleanUrls.length > 0) {
       preloadImages();
     } else {
       setImagesPreloaded(true);

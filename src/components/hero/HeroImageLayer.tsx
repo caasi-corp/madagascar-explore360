@@ -24,7 +24,9 @@ const HeroImageLayer: React.FC<HeroImageLayerProps> = ({
   isVisible,
   isPrevious = false
 }) => {
-  // Utiliser une image progressive avec un fond de dégradé glacé
+  // Nettoyage de l'URL de l'image
+  const cleanImageUrl = image ? image.split('?')[0] : '';
+  
   return (
     <div 
       className={`absolute inset-0 w-full h-full transition-all duration-1500 ${
@@ -45,7 +47,7 @@ const HeroImageLayer: React.FC<HeroImageLayerProps> = ({
       
       {/* Image progressive optimisée */}
       <ProgressiveImage 
-        src={image} 
+        src={cleanImageUrl} 
         alt="Paysage Madagascar"
         className="w-full h-full object-cover"
         containerClassName="w-full h-full"

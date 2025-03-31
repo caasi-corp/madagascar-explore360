@@ -60,7 +60,10 @@ export const optimizeImageUrl = (
   // For Unsplash images, add optimization parameters
   if (url.includes('unsplash.com')) {
     const bestFormat = format === 'auto' ? getBestFormat() : format;
-    return `${url}?w=${width}&q=${quality}&fm=${bestFormat}&fit=crop`;
+    
+    // Important - Fix: Remove any existing URL parameters before adding new ones
+    const baseUrl = url.split('?')[0];
+    return `${baseUrl}?w=${width}&q=${quality}&fm=${bestFormat}&fit=crop`;
   }
   
   // For other sources, return the original URL
@@ -76,7 +79,9 @@ export const getImageThumbnail = (url: string): string => {
   if (!url) return IMAGE_PLACEHOLDER;
   
   if (url.includes('unsplash.com')) {
-    return `${url}?w=${DEFAULT_THUMBNAIL_WIDTH}&blur=${DEFAULT_BLUR_AMOUNT}&q=30`;
+    // Fix: Remove any existing URL parameters before adding new ones
+    const baseUrl = url.split('?')[0];
+    return `${baseUrl}?w=${DEFAULT_THUMBNAIL_WIDTH}&blur=${DEFAULT_BLUR_AMOUNT}&q=30`;
   }
   return url;
 };
@@ -135,7 +140,10 @@ export const getResponsiveImageUrls = (url: string) => {
 export const generateSrcSet = (url: string, sizes: number[] = [400, 800, 1200]): string => {
   if (!url) return '';
   
+  // Fix: Remove any existing URL parameters before adding new ones
+  const baseUrl = url.split('?')[0];
+  
   return sizes
-    .map(size => `${optimizeImageUrl(url, size)} ${size}w`)
+    .map(size => `${optimizeImageUrl(baseUrl, size)} ${size}w`)
     .join(', ');
 };

@@ -31,9 +31,9 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
   index = 0,
   showCta = true
 }) => {
-  // Vérifier que l'URL de l'image existe
-  const imageUrl = vehicle.image && vehicle.image.trim() !== '' 
-    ? vehicle.image 
+  // Vérifier que l'URL de l'image existe et la nettoyer
+  let imageUrl = vehicle.image && vehicle.image.trim() !== '' 
+    ? vehicle.image.split('?')[0] 
     : 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf'; // Image par défaut
 
   return (
