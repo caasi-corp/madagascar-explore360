@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { getTransitionClasses } from './HeroTransitionEffects';
 import { ProgressiveImage } from '../ui/progressive-image';
 
@@ -24,8 +24,18 @@ const HeroImageLayer: React.FC<HeroImageLayerProps> = ({
   isVisible,
   isPrevious = false
 }) => {
-  // Nettoyage de l'URL de l'image
+  const [imageLoaded, setImageLoaded] = useState(false);
+  
+  // Clean image URL by removing query parameters
   const cleanImageUrl = image ? image.split('?')[0] : '';
+  
+  // Determine z-index based on image state
+  const zIndex = isPrevious ? 0 : (isTransitioning ? 0 : 1);
+  
+  // Determine if blur effect should be applied
+  const shouldBlur = 
+    (isPrevious && isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom')) ||
+    (!isPrevious && !isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom'));
   
   return (
     <div 
@@ -36,23 +46,23 @@ const HeroImageLayer: React.FC<HeroImageLayerProps> = ({
         overflow: 'hidden',
         transform: `scale(${dronePosition.scale}) translate(${dronePosition.x}%, ${dronePosition.y}%)`,
         transition: `transform 2s ease-out, filter 1.5s ease-out, opacity 0.5s ease-in`,
-        filter: isPrevious 
-          ? (isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom') ? 'blur(8px)' : 'blur(0px)') 
-          : (!isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom') ? 'blur(0px)' : ''),
-        zIndex: isPrevious ? 0 : (isTransitioning ? 0 : 1),
+        filter: shouldBlur ? 'blur(8px)' : 'blur(0px)',
+        zIndex,
       }}
     >
-      {/* Une couche d'overlay pour l'effet glacé */}
+      {/* Gradient overlay for enhanced contrast */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60 z-10"></div>
       
-      {/* Image progressive optimisée */}
+      {/* Optimized progressive image component */}
       <ProgressiveImage 
         src={cleanImageUrl} 
         alt="Paysage Madagascar"
         className="w-full h-full object-cover"
         containerClassName="w-full h-full"
-        priority={true}
+        priority={!isPrevious} // Prioritize loading current image
         sizes="100vw"
+        onLoad={() => setImageLoaded(true)}
+        fallbackSrc="/placeholder.svg"
       />
     </div>
   );
