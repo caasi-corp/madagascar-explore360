@@ -12,13 +12,13 @@ export type EntryAnimationType =
   | 'bounce';
 
 const animations: Record<EntryAnimationType, string> = {
-  'fade-up': 'opacity-0 translate-y-4 animate-fade-in',
-  'fade-down': 'opacity-0 -translate-y-4 animate-fade-in',
-  'fade-left': 'opacity-0 translate-x-4 animate-fade-in',
-  'fade-right': 'opacity-0 -translate-x-4 animate-fade-in',
-  'zoom-in': 'opacity-0 scale-95 animate-scale-in',
-  'zoom-out': 'opacity-0 scale-105 animate-scale-in',
-  'slide-in': 'opacity-0 -translate-x-8 animate-slide-in',
+  'fade-up': 'opacity-0 translate-y-4 animate-fade-up',
+  'fade-down': 'opacity-0 -translate-y-4 animate-fade-down',
+  'fade-left': 'opacity-0 translate-x-4 animate-fade-left',
+  'fade-right': 'opacity-0 -translate-x-4 animate-fade-right',
+  'zoom-in': 'opacity-0 scale-95 animate-zoom-in',
+  'zoom-out': 'opacity-0 scale-105 animate-zoom-out',
+  'slide-in': 'opacity-0 -translate-x-8 animate-fade-left',
   'bounce': 'opacity-0 animate-bounce'
 };
 
