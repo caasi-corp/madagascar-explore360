@@ -26,11 +26,18 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {tours.map((tour, index) => (
-            <TourCard 
+            <AnimatedContainer 
               key={tour.id} 
-              tour={tour} 
-              animationIndex={index}
-            />
+              className="hover-scale" 
+              delay={200 * (index + 1)}
+              onlyWhenVisible={true}
+              style={{ animationFillMode: 'both' }}
+            >
+              <TourCard 
+                tour={tour} 
+                animationIndex={index}
+              />
+            </AnimatedContainer>
           ))}
         </div>
         
