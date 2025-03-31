@@ -2,7 +2,7 @@
 import React from 'react';
 import AutoSaveIndicator from './AutoSaveIndicator';
 import SavedDataAlert from './SavedDataAlert';
-import { TourFormValues } from '@/pages/admin/TourEditor';
+import { TourFormValues } from '@/hooks/useTourEditorForm';
 import { UseFormReturn } from 'react-hook-form';
 
 interface TourEditorHeaderProps {

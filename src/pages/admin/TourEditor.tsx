@@ -2,7 +2,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useTourEditorForm, TourFormValues } from '@/hooks/useTourEditorForm';
+import { useTourEditorForm } from '@/hooks/useTourEditorForm';
 import TourEditorHeader from '@/components/admin/tours/TourEditorHeader';
 import TourEditorForm from '@/components/admin/tours/TourEditorForm';
 

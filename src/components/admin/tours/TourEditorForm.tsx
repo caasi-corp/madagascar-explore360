@@ -2,7 +2,7 @@
 import React from 'react';
 import { Form } from '@/components/ui/form';
 import { UseFormReturn } from 'react-hook-form';
-import { TourFormValues } from '@/pages/admin/TourEditor';
+import { TourFormValues } from '@/hooks/useTourEditorForm';
 import TourBasicInfoFields from '@/components/admin/tours/TourBasicInfoFields';
 import TourCategorySelect from '@/components/admin/tours/TourCategorySelect';
 import TourPricingFields from '@/components/admin/tours/TourPricingFields';
