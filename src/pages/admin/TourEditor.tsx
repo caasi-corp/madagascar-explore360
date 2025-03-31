@@ -89,8 +89,8 @@ const TourEditor: React.FC<TourEditorProps> = ({ useCategories = false }) => {
               category: tour.category || 'adventure',
               // Convert string to number for form fields
               price: typeof tour.price === 'string' ? parseFloat(tour.price) : tour.price,
-              // Convert string to number for duration
-              duration: typeof tour.duration === 'string' ? parseInt(tour.duration) : parseInt(tour.duration.toString()),
+              // Safely convert duration to number regardless of its type
+              duration: typeof tour.duration === 'string' ? parseInt(tour.duration) : Number(tour.duration),
               featured: tour.featured ? 'true' : 'false',
               difficulty: tour.difficulty || 'medium'
             };
