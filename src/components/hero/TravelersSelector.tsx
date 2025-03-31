@@ -43,6 +43,61 @@ const TravelersSelector: React.FC<TravelersSelectorProps> = ({ travelers, setTra
     return display;
   };
 
+  // Helper functions to update traveler counts
+  const decreaseAdults = () => {
+    if (travelers.adults <= 1) return;
+    const newTravelers = { 
+      ...travelers, 
+      adults: Math.max(1, travelers.adults - 1) 
+    };
+    setTravelers(newTravelers);
+  };
+
+  const increaseAdults = () => {
+    if (travelers.adults >= 10) return;
+    const newTravelers = { 
+      ...travelers, 
+      adults: Math.min(10, travelers.adults + 1) 
+    };
+    setTravelers(newTravelers);
+  };
+
+  const decreaseChildren = () => {
+    if (travelers.children <= 0) return;
+    const newTravelers = { 
+      ...travelers, 
+      children: Math.max(0, travelers.children - 1) 
+    };
+    setTravelers(newTravelers);
+  };
+
+  const increaseChildren = () => {
+    if (travelers.children >= 6) return;
+    const newTravelers = { 
+      ...travelers, 
+      children: Math.min(6, travelers.children + 1) 
+    };
+    setTravelers(newTravelers);
+  };
+
+  const decreaseInfants = () => {
+    if (travelers.infants <= 0) return;
+    const newTravelers = { 
+      ...travelers, 
+      infants: Math.max(0, travelers.infants - 1) 
+    };
+    setTravelers(newTravelers);
+  };
+
+  const increaseInfants = () => {
+    if (travelers.infants >= 4) return;
+    const newTravelers = { 
+      ...travelers, 
+      infants: Math.min(4, travelers.infants + 1) 
+    };
+    setTravelers(newTravelers);
+  };
+
   return (
     <div className="relative">
       <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-northgascar-teal" size={18} />
@@ -68,7 +123,7 @@ const TravelersSelector: React.FC<TravelersSelectorProps> = ({ travelers, setTra
                   variant="outline" 
                   size="icon" 
                   className="h-8 w-8 rounded-full"
-                  onClick={() => setTravelers(prev => ({ ...prev, adults: Math.max(1, prev.adults - 1) }))}
+                  onClick={decreaseAdults}
                   disabled={travelers.adults <= 1}
                 >
                   -
@@ -78,7 +133,7 @@ const TravelersSelector: React.FC<TravelersSelectorProps> = ({ travelers, setTra
                   variant="outline" 
                   size="icon" 
                   className="h-8 w-8 rounded-full"
-                  onClick={() => setTravelers(prev => ({ ...prev, adults: Math.min(10, prev.adults + 1) }))}
+                  onClick={increaseAdults}
                   disabled={travelers.adults >= 10}
                 >
                   +
@@ -95,7 +150,7 @@ const TravelersSelector: React.FC<TravelersSelectorProps> = ({ travelers, setTra
                   variant="outline" 
                   size="icon" 
                   className="h-8 w-8 rounded-full"
-                  onClick={() => setTravelers(prev => ({ ...prev, children: Math.max(0, prev.children - 1) }))}
+                  onClick={decreaseChildren}
                   disabled={travelers.children <= 0}
                 >
                   -
@@ -105,7 +160,7 @@ const TravelersSelector: React.FC<TravelersSelectorProps> = ({ travelers, setTra
                   variant="outline" 
                   size="icon" 
                   className="h-8 w-8 rounded-full"
-                  onClick={() => setTravelers(prev => ({ ...prev, children: Math.min(6, prev.children + 1) }))}
+                  onClick={increaseChildren}
                   disabled={travelers.children >= 6}
                 >
                   +
@@ -122,7 +177,7 @@ const TravelersSelector: React.FC<TravelersSelectorProps> = ({ travelers, setTra
                   variant="outline" 
                   size="icon" 
                   className="h-8 w-8 rounded-full"
-                  onClick={() => setTravelers(prev => ({ ...prev, infants: Math.max(0, prev.infants - 1) }))}
+                  onClick={decreaseInfants}
                   disabled={travelers.infants <= 0}
                 >
                   -
@@ -132,7 +187,7 @@ const TravelersSelector: React.FC<TravelersSelectorProps> = ({ travelers, setTra
                   variant="outline" 
                   size="icon" 
                   className="h-8 w-8 rounded-full"
-                  onClick={() => setTravelers(prev => ({ ...prev, infants: Math.min(4, prev.infants + 1) }))}
+                  onClick={increaseInfants}
                   disabled={travelers.infants >= 4}
                 >
                   +
