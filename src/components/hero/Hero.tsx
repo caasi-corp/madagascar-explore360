@@ -3,6 +3,7 @@ import React from 'react';
 import HeroCarousel from './HeroCarousel';
 import HeroSearch from './HeroSearch';
 import { HeroProps } from './HeroProps';
+import { useBreakpoint } from '@/hooks/use-mobile';
 
 const Hero: React.FC<HeroProps> = ({
   title = "Excursions personnalisées dans le nord de Madagascar",
@@ -11,6 +12,8 @@ const Hero: React.FC<HeroProps> = ({
   backgroundImage,
   height = "h-screen"
 }) => {
+  const { isMobile } = useBreakpoint();
+  
   const natureImages = [
     "https://images.unsplash.com/photo-1500375592092-40eb2168fd21", // plage, vagues
     "https://images.unsplash.com/photo-1518877593221-1f28583780b4", // baleine
@@ -27,15 +30,19 @@ const Hero: React.FC<HeroProps> = ({
       
       <div className="container mx-auto px-4 z-10 text-center md:text-left">
         <h1 
-          className="text-white text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6 max-w-3xl animate-fade-in"
+          className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 md:mb-6 max-w-3xl animate-fade-in"
         >
           {title}
         </h1>
-        <p className="text-white/90 text-lg md:text-xl max-w-2xl mb-8 animation-delay-300 animate-fade-in">
+        <p className="text-white/90 text-base sm:text-lg md:text-xl max-w-2xl mb-6 md:mb-8 animation-delay-300 animate-fade-in">
           {subtitle}
         </p>
         
-        {showSearch && <HeroSearch />}
+        {showSearch && (
+          <div className={`${isMobile ? 'mt-4' : 'mt-0'}`}>
+            <HeroSearch />
+          </div>
+        )}
       </div>
     </div>
   );

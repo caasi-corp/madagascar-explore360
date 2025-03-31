@@ -9,12 +9,14 @@ export interface PreloaderProps {
   imageUrls: string[];
   imageSizes?: number[];
   onProgress?: (progress: number) => void;
+  priority?: boolean;
 }
 
 export const useImagePreloader = ({
   imageUrls,
   imageSizes = [600],
-  onProgress
+  onProgress,
+  priority = false
 }: PreloaderProps): { 
   imagesPreloaded: boolean;
   progress: number;
@@ -25,24 +27,55 @@ export const useImagePreloader = ({
   useEffect(() => {
     let isMounted = true;
     let loadedCount = 0;
+    const totalImages = imageUrls.length * imageSizes.length;
     
     const updateProgress = () => {
       loadedCount++;
-      const currentProgress = Math.round((loadedCount / (imageUrls.length * imageSizes.length)) * 100);
+      const currentProgress = Math.round((loadedCount / totalImages) * 100);
       
       if (isMounted) {
         setProgress(currentProgress);
         if (onProgress) onProgress(currentProgress);
         
-        if (loadedCount === imageUrls.length * imageSizes.length) {
+        if (loadedCount === totalImages) {
           setImagesPreloaded(true);
         }
       }
     };
     
     const preloadImages = async () => {
+      // For priority loading, load the smallest size of each image first
+      if (priority && imageSizes.length > 1) {
+        const smallestSize = Math.min(...imageSizes);
+        const priorityPromises = imageUrls.map(url => {
+          return new Promise((resolve, reject) => {
+            const optimizedUrl = optimizeImageUrl(url, smallestSize);
+            const img = new Image();
+            img.onload = () => {
+              updateProgress();
+              resolve(true);
+            };
+            img.onerror = () => {
+              updateProgress();
+              reject(new Error(`Failed to load image: ${optimizedUrl}`));
+            };
+            img.src = optimizedUrl;
+          });
+        });
+        
+        try {
+          await Promise.all(priorityPromises);
+        } catch (error) {
+          console.warn('Error during priority image preloading:', error);
+        }
+      }
+      
+      // Load all sizes of all images
       const preloadPromises = imageUrls.flatMap((url) => {
         return imageSizes.map((size) => {
+          // Skip if we already loaded this size as priority
+          if (priority && size === Math.min(...imageSizes)) return Promise.resolve(true);
+          
           return new Promise((resolve, reject) => {
             const optimizedUrl = optimizeImageUrl(url, size);
             const img = new Image();
@@ -61,13 +94,13 @@ export const useImagePreloader = ({
 
       try {
         await Promise.allSettled(preloadPromises);
-        if (isMounted && loadedCount === imageUrls.length * imageSizes.length) {
+        if (isMounted && loadedCount === totalImages) {
           setImagesPreloaded(true);
         }
       } catch (error) {
         console.error('Error during image preloading:', error);
         if (isMounted) {
-          // Considérer comme préchargé même en cas d'erreur pour ne pas bloquer l'UI
+          // Consider as preloaded even in case of error to not block the UI
           setImagesPreloaded(true);
         }
       }
@@ -83,7 +116,7 @@ export const useImagePreloader = ({
     return () => {
       isMounted = false;
     };
-  }, [imageUrls, imageSizes, onProgress]);
+  }, [imageUrls, imageSizes, onProgress, priority]);
 
   return { imagesPreloaded, progress };
 };

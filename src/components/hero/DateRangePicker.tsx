@@ -11,6 +11,7 @@ import {
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { DateRange } from 'react-day-picker';
+import { useBreakpoint } from '@/hooks/use-mobile';
 
 interface DateRangePickerProps {
   dateRange: DateRange;
@@ -19,6 +20,7 @@ interface DateRangePickerProps {
 
 const DateRangePicker: React.FC<DateRangePickerProps> = ({ dateRange, setDateRange }) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const { isMobile } = useBreakpoint();
 
   // Format date range for display
   const formatDateRange = () => {
@@ -65,7 +67,11 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ dateRange, setDateRan
             </Button>
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 glass-popover border-white/20 bg-black/80 backdrop-blur-md" align="start">
+        <PopoverContent 
+          className="w-auto p-0 glass-popover border-white/20 bg-black/80 backdrop-blur-md" 
+          align="start"
+          sideOffset={5}
+        >
           <div className="p-3">
             <CalendarComponent
               initialFocus
@@ -73,7 +79,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ dateRange, setDateRan
               defaultMonth={dateRange.from}
               selected={dateRange}
               onSelect={setDateRange}
-              numberOfMonths={2}
+              numberOfMonths={isMobile ? 1 : 2}
               disabled={(date) => date < new Date()}
               className="pointer-events-auto text-white"
               locale={fr}

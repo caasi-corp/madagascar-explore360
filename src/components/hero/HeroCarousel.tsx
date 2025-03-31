@@ -1,11 +1,13 @@
 
 import React, { useEffect, useState } from 'react';
-import { getTransitionClasses } from './HeroTransitionEffects';
 import { useHeroDroneEffect } from './HeroDroneEffect';
 import { useImageTransition } from './useImageTransition';
 import { HeroCarouselProps } from './HeroCarouselProps';
 import { useImagePreloader } from '@/hooks/useImagePreloader';
-import { Skeleton } from '@/components/ui/skeleton';
+import HeroLoadingSkeleton from './HeroLoadingSkeleton';
+import HeroImageLayer from './HeroImageLayer';
+import CarouselNavigation from './CarouselNavigation';
+import { useBreakpoint } from '@/hooks/use-mobile';
 
 const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) => {
   const { 
@@ -17,11 +19,24 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
   } = useImageTransition({ images });
   
   const dronePosition = useHeroDroneEffect();
-  // Fix: Pass an object with imageUrls property instead of just the array
-  const { imagesPreloaded } = useImagePreloader({
+  const { isMobile, isTablet } = useBreakpoint();
+  
+  // Optimize image sizes based on device
+  const imageSizes = isMobile 
+    ? [600, 800] 
+    : isTablet 
+      ? [800, 1200] 
+      : [1200, 1600, 2000];
+  
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  
+  const { imagesPreloaded, progress } = useImagePreloader({
     imageUrls: backgroundImage ? [backgroundImage] : images,
-    imageSizes: [800, 1200, 1600] // Added responsive image sizes
+    imageSizes,
+    onProgress: setLoadingProgress,
+    priority: true
   });
+  
   const [isVisible, setIsVisible] = useState(false);
 
   const currentImage = backgroundImage || images[currentImageIndex];
@@ -37,54 +52,35 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
   
   return (
     <>
-      {!imagesPreloaded && (
-        <div className="absolute inset-0 w-full h-full bg-gray-800">
-          <Skeleton className="w-full h-full" />
-        </div>
-      )}
+      {!imagesPreloaded && <HeroLoadingSkeleton progress={loadingProgress} />}
       
       {imagesPreloaded && (
         <>
-          {/* Couche d'image précédente avec effet drone */}
-          <div 
-            className={`absolute inset-0 w-full h-full transition-all duration-1500 ${isTransitioning ? getTransitionClasses(currentEffect) : ''} ${isVisible ? 'opacity-100' : 'opacity-0'}`}
-            style={{
-              backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${previousImage})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              transform: `scale(${dronePosition.scale}) translate(${dronePosition.x}%, ${dronePosition.y}%)`,
-              transition: `transform 2s ease-out, filter 1.5s ease-out, opacity 0.5s ease-in`,
-              filter: isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom') ? 'blur(8px)' : 'blur(0px)',
-            }}
+          {/* Previous image layer */}
+          <HeroImageLayer
+            image={previousImage}
+            isTransitioning={isTransitioning}
+            currentEffect={currentEffect}
+            dronePosition={dronePosition}
+            isVisible={isVisible}
+            isPrevious={true}
           />
           
-          {/* Couche d'image actuelle avec effet drone */}
-          <div 
-            className={`absolute inset-0 w-full h-full ${isTransitioning ? 'opacity-100' : 'opacity-100'} transition-all duration-1500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
-            style={{
-              backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${currentImage})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              transform: `scale(${dronePosition.scale}) translate(${dronePosition.x}%, ${dronePosition.y}%)`,
-              transition: 'transform 2s ease-out, filter 1.5s ease-out, opacity 0.5s ease-in',
-              zIndex: isTransitioning ? 0 : 1,
-              filter: !isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom') ? 'blur(0px)' : '',
-            }}
+          {/* Current image layer */}
+          <HeroImageLayer
+            image={currentImage}
+            isTransitioning={isTransitioning}
+            currentEffect={currentEffect}
+            dronePosition={dronePosition}
+            isVisible={isVisible}
           />
           
-          <div className="absolute bottom-4 right-4 z-20">
-            <div className="flex gap-2 glass-effect p-2 rounded-full">
-              {images.map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-3 h-3 rounded-full glass-shimmer ${
-                    index === currentImageIndex ? 'bg-northgascar-teal' : 'bg-white/50'
-                  } transition-all duration-300`}
-                  onClick={() => changeImage(index)}
-                />
-              ))}
-            </div>
-          </div>
+          {/* Navigation dots */}
+          <CarouselNavigation
+            images={images}
+            currentImageIndex={currentImageIndex}
+            onChangeImage={changeImage}
+          />
         </>
       )}
     </>

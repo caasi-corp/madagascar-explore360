@@ -6,6 +6,7 @@ import { DateRange } from 'react-day-picker';
 import DestinationSelector from './DestinationSelector';
 import DateRangePicker from './DateRangePicker';
 import TravelersSelector from './TravelersSelector';
+import { useBreakpoint } from '@/hooks/use-mobile';
 
 const destinations = [
   { name: 'Nosy Be', type: 'plages' },
@@ -29,6 +30,8 @@ const HeroSearch = () => {
     children: 0,
     infants: 0,
   });
+  
+  const { isMobile } = useBreakpoint();
 
   // Handle search button click
   const handleSearch = () => {
@@ -41,8 +44,8 @@ const HeroSearch = () => {
   };
 
   return (
-    <div className="glass-card p-4 md:p-6 rounded-lg shadow-lg max-w-4xl mx-auto md:mx-0 animation-delay-600 animate-fade-in">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+    <div className="glass-card p-3 sm:p-4 md:p-6 rounded-lg shadow-lg max-w-4xl mx-auto md:mx-0 animation-delay-600 animate-fade-in">
+      <div className={`grid grid-cols-1 ${isMobile ? 'gap-3' : 'lg:grid-cols-4 gap-4'}`}>
         {/* Destination Field */}
         <DestinationSelector 
           destination={destination} 
@@ -64,7 +67,7 @@ const HeroSearch = () => {
 
         {/* Search Button */}
         <Button 
-          className="bg-northgascar-teal hover:bg-northgascar-teal/80 text-white h-10 lg:h-full"
+          className={`bg-northgascar-teal hover:bg-northgascar-teal/80 text-white ${isMobile ? 'h-10 mt-1' : 'h-10 lg:h-full'}`}
           onClick={handleSearch}
         >
           <Search className="mr-2" size={18} />
