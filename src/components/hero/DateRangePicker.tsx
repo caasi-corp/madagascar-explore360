@@ -48,7 +48,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ dateRange, setDateRan
           <div className="relative">
             <Button
               variant="glass"
-              className="w-full pl-10 pr-8 h-10 justify-between font-normal text-foreground focus:text-foreground active:text-foreground bg-black/30 dark:bg-black/40 border-white/20"
+              className="w-full pl-10 pr-8 h-10 justify-between font-normal text-white hover:text-white focus:text-white active:text-white bg-black/30 dark:bg-black/40 border-white/20"
             >
               <span className="truncate">{formatDateRange()}</span>
               <ChevronDown className="h-4 w-4 opacity-50 absolute right-3" />
@@ -80,7 +80,13 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ dateRange, setDateRan
               classNames={{
                 day_today: "bg-northgascar-teal/20 text-white",
                 day_selected: "bg-northgascar-teal !text-white hover:bg-northgascar-teal/80",
-                day_outside: "text-white/40 opacity-50"
+                day_outside: "text-white/40 opacity-50",
+                day: "text-white hover:bg-white/10 hover:text-white",
+                caption: "text-white",
+                caption_label: "text-white",
+                nav_button: "text-white hover:bg-white/10",
+                table: "text-white",
+                head_cell: "text-white/70"
               }}
             />
             <div className="flex justify-end gap-2 pt-2">
@@ -90,14 +96,14 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ dateRange, setDateRan
                 onClick={() => {
                   setDateRange({ from: undefined, to: undefined });
                 }}
-                className="border-white/30 text-white hover:bg-white/10"
+                className="border-white/30 text-white hover:bg-white/10 hover:text-white"
               >
                 Effacer
               </Button>
               <Button 
                 size="sm"
                 onClick={() => setIsCalendarOpen(false)}
-                className="bg-northgascar-teal hover:bg-northgascar-teal/80 text-white"
+                className="bg-northgascar-teal hover:bg-northgascar-teal/80 text-white hover:text-white"
               >
                 Appliquer
               </Button>
