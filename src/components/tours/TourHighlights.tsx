@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Star } from 'lucide-react';
 
 interface TourHighlightsProps {
   highlights: string[];
@@ -11,9 +12,12 @@ const TourHighlights: React.FC<TourHighlightsProps> = ({ highlights }) => {
   return (
     <div className="mb-8">
       <h2 className="text-xl font-semibold mb-4">Points forts</h2>
-      <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+      <ul className="space-y-3 text-muted-foreground">
         {highlights.map((highlight, index) => (
-          <li key={index}>{highlight}</li>
+          <li key={index} className="flex items-start">
+            <Star className="h-5 w-5 mr-2 text-yellow-500 flex-shrink-0 mt-0.5" />
+            <span>{highlight}</span>
+          </li>
         ))}
       </ul>
     </div>
