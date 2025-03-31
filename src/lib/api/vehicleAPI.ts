@@ -8,23 +8,32 @@ import { Vehicle } from '../db/schema';
 export const vehicleAPI = {
   getAll: async () => {
     const db = await getDB();
-    return db.getAll('vehicles');
+    const vehicles = await db.getAll('vehicles');
+    console.log('vehicleAPI.getAll():', vehicles);
+    return vehicles;
   },
   
   getById: async (id: string) => {
     const db = await getDB();
-    return db.get('vehicles', id);
+    const vehicle = await db.get('vehicles', id);
+    console.log(`vehicleAPI.getById(${id}):`, vehicle);
+    return vehicle;
   },
   
   getByType: async (type: string) => {
     const db = await getDB();
-    return db.getAllFromIndex('vehicles', 'by-type', type);
+    const vehicles = await db.getAllFromIndex('vehicles', 'by-type', type);
+    console.log(`vehicleAPI.getByType(${type}):`, vehicles);
+    return vehicles;
   },
   
   getAvailable: async () => {
     const db = await getDB();
     const allVehicles = await db.getAll('vehicles');
-    return allVehicles.filter(vehicle => vehicle.availability);
+    console.log('vehicleAPI.getAvailable() - all vehicles:', allVehicles);
+    const availableVehicles = allVehicles.filter(vehicle => vehicle.availability);
+    console.log('vehicleAPI.getAvailable() - filtered vehicles:', availableVehicles);
+    return availableVehicles;
   },
   
   add: async (vehicle: Omit<Vehicle, 'id'>) => {

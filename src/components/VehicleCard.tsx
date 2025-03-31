@@ -31,6 +31,8 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
   index = 0,
   showCta = true
 }) => {
+  console.log('VehicleCard rendering:', vehicle);
+  
   // Vérifier que l'URL de l'image existe et la nettoyer
   let imageUrl = vehicle.image && vehicle.image.trim() !== '' 
     ? vehicle.image.split('?')[0] 
@@ -38,25 +40,27 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
 
   return (
     <AnimatedContainer
-      className="rounded-lg border overflow-hidden bg-card hover:shadow-lg transition-shadow h-full flex flex-col"
+      className="rounded-lg border overflow-hidden bg-card h-full flex flex-col"
       delay={index * 150}
       onlyWhenVisible={true}
     >
       <div className="relative h-48 w-full">
-        <ProgressiveImage 
+        <img 
           src={imageUrl} 
           alt={vehicle.name} 
           className="w-full h-full object-cover"
-          containerClassName="w-full h-full"
-          width={600}
-          priority={index < 2}
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.onerror = null;
+            target.src = '/placeholder.svg';
+          }}
         />
         
         <AnimatedBadge
           className={`absolute top-4 right-4 ${
             vehicle.availability 
-              ? "bg-green-500 hover:bg-green-600" 
-              : "bg-red-500 hover:bg-red-600"
+              ? "bg-green-500" 
+              : "bg-red-500"
           } text-white`}
           delay={(index * 150) + 200}
         >
@@ -121,7 +125,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
         {showCta && (
           <div className="mt-5">
             <Button 
-              className="w-full bg-madagascar-green hover:bg-madagascar-green/80 text-white"
+              className="w-full bg-madagascar-green text-white"
               disabled={!vehicle.availability}
             >
               {vehicle.availability ? "Réserver Maintenant" : "Non Disponible"}

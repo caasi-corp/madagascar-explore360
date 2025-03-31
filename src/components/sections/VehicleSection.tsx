@@ -13,14 +13,17 @@ interface VehicleSectionProps {
 
 const VehicleSection: React.FC<VehicleSectionProps> = ({ vehicles: propVehicles }) => {
   // Fetch featured vehicles if no vehicles are provided as props
-  const { data: apiVehicles, isLoading } = useQuery({
+  const { data: apiVehicles, isLoading, isError } = useQuery({
     queryKey: ['vehicles', 'featured'],
     queryFn: () => VehicleService.getFeaturedVehicles(3),
     // Only fetch if no vehicles are provided as props
-    enabled: !propVehicles?.length,
+    enabled: !propVehicles || propVehicles.length === 0,
   });
 
-  const vehicles = propVehicles?.length ? propVehicles : apiVehicles || [];
+  console.log('VehicleSection - propVehicles:', propVehicles);
+  console.log('VehicleSection - apiVehicles:', apiVehicles);
+  
+  const vehicles = propVehicles && propVehicles.length > 0 ? propVehicles : apiVehicles || [];
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900/50 py-16">
@@ -36,23 +39,35 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({ vehicles: propVehicles 
             <Button variant="outline" className="flex items-center gap-2" asChild>
               <a href="/services/car-rental">
                 <span>Voir Tous Les Véhicules</span>
-                <Car className="w-4 h-4 transition-transform" />
+                <Car className="w-4 h-4" />
               </a>
             </Button>
           </div>
         </div>
 
-        {isLoading && !propVehicles?.length ? (
+        {isLoading && (!propVehicles || propVehicles.length === 0) ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="h-96 rounded-lg bg-gray-200 dark:bg-gray-800 animate-pulse"></div>
             ))}
           </div>
-        ) : (
+        ) : isError ? (
+          <div className="text-center py-10">
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              Une erreur s'est produite lors du chargement des véhicules.
+            </p>
+          </div>
+        ) : vehicles.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {vehicles.map((vehicle, index) => (
               <VehicleCard key={vehicle.id} vehicle={vehicle} index={index} />
             ))}
+          </div>
+        ) : (
+          <div className="text-center py-10">
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              Aucun véhicule disponible pour le moment.
+            </p>
           </div>
         )}
       </div>

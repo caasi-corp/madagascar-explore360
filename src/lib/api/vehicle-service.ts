@@ -27,6 +27,7 @@ export class VehicleService {
   static async getAvailableVehicles(): Promise<Vehicle[]> {
     try {
       const vehicles = await vehicleAPI.getAvailable();
+      console.log('Available vehicles fetched:', vehicles);
       return vehicles;
     } catch (error) {
       console.error("Error fetching available vehicles:", error);
@@ -89,6 +90,7 @@ export class VehicleService {
   static async getFeaturedVehicles(limit: number = 3): Promise<Vehicle[]> {
     try {
       const availableVehicles = await this.getAvailableVehicles();
+      console.log('Featured vehicles (before slice):', availableVehicles);
       // Return the first few vehicles, but in a real implementation
       // you might have a "featured" field on the vehicle
       return availableVehicles.slice(0, limit);

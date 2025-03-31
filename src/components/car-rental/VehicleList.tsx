@@ -11,6 +11,8 @@ interface VehicleListProps {
 }
 
 const VehicleList: React.FC<VehicleListProps> = ({ vehicles }) => {
+  console.log('VehicleList - vehicles:', vehicles);
+  
   if (vehicles.length === 0) {
     return (
       <div className="text-center py-10">
@@ -30,12 +32,12 @@ const VehicleList: React.FC<VehicleListProps> = ({ vehicles }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       {vehicles.map((vehicle) => (
-        <Card key={vehicle.id} className="glass-card overflow-hidden hover:shadow-lg transition-shadow duration-300">
+        <Card key={vehicle.id} className="overflow-hidden">
           <div className="aspect-video w-full overflow-hidden">
             <img 
-              src={vehicle.image ? `${vehicle.image.split('?')[0]}?auto=format&fit=crop&w=800&q=80` : '/placeholder.svg'} 
+              src={vehicle.image ? `${vehicle.image.split('?')[0]}` : '/placeholder.svg'} 
               alt={vehicle.name} 
-              className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+              className="w-full h-full object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.onerror = null;
@@ -94,7 +96,7 @@ const VehicleList: React.FC<VehicleListProps> = ({ vehicles }) => {
             )}
             
             <Button 
-              className="w-full glass-button bg-madagascar-green text-white hover:bg-madagascar-green/90"
+              className="w-full bg-madagascar-green text-white"
               onClick={() => handleBooking(vehicle)}
             >
               Réserver
