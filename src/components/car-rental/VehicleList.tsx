@@ -3,11 +3,11 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Settings, Users, Fuel, Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { VehicleProps } from '@/components/VehicleCard';
+import { Vehicle } from '@/lib/db/schema';
 import { toast } from 'sonner';
 
 interface VehicleListProps {
-  vehicles: VehicleProps[];
+  vehicles: Vehicle[];
 }
 
 const VehicleList: React.FC<VehicleListProps> = ({ vehicles }) => {
@@ -21,7 +21,7 @@ const VehicleList: React.FC<VehicleListProps> = ({ vehicles }) => {
     );
   }
   
-  const handleBooking = (vehicle: VehicleProps) => {
+  const handleBooking = (vehicle: Vehicle) => {
     toast.success(`Réservation initiée pour ${vehicle.name}`, {
       description: "Vous serez redirigé vers le formulaire de réservation"
     });

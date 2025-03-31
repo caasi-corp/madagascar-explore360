@@ -1,8 +1,6 @@
-
 import React from 'react';
 import Hero from '@/components/Hero';
 import { TourProps } from '@/components/TourCard';
-import { VehicleProps } from '@/components/VehicleCard';
 import { 
   Map, 
   Car, 
@@ -87,46 +85,6 @@ const Index = () => {
     },
   ];
 
-  // Sample vehicles data
-  const vehicles: VehicleProps[] = [
-    {
-      id: 'v1',
-      name: 'Toyota Land Cruiser',
-      type: '4x4',
-      pricePerDay: 89,
-      seats: 7,
-      transmission: 'Automatic',
-      fuelType: 'Diesel',
-      image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf',
-      features: ['Climatisation', 'GPS', 'Porte-bagages', '4x4', 'Bluetooth', 'Ports USB'],
-      availability: true,
-    },
-    {
-      id: 'v2',
-      name: 'Yamaha TW200',
-      type: 'motorcycle',
-      pricePerDay: 45,
-      seats: 2,
-      transmission: 'Manual',
-      fuelType: 'Essence',
-      image: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39',
-      features: ['Casque inclus', 'Sacoches', 'Capacité tout-terrain', 'Économe en carburant'],
-      availability: true,
-    },
-    {
-      id: 'v3',
-      name: 'BRP Can-Am Outlander',
-      type: 'quad',
-      pricePerDay: 65,
-      seats: 1,
-      transmission: 'Automatic',
-      fuelType: 'Essence',
-      image: 'https://images.unsplash.com/photo-1628985816814-b5ce00832b6a',
-      features: ['Casque inclus', 'Coffre de rangement', '4x4', 'Garde au sol élevée'],
-      availability: false,
-    },
-  ];
-
   // Services data
   const services = [
     {
@@ -186,7 +144,7 @@ const Index = () => {
       <Services services={services} />
       
       {/* Vehicle Rental Section */}
-      <VehicleSection vehicles={vehicles} />
+      <VehicleSection />
       
       {/* Why Choose Us Section */}
       <Advantages advantages={advantages} />

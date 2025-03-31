@@ -6,9 +6,8 @@ import { z } from 'zod';
 
 import CarRentalForm from '@/components/car-rental/CarRentalForm';
 import VehicleList from '@/components/car-rental/VehicleList';
-import { mockVehicles } from '@/components/car-rental/vehicleData';
-import { VehicleProps } from '@/components/VehicleCard';
-import { vehicleAPI } from '@/lib/api/vehicleAPI';
+import { VehicleService, VehicleSearchParams } from '@/lib/api/vehicle-service';
+import { Vehicle } from '@/lib/db/schema';
 
 const formSchema = z.object({
   pickupLocation: z.string().min(2, { message: "La localisation est requise" }),
@@ -28,42 +27,43 @@ const CarRental = () => {
     from: new Date(),
     to: new Date(new Date().setDate(new Date().getDate() + 3)),
   });
-  const [filteredVehicles, setFilteredVehicles] = useState<VehicleProps[]>(mockVehicles);
-  const [searchParams, setSearchParams] = useState({
+  const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
+  const [searchParams, setSearchParams] = useState<VehicleSearchParams>({
     pickupLocation: "",
     pickupDate: date.from,
     dropoffDate: date.to,
   });
   
   // Fetch available vehicles from API
-  const { data: availableVehicles } = useQuery({
-    queryKey: ['vehicles', searchParams],
-    queryFn: () => vehicleAPI.getAvailable(),
-    initialData: mockVehicles,
+  const { data: availableVehicles = [], isLoading } = useQuery({
+    queryKey: ['vehicles', 'available'],
+    queryFn: () => VehicleService.getAvailableVehicles(),
   });
   
-  const handleFormSubmit = (values: z.infer<typeof formSchema>) => {
-    const params = {
+  // Set initial filtered vehicles when available vehicles change
+  React.useEffect(() => {
+    if (availableVehicles.length > 0 && filteredVehicles.length === 0) {
+      setFilteredVehicles(availableVehicles);
+    }
+  }, [availableVehicles, filteredVehicles]);
+  
+  const handleFormSubmit = async (values: z.infer<typeof formSchema>) => {
+    const params: VehicleSearchParams = {
       pickupLocation: values.pickupLocation,
       pickupDate: values.pickupDate,
       dropoffDate: values.dropoffDate || values.pickupDate,
+      vehicleType: values.vehicleType,
+      transmission: values.transmission,
+      fuelType: values.fuelType,
+      minPrice: values.minPrice,
+      maxPrice: values.maxPrice,
+      minSeats: values.minSeats,
     };
     
     setSearchParams(params);
     
-    // Filter vehicles based on form values
-    const filtered = availableVehicles.filter(vehicle => {
-      return (
-        (!values.vehicleType || vehicle.type === values.vehicleType) &&
-        (!values.transmission || vehicle.transmission === values.transmission) &&
-        (!values.fuelType || vehicle.fuelType === values.fuelType) &&
-        (!values.minPrice || vehicle.pricePerDay >= values.minPrice) &&
-        (!values.maxPrice || vehicle.pricePerDay <= values.maxPrice) &&
-        (!values.minSeats || vehicle.seats >= values.minSeats) &&
-        vehicle.availability === true
-      );
-    });
-    
+    // Filter vehicles based on search params
+    const filtered = await VehicleService.filterVehicles(params);
     setFilteredVehicles(filtered);
   };
   
@@ -83,7 +83,13 @@ const CarRental = () => {
       
         {/* Results */}
         <div className="col-span-3">
-          <VehicleList vehicles={filteredVehicles} />
+          {isLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-madagascar-green"></div>
+            </div>
+          ) : (
+            <VehicleList vehicles={filteredVehicles} />
+          )}
         </div>
       </div>
     </div>

@@ -1,102 +1,60 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowRight } from 'lucide-react';
-import VehicleCard, { VehicleProps } from '@/components/VehicleCard';
-import { useIsMobile } from '@/hooks/use-mobile';
+import VehicleCard from '@/components/VehicleCard';
+import { Vehicle } from '@/lib/db/schema';
+import { VehicleService } from '@/lib/api/vehicle-service';
 
 interface VehicleSectionProps {
-  vehicles: VehicleProps[];
+  vehicles?: Vehicle[];
 }
 
-const VehicleSection: React.FC<VehicleSectionProps> = ({ vehicles }) => {
-  const [activeTab, setActiveTab] = useState('all');
-  const [displayedVehicles, setDisplayedVehicles] = useState<VehicleProps[]>(vehicles);
-  const isMobile = useIsMobile();
-  
-  useEffect(() => {
-    if (activeTab === 'all') {
-      setDisplayedVehicles(vehicles);
-    } else {
-      setDisplayedVehicles(vehicles.filter(v => v.type === activeTab));
-    }
-  }, [activeTab, vehicles]);
-  
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-  };
+const VehicleSection: React.FC<VehicleSectionProps> = ({ vehicles: propVehicles }) => {
+  // Fetch featured vehicles if no vehicles are provided as props
+  const { data: apiVehicles, isLoading } = useQuery({
+    queryKey: ['vehicles', 'featured'],
+    queryFn: () => VehicleService.getFeaturedVehicles(3),
+    // Only fetch if no vehicles are provided as props
+    enabled: !propVehicles?.length,
+  });
+
+  const vehicles = propVehicles?.length ? propVehicles : apiVehicles || [];
 
   return (
-    <section className="section-padding bg-madagascar-blue to-madagascar-blue/80 text-white">
+    <section className="bg-gray-50 dark:bg-gray-900/50 py-16">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">Explorez à Votre Façon</h2>
-          <p className="text-lg text-white/80 max-w-2xl mx-auto">
-            Choisissez parmi notre flotte de véhicules bien entretenus pour votre aventure parfaite à Madagascar
-          </p>
-        </div>
-        
-        <Tabs defaultValue="all" className="w-full" onValueChange={handleTabChange}>
-          <div className="flex justify-center mb-6">
-            <TabsList className="bg-madagascar-blue/90 w-full max-w-3xl overflow-x-auto flex">
-              <TabsTrigger 
-                value="all" 
-                className="flex-1 text-white data-[state=active]:bg-white/10 data-[state=active]:text-white"
-              >
-                Tous les véhicules
-              </TabsTrigger>
-              <TabsTrigger 
-                value="4x4" 
-                className="flex-1 text-white data-[state=active]:bg-white/10 data-[state=active]:text-white"
-              >
-                4x4
-              </TabsTrigger>
-              <TabsTrigger 
-                value="car" 
-                className="flex-1 text-white data-[state=active]:bg-white/10 data-[state=active]:text-white"
-              >
-                Voitures
-              </TabsTrigger>
-              <TabsTrigger 
-                value="motorcycle" 
-                className="flex-1 text-white data-[state=active]:bg-white/10 data-[state=active]:text-white"
-              >
-                Motos
-              </TabsTrigger>
-              <TabsTrigger 
-                value="quad" 
-                className="flex-1 text-white data-[state=active]:bg-white/10 data-[state=active]:text-white"
-              >
-                Quads
-              </TabsTrigger>
-            </TabsList>
+        <div className="flex flex-wrap items-center justify-between mb-10">
+          <div className="w-full lg:w-1/2 mb-6 lg:mb-0">
+            <h2 className="text-3xl font-bold mb-3">Location de Véhicules</h2>
+            <p className="text-gray-600 dark:text-gray-400 max-w-lg">
+              Explorez Madagascar à votre rythme avec notre sélection de véhicules adaptés à tous les terrains et aventures.
+            </p>
           </div>
-          
-          <div className="mt-2">
-            {displayedVehicles.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {displayedVehicles.map((vehicle, index) => (
-                  <VehicleCard key={vehicle.id} vehicle={vehicle} index={index} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-10">
-                <p className="text-white/80">
-                  Aucun véhicule de type {activeTab === 'all' ? '' : activeTab} disponible pour le moment.
-                </p>
-              </div>
-            )}
+          <div className="w-full lg:w-auto">
+            <Button variant="outline" className="group" asChild>
+              <a href="/services/car-rental" className="flex items-center gap-2">
+                <span>Voir Tous Les Véhicules</span>
+                <Car className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </a>
+            </Button>
           </div>
-        </Tabs>
-        
-        <div className="mt-10 text-center">
-          <Button asChild className="bg-white hover:bg-white/90 text-madagascar-blue">
-            <a href="/services/car-rental">
-              Voir tous les véhicules <ArrowRight size={16} className="ml-2" />
-            </a>
-          </Button>
         </div>
+
+        {isLoading && !propVehicles?.length ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-96 rounded-lg bg-gray-200 dark:bg-gray-800 animate-pulse"></div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {vehicles.map((vehicle, index) => (
+              <VehicleCard key={vehicle.id} vehicle={vehicle} index={index} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
