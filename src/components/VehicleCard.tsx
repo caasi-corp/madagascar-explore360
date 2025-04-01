@@ -31,9 +31,15 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
 }) => {
   // Image par défaut si l'URL est vide ou invalide
   const defaultImage = '/placeholder.svg';
-  const imageUrl = vehicle.image && vehicle.image.trim() !== '' ? vehicle.image : defaultImage;
+  
+  // S'assurer que image est une chaîne de caractères et pas undefined ou null
+  const imageString = typeof vehicle.image === 'string' ? vehicle.image : '';
+  const imageUrl = imageString && imageString.trim() !== '' ? imageString : defaultImage;
+  
+  console.log("Vehicle image URL:", imageUrl);
   
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    console.log("Image loading error, using placeholder");
     const target = e.target as HTMLImageElement;
     target.onerror = null; // Empêcher les boucles infinies
     target.src = defaultImage;
@@ -98,7 +104,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
         <div className="mt-auto">
           <p className="text-sm font-medium mb-2">Caractéristiques:</p>
           <div className="flex flex-wrap gap-2">
-            {vehicle.features.slice(0, 4).map((feature, i) => (
+            {vehicle.features && vehicle.features.slice(0, 4).map((feature, i) => (
               <AnimatedBadge 
                 key={feature} 
                 variant="secondary" 
@@ -108,7 +114,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({
                 {feature}
               </AnimatedBadge>
             ))}
-            {vehicle.features.length > 4 && (
+            {vehicle.features && vehicle.features.length > 4 && (
               <AnimatedBadge 
                 variant="secondary" 
                 className="text-xs"

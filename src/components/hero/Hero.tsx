@@ -25,6 +25,7 @@ const Hero: React.FC<HeroProps> = ({
   return (
     <div 
       className={`relative ${height} w-full flex items-center justify-center overflow-hidden`}
+      style={{ width: '100vw', margin: '0 -1rem' }}
     >
       <HeroCarousel images={natureImages} backgroundImage={backgroundImage} />
       

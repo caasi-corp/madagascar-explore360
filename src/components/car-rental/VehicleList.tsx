@@ -33,7 +33,7 @@ const VehicleList: React.FC<VehicleListProps> = ({ vehicles }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       {vehicles.map((vehicle) => (
-        <Card key={vehicle.id} className="overflow-hidden">
+        <Card key={vehicle.id} className="overflow-hidden h-full flex flex-col">
           <div className="aspect-video w-full overflow-hidden">
             <img 
               src={vehicle.image || defaultImage} 
@@ -41,13 +41,14 @@ const VehicleList: React.FC<VehicleListProps> = ({ vehicles }) => {
               className="w-full h-full object-cover"
               loading="lazy"
               onError={(e) => {
+                console.log("Vehicle image error, using placeholder");
                 const target = e.target as HTMLImageElement;
                 target.onerror = null;
                 target.src = defaultImage;
               }}
             />
           </div>
-          <CardContent className="p-5">
+          <CardContent className="p-5 flex flex-col flex-grow">
             <div className="flex justify-between items-center mb-3">
               <h3 className="text-xl font-bold">{vehicle.name}</h3>
               <span className="text-lg font-bold text-madagascar-green">
@@ -97,12 +98,14 @@ const VehicleList: React.FC<VehicleListProps> = ({ vehicles }) => {
               </div>
             )}
             
-            <Button 
-              className="w-full bg-madagascar-green text-white"
-              onClick={() => handleBooking(vehicle)}
-            >
-              Réserver
-            </Button>
+            <div className="mt-auto">
+              <Button 
+                className="w-full bg-madagascar-green text-white"
+                onClick={() => handleBooking(vehicle)}
+              >
+                Réserver
+              </Button>
+            </div>
           </CardContent>
         </Card>
       ))}

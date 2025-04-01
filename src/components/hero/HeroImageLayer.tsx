@@ -37,6 +37,10 @@ const HeroImageLayer: React.FC<HeroImageLayerProps> = ({
     (isPrevious && isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom')) ||
     (!isPrevious && !isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom'));
   
+  if (!cleanImageUrl) {
+    return null;
+  }
+  
   return (
     <div 
       className={`absolute inset-0 w-full h-full transition-all duration-1500 ${
@@ -57,7 +61,7 @@ const HeroImageLayer: React.FC<HeroImageLayerProps> = ({
       <ProgressiveImage 
         src={cleanImageUrl} 
         alt="Paysage Madagascar"
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover object-center"
         containerClassName="w-full h-full"
         priority={!isPrevious} // Prioritize loading current image
         sizes="100vw"

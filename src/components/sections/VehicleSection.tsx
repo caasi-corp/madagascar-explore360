@@ -22,6 +22,9 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({ vehicles: propVehicles 
     enabled: !propVehicles || propVehicles.length === 0,
   });
   
+  console.log("API Vehicles:", apiVehicles);
+  console.log("Prop Vehicles:", propVehicles);
+  
   // Utiliser les véhicules des props si disponibles, sinon utiliser ceux de l'API
   const vehicles = propVehicles && propVehicles.length > 0 ? propVehicles : apiVehicles || [];
 
@@ -57,7 +60,7 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({ vehicles: propVehicles 
               Une erreur s'est produite lors du chargement des véhicules.
             </p>
           </div>
-        ) : vehicles.length > 0 ? (
+        ) : vehicles && vehicles.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {vehicles.map((vehicle, index) => (
               <VehicleCard key={vehicle.id || index} vehicle={vehicle} index={index} />

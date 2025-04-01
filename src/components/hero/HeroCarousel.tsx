@@ -23,15 +23,15 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
   
   // Optimiser les tailles d'images en fonction de l'appareil
   const imageSizes = isMobile 
-    ? [400, 800] 
+    ? [600, 800] 
     : isTablet 
-      ? [800, 1200] 
-      : [1200, 1600, 2000];
+      ? [1200, 1600] 
+      : [1600, 2000, 2400];
   
   const [loadingProgress, setLoadingProgress] = useState(0);
   
   // Nettoyer les URLs des images avant le préchargement
-  const cleanImages = (backgroundImage ? [backgroundImage] : images).map(img => 
+  const cleanImages = (backgroundImage ? [backgroundImage] : [...images]).filter(Boolean).map(img => 
     img ? img.split('?')[0] : ''
   );
   
@@ -44,8 +44,8 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
   
   const [isVisible, setIsVisible] = useState(false);
 
-  const currentImage = backgroundImage || images[currentImageIndex];
-  const previousImage = previousImageIndex >= 0 ? images[previousImageIndex] : currentImage;
+  const currentImage = backgroundImage || (images && images.length > 0 ? images[currentImageIndex] : '');
+  const previousImage = previousImageIndex >= 0 && images && images.length > 0 ? images[previousImageIndex] : currentImage;
 
   // Animation d'entrée pour un meilleur ressenti
   useEffect(() => {
@@ -81,7 +81,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
           />
           
           {/* Navigation dots */}
-          {images.length > 1 && (
+          {images && images.length > 1 && (
             <CarouselNavigation
               images={images}
               currentImageIndex={currentImageIndex}

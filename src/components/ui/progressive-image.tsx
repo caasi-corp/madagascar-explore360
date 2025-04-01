@@ -34,13 +34,14 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
   const [isError, setIsError] = useState(false);
   const isMobile = useIsMobile();
   
-  // Nettoyer l'URL et utiliser une URL directe sans optimisation qui peut échouer
-  const cleanSrc = src ? src.split('?')[0] : '';
+  // Nettoyer l'URL et vérifier qu'elle existe
+  const cleanSrc = src && typeof src === 'string' ? src.split('?')[0] : '';
   
   // Gérer le chargement de l'image
   const handleImageLoaded = () => {
     setIsLoaded(true);
     if (onLoad) onLoad();
+    console.log("Image loaded successfully:", cleanSrc);
   };
   
   // Gérer les erreurs de chargement
@@ -54,6 +55,12 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
     setIsLoaded(false);
     setIsError(false);
     
+    // Si pas de source valide, marquer comme erreur
+    if (!cleanSrc) {
+      setIsError(true);
+      return;
+    }
+    
     // Précharger les images prioritaires
     if (priority && cleanSrc) {
       const img = new Image();
@@ -61,10 +68,6 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
       img.onload = handleImageLoaded;
       img.onerror = handleError;
     }
-    
-    return () => {
-      // Pas besoin de nettoyage pour les objets Image
-    };
   }, [cleanSrc, priority]);
   
   return (
@@ -84,7 +87,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
       )}
       
       {/* Image principale */}
-      {!isError ? (
+      {!isError && cleanSrc ? (
         <img
           src={cleanSrc}
           alt={alt}
@@ -95,7 +98,7 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
           loading={priority ? "eager" : "lazy"}
           decoding="async"
           className={cn(
-            "w-full h-full object-cover transition-opacity duration-500",
+            "w-full h-full object-cover object-center transition-opacity duration-500",
             !isLoaded ? "opacity-0" : "opacity-100",
             className
           )}
