@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import TourCard, { TourProps } from '@/components/TourCard';
-import { AnimatedContainer } from '@/components/ui/animated-container';
 import { optimizeImageUrl } from '@/lib/imageOptimizer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -53,7 +52,7 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
   return (
     <section className="section-padding bg-muted/30">
       <div className="container mx-auto px-4">
-        <AnimatedContainer className="text-center mb-10" onlyWhenVisible={true}>
+        <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 text-madagascar-yellow font-medium mb-3">
             <Sparkles className="h-5 w-5" />
             <span>DÉCOUVREZ NOS CIRCUITS</span>
@@ -62,7 +61,7 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Explorez les destinations les plus populaires de Madagascar avec nos circuits guidés
           </p>
-        </AnimatedContainer>
+        </div>
         
         {isLoading ? (
           // Afficher des skeletons pendant le chargement
@@ -80,30 +79,24 @@ const FeaturedTours: React.FC<FeaturedToursProps> = ({ tours }) => {
           // Afficher les tours une fois chargés
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {toursToDisplay.map((tour, index) => (
-              <AnimatedContainer 
-                key={tour.id} 
-                className="hover-scale" 
-                delay={100 * (index + 1)}
-                onlyWhenVisible={true}
-                style={{ animationFillMode: 'both' }}
-              >
+              <div key={tour.id}>
                 <TourCard 
                   tour={tour} 
                   animationIndex={index}
                 />
-              </AnimatedContainer>
+              </div>
             ))}
           </div>
         )}
         
-        <AnimatedContainer className="mt-10 text-center" delay={600} onlyWhenVisible={true}>
-          <Button asChild className="bg-madagascar-green hover:bg-madagascar-green/80 text-white group">
-            <a href="/tours" className="flex items-center">
+        <div className="mt-10 text-center">
+          <Button asChild className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
+            <a href="/tours">
               Voir tous les circuits 
-              <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight size={16} className="ml-2" />
             </a>
           </Button>
-        </AnimatedContainer>
+        </div>
       </div>
     </section>
   );

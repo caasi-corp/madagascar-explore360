@@ -46,7 +46,7 @@ const TourCard: React.FC<TourCardProps> = ({ tour, className, animationIndex = 0
   const formattedPrice = new Intl.NumberFormat('fr-FR').format(tour.price);
   
   return (
-    <Card className={`overflow-hidden hover:shadow-lg transition-all hover:translate-y-[-5px] ${className}`}>
+    <Card className={`overflow-hidden ${className}`}>
       <div className="relative h-36 sm:h-48 overflow-hidden bg-gray-200">
         <ProgressiveImage 
           src={tour.image}

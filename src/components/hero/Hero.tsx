@@ -31,11 +31,11 @@ const Hero: React.FC<HeroProps> = ({
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 z-10 text-center md:text-left relative">
         <h1 
-          className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 md:mb-6 max-w-3xl mx-auto md:mx-0 animate-fade-in drop-shadow-lg"
+          className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 md:mb-6 max-w-3xl mx-auto md:mx-0 drop-shadow-lg"
         >
           {title}
         </h1>
-        <p className="text-white text-base sm:text-lg md:text-xl max-w-2xl mx-auto md:mx-0 mb-6 md:mb-8 animation-delay-300 animate-fade-in drop-shadow-md">
+        <p className="text-white text-base sm:text-lg md:text-xl max-w-2xl mx-auto md:mx-0 mb-6 md:mb-8 drop-shadow-md">
           {subtitle}
         </p>
         

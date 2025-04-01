@@ -48,8 +48,8 @@ const HeroImageLayer: React.FC<HeroImageLayerProps> = ({
         isVisible ? 'opacity-100' : 'opacity-0'}`}
       style={{
         overflow: 'hidden',
-        transform: `scale(${dronePosition.scale}) translate(${dronePosition.x}%, ${dronePosition.y}%)`,
-        transition: `transform 2s ease-out, filter 1.5s ease-out, opacity 0.5s ease-in`,
+        transform: `scale(1) translate(0%, 0%)`, // Removed zoom and movement effects
+        transition: `filter 1.5s ease-out, opacity 0.5s ease-in`,
         filter: shouldBlur ? 'blur(8px)' : 'blur(0px)',
         zIndex,
       }}
