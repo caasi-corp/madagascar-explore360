@@ -4,6 +4,7 @@ import AdminHeader from './AdminHeader';
 import AdminSidebar from './AdminSidebar';
 import Footer from './Footer';
 import { Outlet } from 'react-router-dom';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 const AdminLayout: React.FC = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -29,16 +30,18 @@ const AdminLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
-      <AdminSidebar />
-      <div className="flex flex-col flex-1 md:ml-64"> {/* Ajout d'une marge à gauche qui correspond à la largeur de la sidebar */}
-        <AdminHeader toggleTheme={toggleTheme} theme={theme} />
-        <main className="flex-grow p-6">
-          <Outlet />
-        </main>
-        <Footer />
+    <SidebarProvider>
+      <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900 w-full">
+        <AdminSidebar />
+        <div className="flex flex-col flex-1 md:ml-64">
+          <AdminHeader toggleTheme={toggleTheme} theme={theme} />
+          <main className="flex-grow p-6">
+            <Outlet />
+          </main>
+          <Footer />
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
