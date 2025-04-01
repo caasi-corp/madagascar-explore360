@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 
 // Define a breakpoint for mobile devices
 const MOBILE_BREAKPOINT = 768
+const TABLET_BREAKPOINT = 1024
 
 export function useIsMobile(): boolean {
   const [isMobile, setIsMobile] = useState(
@@ -31,17 +32,22 @@ export function useIsMobile(): boolean {
   return isMobile
 }
 
-// Add useBreakpoint function for backward compatibility
-export function useBreakpoint(breakpoint: number = MOBILE_BREAKPOINT): boolean {
-  const [isBelow, setIsBelow] = useState(
-    typeof window !== "undefined" ? window.innerWidth < breakpoint : false
-  )
+// Modified useBreakpoint to return an object with isMobile and isTablet properties
+export function useBreakpoint(mobileBreakpoint: number = MOBILE_BREAKPOINT, tabletBreakpoint: number = TABLET_BREAKPOINT) {
+  const [screenInfo, setScreenInfo] = useState({
+    isMobile: typeof window !== "undefined" ? window.innerWidth < mobileBreakpoint : false,
+    isTablet: typeof window !== "undefined" ? window.innerWidth >= mobileBreakpoint && window.innerWidth < tabletBreakpoint : false
+  })
 
   useEffect(() => {
     if (typeof window === "undefined") return
 
     const handleResize = () => {
-      setIsBelow(window.innerWidth < breakpoint)
+      const width = window.innerWidth
+      setScreenInfo({
+        isMobile: width < mobileBreakpoint,
+        isTablet: width >= mobileBreakpoint && width < tabletBreakpoint
+      })
     }
 
     // Add event listener
@@ -52,7 +58,7 @@ export function useBreakpoint(breakpoint: number = MOBILE_BREAKPOINT): boolean {
 
     // Remove event listener on cleanup
     return () => window.removeEventListener("resize", handleResize)
-  }, [breakpoint])
+  }, [mobileBreakpoint, tabletBreakpoint])
 
-  return isBelow
+  return screenInfo
 }
