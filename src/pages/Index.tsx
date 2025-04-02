@@ -80,10 +80,10 @@ const Index = () => {
     {
       id: "v1",
       name: "Toyota Land Cruiser",
-      type: "4x4",
+      type: "4x4" as const, // Fixed: explicitly define as literal type
       pricePerDay: 80,
       seats: 7,
-      transmission: "Automatic",
+      transmission: "Automatic" as const, // Fixed: explicitly define as literal type
       fuelType: "Diesel",
       image: "/placeholder.svg",
       features: ["Climatisation", "GPS", "Bluetooth", "Toit ouvrant"],
@@ -92,10 +92,10 @@ const Index = () => {
     {
       id: "v2",
       name: "Hyundai i10",
-      type: "car",
+      type: "car" as const, // Fixed: explicitly define as literal type
       pricePerDay: 35,
       seats: 4,
-      transmission: "Manual",
+      transmission: "Manual" as const, // Fixed: explicitly define as literal type
       fuelType: "Essence",
       image: "/placeholder.svg",
       features: ["Économique", "Facile à conduire", "Idéal pour la ville"],
@@ -104,10 +104,10 @@ const Index = () => {
     {
       id: "v3",
       name: "Yamaha XT660",
-      type: "motorcycle",
+      type: "motorcycle" as const, // Fixed: explicitly define as literal type
       pricePerDay: 45,
       seats: 2,
-      transmission: "Manual",
+      transmission: "Manual" as const, // Fixed: explicitly define as literal type
       fuelType: "Essence",
       image: "/placeholder.svg",
       features: ["Trail", "Tout terrain", "Légère"],
