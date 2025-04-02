@@ -41,6 +41,7 @@ const vehicles: VehicleProps[] = [
     id: 'v1',
     name: 'Toyota Land Cruiser',
     type: '4x4',
+    price: 89, // Added price property
     pricePerDay: 89,
     seats: 7,
     transmission: 'Automatic',
@@ -53,6 +54,7 @@ const vehicles: VehicleProps[] = [
     id: 'v2',
     name: 'Yamaha TW200',
     type: 'motorcycle',
+    price: 45, // Added price property
     pricePerDay: 45,
     seats: 2,
     transmission: 'Manual',
@@ -65,6 +67,7 @@ const vehicles: VehicleProps[] = [
     id: 'v3',
     name: 'BRP Can-Am Outlander',
     type: 'quad',
+    price: 65, // Added price property
     pricePerDay: 65,
     seats: 1,
     transmission: 'Automatic',
@@ -77,6 +80,7 @@ const vehicles: VehicleProps[] = [
     id: 'v4',
     name: 'Toyota Corolla',
     type: 'car',
+    price: 55, // Added price property
     pricePerDay: 55,
     seats: 5,
     transmission: 'Automatic',
@@ -89,6 +93,7 @@ const vehicles: VehicleProps[] = [
     id: 'v5',
     name: 'Mitsubishi Pajero',
     type: '4x4',
+    price: 85, // Added price property
     pricePerDay: 85,
     seats: 7,
     transmission: 'Automatic',
@@ -101,6 +106,7 @@ const vehicles: VehicleProps[] = [
     id: 'v6',
     name: 'Peugeot 208',
     type: 'car',
+    price: 40, // Added price property
     pricePerDay: 40,
     seats: 5,
     transmission: 'Manual',
