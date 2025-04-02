@@ -1,6 +1,7 @@
 import React from 'react';
 import Hero from '@/components/Hero';
 import { TourProps } from '@/components/TourCard';
+import { VehicleProps } from '@/components/VehicleCard';
 import { 
   Map, 
   Car, 
@@ -17,7 +18,7 @@ import Advantages from '@/components/sections/Advantages';
 import CallToAction from '@/components/sections/CallToAction';
 
 const Index = () => {
-  // Sample tour data with enhanced information
+  // Sample tour data
   const featuredTours: TourProps[] = [
     {
       id: '1',
@@ -30,10 +31,6 @@ const Index = () => {
       image: 'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb',
       featured: true,
       category: 'Nature',
-      groupSize: 12,
-      difficulty: 'Facile',
-      language: ['Français', 'Anglais'],
-      startDate: '15/05/2025',
     },
     {
       id: '2',
@@ -46,10 +43,6 @@ const Index = () => {
       image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027',
       featured: true,
       category: 'Faune',
-      groupSize: 8,
-      difficulty: 'Modéré',
-      language: ['Français', 'Anglais', 'Malgache'],
-      startDate: '02/06/2025',
     },
     {
       id: '3',
@@ -62,10 +55,6 @@ const Index = () => {
       image: 'https://images.unsplash.com/photo-1469041797191-50ace28483c3',
       featured: true,
       category: 'Aventure',
-      groupSize: 10,
-      difficulty: 'Modéré',
-      language: ['Français', 'Anglais'],
-      startDate: '10/06/2025',
     },
     {
       id: '4',
@@ -76,12 +65,48 @@ const Index = () => {
       price: 599,
       rating: 4.9,
       image: 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57',
-      featured: true,
+      featured: false,
       category: 'Plage',
-      groupSize: 14,
-      difficulty: 'Facile',
-      language: ['Français', 'Anglais', 'Italien'],
-      startDate: '22/06/2025',
+    },
+  ];
+
+  // Sample vehicles data
+  const vehicles: VehicleProps[] = [
+    {
+      id: 'v1',
+      name: 'Toyota Land Cruiser',
+      type: '4x4',
+      pricePerDay: 89,
+      seats: 7,
+      transmission: 'Automatic',
+      fuelType: 'Diesel',
+      image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf',
+      features: ['Climatisation', 'GPS', 'Porte-bagages', '4x4', 'Bluetooth', 'Ports USB'],
+      availability: true,
+    },
+    {
+      id: 'v2',
+      name: 'Yamaha TW200',
+      type: 'motorcycle',
+      pricePerDay: 45,
+      seats: 2,
+      transmission: 'Manual',
+      fuelType: 'Essence',
+      image: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39',
+      features: ['Casque inclus', 'Sacoches', 'Capacité tout-terrain', 'Économe en carburant'],
+      availability: true,
+    },
+    {
+      id: 'v3',
+      name: 'BRP Can-Am Outlander',
+      type: 'quad',
+      pricePerDay: 65,
+      seats: 1,
+      transmission: 'Automatic',
+      fuelType: 'Essence',
+      image: 'https://images.unsplash.com/photo-1566845735839-6e25c92269a1',
+      features: ['Casque inclus', 'Coffre de rangement', '4x4', 'Garde au sol élevée'],
+      availability: false,
     },
   ];
 
@@ -144,7 +169,7 @@ const Index = () => {
       <Services services={services} />
       
       {/* Vehicle Rental Section */}
-      <VehicleSection />
+      <VehicleSection vehicles={vehicles} />
       
       {/* Why Choose Us Section */}
       <Advantages advantages={advantages} />

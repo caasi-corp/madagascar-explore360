@@ -17,8 +17,8 @@ export const useImageTransition = ({
   // Effet de transition d'image automatique
   useEffect(() => {
     const interval = setInterval(() => {
-      // Simplification - utilise toujours l'effet de fondu (fade)
-      const newEffect = "fade";
+      // Choisir un nouvel effet de transition aléatoire
+      const newEffect = transitionEffects[Math.floor(Math.random() * transitionEffects.length)];
       
       // Mettre à jour les indices d'image et déclencher la transition
       setTransitionState(prevState => ({
@@ -45,8 +45,8 @@ export const useImageTransition = ({
   const changeImage = (newIndex: number) => {
     if (newIndex === transitionState.currentImageIndex) return;
     
-    // Simplification - utilise toujours l'effet de fondu (fade)
-    const newEffect = "fade";
+    // Choisir un nouvel effet de transition aléatoire
+    const newEffect = transitionEffects[Math.floor(Math.random() * transitionEffects.length)];
     
     setTransitionState(prevState => ({
       ...prevState,

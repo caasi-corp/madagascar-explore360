@@ -4,27 +4,17 @@ import Navbar from './navbar';
 import Footer from './Footer';
 import WhatsAppChat from './WhatsAppChat';
 import { Outlet } from 'react-router-dom';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 interface LayoutProps {
   children?: React.ReactNode;
-  fullWidth?: boolean;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, fullWidth = false }) => {
-  const isMobile = useIsMobile();
-  
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className={`flex-grow ${isMobile ? 'pt-14 md:pt-16' : 'pt-16 md:pt-20'}`}>
-        {fullWidth ? (
-          children || <Outlet />
-        ) : (
-          <div className="container mx-auto px-4 py-4 overflow-x-hidden">
-            {children || <Outlet />}
-          </div>
-        )}
+      <main className="flex-grow">
+        {children || <Outlet />}
       </main>
       <WhatsAppChat />
       <Footer />

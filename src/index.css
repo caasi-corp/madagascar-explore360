@@ -101,11 +101,18 @@
     @apply font-display font-bold;
   }
 
-  /* 3D Logo Effect - suppression des effets de survol */
+  /* 3D Logo Effect */
   .logo-3d {
     filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.2))
            drop-shadow(0px 4px 4px rgba(0,0,0,0.15));
     transition: all 0.3s ease;
+  }
+
+  .logo-3d:hover {
+    filter: drop-shadow(0px 5px 8px rgba(0,0,0,0.3))
+           drop-shadow(0px 8px 12px rgba(0,0,0,0.2))
+           drop-shadow(0px 0px 3px rgba(66,193,217,0.4));
+    transform: translateY(-5px) rotateY(10deg);
   }
 
   .logo-text {
@@ -113,9 +120,13 @@
     transition: all 0.3s ease;
   }
 
-  /* Glass effect classes - CORRIGÉ pour éviter les problèmes au focus/clic */
+  .logo-text:hover {
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.15);
+  }
+
+  /* Glass effect classes */
   .glass-card {
-    @apply bg-black/60 dark:bg-black/70 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg;
+    @apply bg-white/80 dark:bg-black/50 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg;
   }
 
   .glass-effect {
@@ -123,13 +134,8 @@
   }
 
   .glass-button {
-    @apply backdrop-blur-md bg-black/30 dark:bg-black/40 border border-white/20 dark:border-white/10 shadow-md 
-           bg-black/40 dark:bg-black/50 text-white transition-all duration-300;
-  }
-
-  .glass-button:focus, 
-  .glass-button:active {
-    @apply bg-black/40 dark:bg-black/50 outline-none ring-2 ring-white/20 text-white;
+    @apply backdrop-blur-md bg-white/30 dark:bg-white/10 border border-white/40 dark:border-white/20 shadow-md 
+           hover:bg-white/40 dark:hover:bg-white/20 transition-all duration-300;
   }
 
   .glass-label {
@@ -137,19 +143,8 @@
   }
 
   .glass-input {
-    @apply bg-black/30 dark:bg-black/40 backdrop-blur-md border border-white/20 dark:border-white/10 text-white
-           focus:ring-2 focus:ring-white/20 focus:border-white/20 focus:bg-black/40 dark:focus:bg-black/50 focus:outline-none;
-  }
-
-  /* Correction pour les popovers et dropdowns avec effet glass */
-  .glass-popover {
-    @apply backdrop-blur-md bg-black/80 dark:bg-black/90 border border-white/20 dark:border-white/10 shadow-lg 
-           text-white dark:text-white z-50;
-  }
-
-  /* Fixing text color for calendar days */
-  :root .rdp-day:not([aria-disabled=true]) {
-    @apply bg-white/10 text-white;
+    @apply bg-white/30 dark:bg-black/20 backdrop-blur-md border border-white/30 dark:border-white/10 
+           focus:ring-2 focus:ring-primary/50 focus:border-primary/50;
   }
 
   .glass-navbar {
@@ -165,7 +160,7 @@
   }
   
   .hover-scale {
-    @apply transition-transform duration-300;
+    @apply transition-transform duration-300 hover:scale-105;
   }
 
   .section-padding {
@@ -186,49 +181,6 @@
   @keyframes shimmer {
     100% {
       left: 200%;
-    }
-  }
-  
-  /* Image optimization and progressive loading */
-  @keyframes image-fade-in {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-
-  .image-progressive-loading {
-    animation: image-fade-in 0.5s ease-in;
-  }
-
-  /* Style pour les images en cours de chargement */
-  .img-loading {
-    filter: blur(5px);
-    transition: filter 0.3s ease-out;
-    min-height: 60px;
-  }
-
-  .img-loaded {
-    filter: blur(0);
-  }
-  
-  /* Préférence d'optimisation pour les images */
-  img {
-    text-rendering: optimizeSpeed;
-    image-rendering: optimizeQuality;
-  }
-
-  /* Add support for native lazy loading */
-  img[loading="lazy"] {
-    @apply bg-muted/30;
-  }
-
-  /* Remove animation for users who prefer reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    .image-progressive-loading {
-      animation: none;
-    }
-    
-    .img-loading {
-      filter: none;
     }
   }
 }

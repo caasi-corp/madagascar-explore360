@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -136,58 +135,6 @@ export default {
 						transform: 'translateX(0)'
 					}
 				},
-				'scale-in': {
-					'0%': {
-						opacity: '0',
-						transform: 'scale(0.95)'
-					},
-					'100%': {
-						opacity: '1',
-						transform: 'scale(1)'
-					}
-				},
-				'bounce': {
-					'0%, 100%': {
-						transform: 'translateY(0)',
-						animationTimingFunction: 'cubic-bezier(0.8, 0, 1, 1)'
-					},
-					'50%': {
-						transform: 'translateY(-15%)',
-						animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)'
-					}
-				},
-				'float': {
-					'0%, 100%': {
-						transform: 'translateY(0)',
-					},
-					'50%': {
-						transform: 'translateY(-5px)',
-					}
-				},
-				'wiggle': {
-					'0%, 100%': {
-						transform: 'rotate(-3deg)'
-					},
-					'50%': {
-						transform: 'rotate(3deg)'
-					}
-				},
-				'pulse': {
-					'0%, 100%': {
-						opacity: '1'
-					},
-					'50%': {
-						opacity: '0.7'
-					}
-				},
-				'shimmer': {
-					'0%': {
-						backgroundPosition: '-200% 0'
-					},
-					'100%': {
-						backgroundPosition: '200% 0'
-					}
-				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -195,12 +142,6 @@ export default {
 				'fade-in': 'fade-in 0.5s ease-out forwards',
 				'fade-out': 'fade-out 0.5s ease-out forwards',
 				'slide-in': 'slide-in 0.5s ease-out forwards',
-				'scale-in': 'scale-in 0.5s ease-out forwards',
-				'bounce': 'bounce 1s ease-in-out infinite',
-				'float': 'float 3s ease-in-out infinite',
-				'wiggle': 'wiggle 1s ease-in-out infinite',
-				'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-				'shimmer': 'shimmer 2s linear infinite'
 			}
 		}
 	},

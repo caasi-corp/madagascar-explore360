@@ -37,8 +37,8 @@ const NavbarDropdown: React.FC<NavbarDropdownProps> = ({
           variant="ghost" 
           className={`px-3 flex items-center text-base font-medium ${
             isScrolled || isDark
-              ? 'text-foreground'
-              : 'text-white'
+              ? 'text-foreground hover:text-madagascar-green'
+              : 'text-white hover:text-madagascar-yellow'
           }`}
         >
           {title} <ChevronDown size={16} className="ml-1" />

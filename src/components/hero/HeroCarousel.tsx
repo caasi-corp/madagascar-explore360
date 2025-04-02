@@ -1,13 +1,9 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { getTransitionClasses } from './HeroTransitionEffects';
 import { useHeroDroneEffect } from './HeroDroneEffect';
 import { useImageTransition } from './useImageTransition';
 import { HeroCarouselProps } from './HeroCarouselProps';
-import { useImagePreloader } from '@/hooks/useImagePreloader';
-import HeroLoadingSkeleton from './HeroLoadingSkeleton';
-import HeroImageLayer from './HeroImageLayer';
-import CarouselNavigation from './CarouselNavigation';
-import { useBreakpoint } from '@/hooks/use-mobile';
 
 const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) => {
   const { 
@@ -19,78 +15,53 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
   } = useImageTransition({ images });
   
   const dronePosition = useHeroDroneEffect();
-  const { isMobile, isTablet } = useBreakpoint();
-  
-  // Optimiser les tailles d'images en fonction de l'appareil
-  const imageSizes = isMobile 
-    ? [600, 800] 
-    : isTablet 
-      ? [1200, 1600] 
-      : [1600, 2000, 2400];
-  
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  
-  // Nettoyer les URLs des images avant le préchargement
-  const cleanImages = (backgroundImage ? [backgroundImage] : [...images]).filter(Boolean).map(img => 
-    img ? img.split('?')[0] : ''
-  );
-  
-  const { imagesPreloaded, progress } = useImagePreloader({
-    imageUrls: cleanImages,
-    imageSizes: imageSizes,
-    onProgress: setLoadingProgress,
-    priority: true
-  });
-  
-  const [isVisible, setIsVisible] = useState(false);
 
-  const currentImage = backgroundImage || (images && images.length > 0 ? images[currentImageIndex] : '');
-  const previousImage = previousImageIndex >= 0 && images && images.length > 0 ? images[previousImageIndex] : currentImage;
+  const currentImage = backgroundImage || images[currentImageIndex];
+  const previousImage = previousImageIndex >= 0 ? images[previousImageIndex] : currentImage;
 
-  // Animation d'entrée pour un meilleur ressenti
-  useEffect(() => {
-    if (imagesPreloaded) {
-      const timer = setTimeout(() => setIsVisible(true), 100);
-      return () => clearTimeout(timer);
-    }
-  }, [imagesPreloaded]);
-  
   return (
-    <div className="absolute inset-0 w-full h-full overflow-hidden">
-      {!imagesPreloaded && <HeroLoadingSkeleton progress={progress} />}
+    <>
+      {/* Couche d'image précédente avec effet drone */}
+      <div 
+        className={`absolute inset-0 w-full h-full transition-all duration-1500 ${isTransitioning ? getTransitionClasses(currentEffect) : ''}`}
+        style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${previousImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          transform: `scale(${dronePosition.scale}) translate(${dronePosition.x}%, ${dronePosition.y}%)`,
+          transition: `transform 2s ease-out, filter 1.5s ease-out`,
+          filter: isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom') ? 'blur(8px)' : 'blur(0px)',
+        }}
+      />
       
-      {imagesPreloaded && (
-        <>
-          {/* Previous image layer */}
-          <HeroImageLayer
-            image={previousImage}
-            isTransitioning={isTransitioning}
-            currentEffect={currentEffect}
-            dronePosition={dronePosition}
-            isVisible={isVisible}
-            isPrevious={true}
-          />
-          
-          {/* Current image layer */}
-          <HeroImageLayer
-            image={currentImage}
-            isTransitioning={isTransitioning}
-            currentEffect={currentEffect}
-            dronePosition={dronePosition}
-            isVisible={isVisible}
-          />
-          
-          {/* Navigation dots */}
-          {images && images.length > 1 && (
-            <CarouselNavigation
-              images={images}
-              currentImageIndex={currentImageIndex}
-              onChangeImage={changeImage}
+      {/* Couche d'image actuelle avec effet drone */}
+      <div 
+        className={`absolute inset-0 w-full h-full ${isTransitioning ? 'opacity-100' : 'opacity-100'} transition-all duration-1500`}
+        style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${currentImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          transform: `scale(${dronePosition.scale}) translate(${dronePosition.x}%, ${dronePosition.y}%)`,
+          transition: 'transform 2s ease-out, filter 1.5s ease-out',
+          zIndex: isTransitioning ? 0 : 1,
+          filter: !isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom') ? 'blur(0px)' : '',
+        }}
+      />
+      
+      <div className="absolute bottom-4 right-4 z-20">
+        <div className="flex gap-2 glass-effect p-2 rounded-full">
+          {images.map((_, index) => (
+            <button
+              key={index}
+              className={`w-3 h-3 rounded-full glass-shimmer ${
+                index === currentImageIndex ? 'bg-northgascar-teal' : 'bg-white/50'
+              } transition-all duration-300`}
+              onClick={() => changeImage(index)}
             />
-          )}
-        </>
-      )}
-    </div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 };
 
