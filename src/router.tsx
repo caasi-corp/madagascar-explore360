@@ -21,6 +21,23 @@ import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import TermsOfService from './pages/legal/TermsOfService';
 import Sitemap from './pages/legal/Sitemap';
 
+// Pages d'administration
+import AdminSettings from './pages/admin/Settings';
+import AdminTours from './pages/admin/Tours';
+import AdminTourEditor from './pages/admin/TourEditor';
+import AdminTourCategories from './pages/admin/TourCategories';
+import AdminBookings from './pages/admin/Bookings';
+import AdminCustomers from './pages/admin/Customers';
+import AdminVehicles from './pages/admin/Vehicles';
+import AdminVehicleEditor from './pages/admin/VehicleEditor';
+import AdminVehicleBookings from './pages/admin/VehicleBookings';
+import AdminHotels from './pages/admin/Hotels';
+import AdminFlights from './pages/admin/Flights';
+import AdminReports from './pages/admin/Reports';
+import AdminMessages from './pages/admin/Messages';
+import AdminSeoSettings from './pages/admin/SeoSettings';
+import AdminUserManagement from './pages/admin/UserManagement';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -114,6 +131,78 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <AdminDashboard />
+      },
+      {
+        path: 'dashboard',
+        element: <AdminDashboard />
+      },
+      {
+        path: 'tours',
+        element: <AdminTours />
+      },
+      {
+        path: 'tours/new',
+        element: <AdminTourEditor />
+      },
+      {
+        path: 'tours/edit/:id',
+        element: <AdminTourEditor />
+      },
+      {
+        path: 'tours/categories',
+        element: <AdminTourCategories />
+      },
+      {
+        path: 'bookings',
+        element: <AdminBookings />
+      },
+      {
+        path: 'customers',
+        element: <AdminCustomers />
+      },
+      {
+        path: 'vehicles',
+        element: <AdminVehicles />
+      },
+      {
+        path: 'vehicles/new',
+        element: <AdminVehicleEditor />
+      },
+      {
+        path: 'vehicles/edit/:id',
+        element: <AdminVehicleEditor />
+      },
+      {
+        path: 'vehicles/bookings',
+        element: <AdminVehicleBookings />
+      },
+      {
+        path: 'hotels',
+        element: <AdminHotels />
+      },
+      {
+        path: 'flights',
+        element: <AdminFlights />
+      },
+      {
+        path: 'reports',
+        element: <AdminReports />
+      },
+      {
+        path: 'messages',
+        element: <AdminMessages />
+      },
+      {
+        path: 'settings',
+        element: <AdminSettings />
+      },
+      {
+        path: 'settings/seo',
+        element: <AdminSeoSettings />
+      },
+      {
+        path: 'settings/users',
+        element: <AdminUserManagement />
       }
     ]
   }

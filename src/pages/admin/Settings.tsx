@@ -1,356 +1,435 @@
+
 import React, { useState } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
-import {
-  Save,
-  RefreshCw,
-  Trash2,
+import { 
+  Save, 
+  Loader2,
+  Globe,
   Mail,
   Phone,
-  GlobeLock,
-  KeyRound,
-  Lock,
-  AlertOctagon,
-  CreditCard,
-  Landmark,
-  Rocket,
-  GlobeIcon,
-  Languages,
-  Users,
-  BellRing
+  MapPin,
+  Instagram,
+  Facebook,
+  Twitter,
+  Youtube,
+  FileText,
+  Image,
+  Upload
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/components/ui/use-toast';
 
-const Settings = () => {
-  const [siteName, setSiteName] = useState('North Gascar Tours');
-  const [siteEmail, setSiteEmail] = useState('info@northgascartours.com');
-  const [sitePhone, setSitePhone] = useState('+261 32 00 000 00');
-  const [siteAddress, setSiteAddress] = useState('Lot II M 85 AK Antsakaviro, 101 Antananarivo');
-  const [siteDescription, setSiteDescription] = useState('Explore Madagascar with North Gascar Tours. We offer unforgettable tours and adventures.');
-  const [defaultCurrency, setDefaultCurrency] = useState('USD');
-  const [defaultLanguage, setDefaultLanguage] = useState('English');
-  const [timezone, setTimezone] = useState('Africa/Antananarivo');
-  const [registrationEnabled, setRegistrationEnabled] = useState(true);
-  const [emailVerificationEnabled, setEmailVerificationEnabled] = useState(false);
-  const [defaultUserRole, setDefaultUserRole] = useState('user');
-  const [paymentGateway, setPaymentGateway] = useState('paypal');
-  const [paypalClientID, setPaypalClientID] = useState('');
-  const [paypalSecret, setPaypalSecret] = useState('');
-  const [stripeKey, setStripeKey] = useState('');
-  const [stripeSecret, setStripeSecret] = useState('');
-  const [socialLoginEnabled, setSocialLoginEnabled] = useState(true);
-  const [facebookAppID, setFacebookAppID] = useState('');
-  const [facebookAppSecret, setFacebookAppSecret] = useState('');
-  const [googleClientID, setGoogleClientID] = useState('');
-  const [googleClientSecret, setGoogleClientSecret] = useState('');
-  const [notificationSoundsEnabled, setNotificationSoundsEnabled] = useState(true);
-  const [emailNotificationsEnabled, setEmailNotificationsEnabled] = useState(true);
-  const [pushNotificationsEnabled, setPushNotificationsEnabled] = useState(false);
+const AdminSettings = () => {
+  const [isSaving, setIsSaving] = useState(false);
+  const { toast } = useToast();
+  
+  const [settings, setSettings] = useState({
+    general: {
+      siteName: 'Madagascar Car Tour',
+      siteDescription: 'Découvrez les merveilles de Madagascar avec notre agence de voyage locale.',
+      emailContact: 'contact@madagascarcartours.com',
+      phoneNumber: '+261 34 56 789 01',
+      address: '15 Avenue de l\'Indépendance, Antananarivo, Madagascar',
+      logo: '/placeholder.svg',
+      favicon: '/favicon.ico',
+      currencySymbol: '€',
+      currencyCode: 'EUR',
+      defaultLanguage: 'fr',
+      enableRegistration: true,
+      enableBookingSystem: true,
+      enableReviews: true,
+      enableNewsletter: true
+    },
+    social: {
+      facebook: 'https://facebook.com/madagascarcartours',
+      instagram: 'https://instagram.com/madagascarcartours',
+      twitter: 'https://twitter.com/madagascartours',
+      youtube: 'https://youtube.com/madagascarcartours'
+    }
+  });
 
-  const handleSaveGeneralSettings = () => {
-    toast.success('General settings saved!');
+  const handleSave = () => {
+    setIsSaving(true);
+    
+    // Simulation d'une action de sauvegarde
+    setTimeout(() => {
+      setIsSaving(false);
+      toast({
+        title: "Paramètres enregistrés",
+        description: "Vos modifications ont été enregistrées avec succès.",
+      });
+    }, 1500);
   };
 
-  const handleSaveSecuritySettings = () => {
-    toast.success('Security settings saved!');
+  const handleChange = (section: 'general' | 'social', field: string, value: any) => {
+    setSettings({
+      ...settings,
+      [section]: {
+        ...settings[section],
+        [field]: value
+      }
+    });
   };
 
-  const handleSavePaymentSettings = () => {
-    toast.success('Payment settings saved!');
-  };
-
-  const handleSaveSocialLoginSettings = () => {
-    toast.success('Social Login settings saved!');
-  };
-
-  const handleSaveNotificationSettings = () => {
-    toast.success('Notification settings saved!');
-  };
-
-  const handleResetSettings = () => {
-    toast.warning('Settings have been reset to default!');
+  const handleToggleChange = (section: 'general' | 'social', field: string) => {
+    setSettings({
+      ...settings,
+      [section]: {
+        ...settings[section],
+        [field]: !settings[section][field as keyof typeof settings[typeof section]]
+      }
+    });
   };
 
   return (
-    <div className="container mx-auto py-10">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle>Settings</CardTitle>
-          <CardDescription>Manage your website settings.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="general" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="security">Security</TabsTrigger>
-              <TabsTrigger value="payment">Payment</TabsTrigger>
-              <TabsTrigger value="socialLogin">Social Login</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            </TabsList>
-            <TabsContent value="general" className="space-y-4">
-              <div className="grid gap-4">
-                <div>
-                  <Label htmlFor="siteName">Site Name</Label>
-                  <Input id="siteName" value={siteName} onChange={(e) => setSiteName(e.target.value)} />
-                </div>
-                <div>
-                  <Label htmlFor="siteEmail">Site Email</Label>
-                  <Input id="siteEmail" type="email" value={siteEmail} onChange={(e) => setSiteEmail(e.target.value)} />
-                </div>
-                <div>
-                  <Label htmlFor="sitePhone">Site Phone</Label>
-                  <Input id="sitePhone" value={sitePhone} onChange={(e) => setSitePhone(e.target.value)} />
-                </div>
-                <div>
-                  <Label htmlFor="siteAddress">Site Address</Label>
-                  <Textarea id="siteAddress" value={siteAddress} onChange={(e) => setSiteAddress(e.target.value)} />
-                </div>
-                <div>
-                  <Label htmlFor="siteDescription">Site Description</Label>
-                  <Textarea id="siteDescription" value={siteDescription} onChange={(e) => setSiteDescription(e.target.value)} />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="defaultCurrency">Default Currency</Label>
-                    <Select value={defaultCurrency} onValueChange={setDefaultCurrency}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select currency" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="USD">USD</SelectItem>
-                        <SelectItem value="EUR">EUR</SelectItem>
-                        <SelectItem value="MGA">MGA</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="defaultLanguage">Default Language</Label>
-                    <Select value={defaultLanguage} onValueChange={setDefaultLanguage}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select language" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="English">English</SelectItem>
-                        <SelectItem value="French">French</SelectItem>
-                        <SelectItem value="Malagasy">Malagasy</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="timezone">Timezone</Label>
-                  <Input id="timezone" value={timezone} onChange={(e) => setTimezone(e.target.value)} />
-                </div>
-              </div>
-              <Button onClick={handleSaveGeneralSettings}>
-                <Save className="mr-2 h-4 w-4" />
-                Save Changes
-              </Button>
-            </TabsContent>
-            <TabsContent value="security" className="space-y-4">
-              <div className="grid gap-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="registrationEnabled" className="flex items-center">
-                    <GlobeLock className="mr-2 h-4 w-4" />
-                    Registration Enabled
-                  </Label>
-                  <Switch
-                    id="registrationEnabled"
-                    checked={registrationEnabled}
-                    onCheckedChange={(checked) => setRegistrationEnabled(checked)}
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Paramètres du site</h1>
+        <Button 
+          onClick={handleSave}
+          disabled={isSaving}
+          className="bg-madagascar-green hover:bg-madagascar-green/80 text-white"
+        >
+          {isSaving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Enregistrement...
+            </>
+          ) : (
+            <>
+              <Save className="mr-2 h-4 w-4" />
+              Enregistrer les modifications
+            </>
+          )}
+        </Button>
+      </div>
+
+      <Tabs defaultValue="general" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="general">Général</TabsTrigger>
+          <TabsTrigger value="contact">Contact & Social</TabsTrigger>
+          <TabsTrigger value="appearance">Apparence</TabsTrigger>
+          <TabsTrigger value="features">Fonctionnalités</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="general">
+          <Card>
+            <CardHeader>
+              <CardTitle>Informations générales</CardTitle>
+              <CardDescription>
+                Configurez les informations de base de votre site web
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="siteName">Nom du site</Label>
+                  <Input 
+                    id="siteName" 
+                    value={settings.general.siteName} 
+                    onChange={(e) => handleChange('general', 'siteName', e.target.value)}
                   />
                 </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="emailVerificationEnabled" className="flex items-center">
-                    <KeyRound className="mr-2 h-4 w-4" />
-                    Email Verification Enabled
-                  </Label>
-                  <Switch
-                    id="emailVerificationEnabled"
-                    checked={emailVerificationEnabled}
-                    onCheckedChange={(checked) => setEmailVerificationEnabled(checked)}
+                
+                <div className="space-y-2">
+                  <Label htmlFor="defaultLanguage">Langue par défaut</Label>
+                  <Input 
+                    id="defaultLanguage" 
+                    value={settings.general.defaultLanguage} 
+                    onChange={(e) => handleChange('general', 'defaultLanguage', e.target.value)}
                   />
                 </div>
-                <div>
-                  <Label htmlFor="defaultUserRole">Default User Role</Label>
-                  <Select value={defaultUserRole} onValueChange={setDefaultUserRole}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="user">User</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    <AlertOctagon className="mr-1 inline-block h-4 w-4" />
-                    Setting the default user role to "admin" is not recommended for security reasons.
-                  </p>
+
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="siteDescription">Description du site</Label>
+                  <Textarea 
+                    id="siteDescription" 
+                    value={settings.general.siteDescription} 
+                    onChange={(e) => handleChange('general', 'siteDescription', e.target.value)}
+                  />
                 </div>
               </div>
-              <Button onClick={handleSaveSecuritySettings}>
-                <Save className="mr-2 h-4 w-4" />
-                Save Changes
-              </Button>
-            </TabsContent>
-            <TabsContent value="payment" className="space-y-4">
-              <div className="grid gap-4">
-                <div>
-                  <Label htmlFor="paymentGateway">Payment Gateway</Label>
-                  <Select value={paymentGateway} onValueChange={setPaymentGateway}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select gateway" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="paypal">PayPal</SelectItem>
-                      <SelectItem value="stripe">Stripe</SelectItem>
-                    </SelectContent>
-                  </Select>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="currencySymbol">Symbole de la monnaie</Label>
+                  <Input 
+                    id="currencySymbol" 
+                    value={settings.general.currencySymbol} 
+                    onChange={(e) => handleChange('general', 'currencySymbol', e.target.value)}
+                  />
                 </div>
-                {paymentGateway === 'paypal' && (
-                  <>
-                    <div>
-                      <Label htmlFor="paypalClientID">PayPal Client ID</Label>
-                      <Input id="paypalClientID" value={paypalClientID} onChange={(e) => setPaypalClientID(e.target.value)} />
+                
+                <div className="space-y-2">
+                  <Label htmlFor="currencyCode">Code de la monnaie</Label>
+                  <Input 
+                    id="currencyCode" 
+                    value={settings.general.currencyCode} 
+                    onChange={(e) => handleChange('general', 'currencyCode', e.target.value)}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="contact">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Informations de contact</CardTitle>
+                <CardDescription>
+                  Configurez les coordonnées affichées sur votre site
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="emailContact">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      <span>Email de contact</span>
                     </div>
-                    <div>
-                      <Label htmlFor="paypalSecret">PayPal Secret</Label>
-                      <Input id="paypalSecret" type="password" value={paypalSecret} onChange={(e) => setPaypalSecret(e.target.value)} />
+                  </Label>
+                  <Input 
+                    id="emailContact" 
+                    value={settings.general.emailContact} 
+                    onChange={(e) => handleChange('general', 'emailContact', e.target.value)}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="phoneNumber">
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4" />
+                      <span>Numéro de téléphone</span>
                     </div>
-                  </>
-                )}
-                {paymentGateway === 'stripe' && (
-                  <>
-                    <div>
-                      <Label htmlFor="stripeKey">Stripe Key</Label>
-                      <Input id="stripeKey" value={stripeKey} onChange={(e) => setStripeKey(e.target.value)} />
+                  </Label>
+                  <Input 
+                    id="phoneNumber" 
+                    value={settings.general.phoneNumber} 
+                    onChange={(e) => handleChange('general', 'phoneNumber', e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="address">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      <span>Adresse</span>
                     </div>
-                    <div>
-                      <Label htmlFor="stripeSecret">Stripe Secret</Label>
-                      <Input id="stripeSecret" type="password" value={stripeSecret} onChange={(e) => setStripeSecret(e.target.value)} />
+                  </Label>
+                  <Textarea 
+                    id="address" 
+                    value={settings.general.address} 
+                    onChange={(e) => handleChange('general', 'address', e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Réseaux sociaux</CardTitle>
+                <CardDescription>
+                  Configurez les liens vers vos profils de médias sociaux
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="facebook">
+                    <div className="flex items-center gap-2">
+                      <Facebook className="h-4 w-4" />
+                      <span>Facebook</span>
                     </div>
-                  </>
-                )}
+                  </Label>
+                  <Input 
+                    id="facebook" 
+                    value={settings.social.facebook} 
+                    onChange={(e) => handleChange('social', 'facebook', e.target.value)}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="instagram">
+                    <div className="flex items-center gap-2">
+                      <Instagram className="h-4 w-4" />
+                      <span>Instagram</span>
+                    </div>
+                  </Label>
+                  <Input 
+                    id="instagram" 
+                    value={settings.social.instagram} 
+                    onChange={(e) => handleChange('social', 'instagram', e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="twitter">
+                    <div className="flex items-center gap-2">
+                      <Twitter className="h-4 w-4" />
+                      <span>Twitter</span>
+                    </div>
+                  </Label>
+                  <Input 
+                    id="twitter" 
+                    value={settings.social.twitter} 
+                    onChange={(e) => handleChange('social', 'twitter', e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="youtube">
+                    <div className="flex items-center gap-2">
+                      <Youtube className="h-4 w-4" />
+                      <span>YouTube</span>
+                    </div>
+                  </Label>
+                  <Input 
+                    id="youtube" 
+                    value={settings.social.youtube} 
+                    onChange={(e) => handleChange('social', 'youtube', e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="appearance">
+          <Card>
+            <CardHeader>
+              <CardTitle>Personnalisation de l'apparence</CardTitle>
+              <CardDescription>
+                Configurez l'apparence visuelle de votre site web
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <Label>Logo du site</Label>
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
+                      <img 
+                        src={settings.general.logo} 
+                        alt="Logo" 
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    </div>
+                    <Button variant="outline" className="flex gap-2">
+                      <Upload className="h-4 w-4" />
+                      Télécharger
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <Label>Favicon</Label>
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 bg-gray-200 rounded p-2 flex items-center justify-center">
+                      <img 
+                        src={settings.general.favicon} 
+                        alt="Favicon" 
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    </div>
+                    <Button variant="outline" className="flex gap-2">
+                      <Image className="h-4 w-4" />
+                      Télécharger
+                    </Button>
+                  </div>
+                </div>
               </div>
-              <Button onClick={handleSavePaymentSettings}>
-                <Save className="mr-2 h-4 w-4" />
-                Save Changes
-              </Button>
-            </TabsContent>
-            <TabsContent value="socialLogin" className="space-y-4">
-              <div className="grid gap-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="socialLoginEnabled" className="flex items-center">
-                    <Users className="mr-2 h-4 w-4" />
-                    Social Login Enabled
-                  </Label>
-                  <Switch
-                    id="socialLoginEnabled"
-                    checked={socialLoginEnabled}
-                    onCheckedChange={(checked) => setSocialLoginEnabled(checked)}
-                  />
-                </div>
-                <Separator />
-                <div>
-                  <h4 className="font-semibold mb-2">Facebook</h4>
-                  <div>
-                    <Label htmlFor="facebookAppID">Facebook App ID</Label>
-                    <Input id="facebookAppID" value={facebookAppID} onChange={(e) => setFacebookAppID(e.target.value)} />
-                  </div>
-                  <div>
-                    <Label htmlFor="facebookAppSecret">Facebook App Secret</Label>
-                    <Input id="facebookAppSecret" type="password" value={facebookAppSecret} onChange={(e) => setFacebookAppSecret(e.target.value)} />
+
+              <div className="space-y-4">
+                <Label>Image du héros</Label>
+                <div className="w-full h-52 bg-gray-200 rounded overflow-hidden flex items-center justify-center">
+                  <div className="text-muted-foreground flex flex-col items-center">
+                    <FileText className="h-8 w-8 mb-2" />
+                    <span>Aucune image sélectionnée</span>
                   </div>
                 </div>
-                <Separator />
-                <div>
-                  <h4 className="font-semibold mb-2">Google</h4>
-                  <div>
-                    <Label htmlFor="googleClientID">Google Client ID</Label>
-                    <Input id="googleClientID" value={googleClientID} onChange={(e) => setGoogleClientID(e.target.value)} />
-                  </div>
-                  <div>
-                    <Label htmlFor="googleClientSecret">Google Client Secret</Label>
-                    <Input id="googleClientSecret" type="password" value={googleClientSecret} onChange={(e) => setGoogleClientSecret(e.target.value)} />
-                  </div>
-                </div>
+                <Button variant="outline" className="flex gap-2">
+                  <Upload className="h-4 w-4" />
+                  Télécharger une image
+                </Button>
               </div>
-              <Button onClick={handleSaveSocialLoginSettings}>
-                <Save className="mr-2 h-4 w-4" />
-                Save Changes
-              </Button>
-            </TabsContent>
-            <TabsContent value="notifications" className="space-y-4">
-              <div className="grid gap-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="notificationSoundsEnabled" className="flex items-center">
-                    <BellRing className="mr-2 h-4 w-4" />
-                    Notification Sounds
-                  </Label>
-                  <Switch
-                    id="notificationSoundsEnabled"
-                    checked={notificationSoundsEnabled}
-                    onCheckedChange={(checked) => setNotificationSoundsEnabled(checked)}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="features">
+          <Card>
+            <CardHeader>
+              <CardTitle>Fonctionnalités du site</CardTitle>
+              <CardDescription>
+                Activez ou désactivez des fonctionnalités spécifiques
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex items-center justify-between space-y-0">
+                  <div>
+                    <p className="font-medium">Système d'inscription</p>
+                    <p className="text-sm text-muted-foreground">
+                      Permet aux utilisateurs de créer un compte
+                    </p>
+                  </div>
+                  <Switch 
+                    checked={settings.general.enableRegistration} 
+                    onCheckedChange={() => handleToggleChange('general', 'enableRegistration')}
                   />
                 </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="emailNotificationsEnabled" className="flex items-center">
-                    <Mail className="mr-2 h-4 w-4" />
-                    Email Notifications
-                  </Label>
-                  <Switch
-                    id="emailNotificationsEnabled"
-                    checked={emailNotificationsEnabled}
-                    onCheckedChange={(checked) => setEmailNotificationsEnabled(checked)}
+                
+                <div className="flex items-center justify-between space-y-0">
+                  <div>
+                    <p className="font-medium">Système de réservation</p>
+                    <p className="text-sm text-muted-foreground">
+                      Permet aux utilisateurs de réserver des services
+                    </p>
+                  </div>
+                  <Switch 
+                    checked={settings.general.enableBookingSystem} 
+                    onCheckedChange={() => handleToggleChange('general', 'enableBookingSystem')}
                   />
                 </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="pushNotificationsEnabled" className="flex items-center">
-                    <Rocket className="mr-2 h-4 w-4" />
-                    Push Notifications
-                  </Label>
-                  <Switch
-                    id="pushNotificationsEnabled"
-                    checked={pushNotificationsEnabled}
-                    onCheckedChange={(checked) => setPushNotificationsEnabled(checked)}
+                
+                <div className="flex items-center justify-between space-y-0">
+                  <div>
+                    <p className="font-medium">Avis des clients</p>
+                    <p className="text-sm text-muted-foreground">
+                      Permet aux utilisateurs de laisser des avis
+                    </p>
+                  </div>
+                  <Switch 
+                    checked={settings.general.enableReviews} 
+                    onCheckedChange={() => handleToggleChange('general', 'enableReviews')}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between space-y-0">
+                  <div>
+                    <p className="font-medium">Newsletter</p>
+                    <p className="text-sm text-muted-foreground">
+                      Permet l'inscription à la newsletter
+                    </p>
+                  </div>
+                  <Switch 
+                    checked={settings.general.enableNewsletter} 
+                    onCheckedChange={() => handleToggleChange('general', 'enableNewsletter')}
                   />
                 </div>
               </div>
-              <Button onClick={handleSaveNotificationSettings}>
-                <Save className="mr-2 h-4 w-4" />
-                Save Changes
-              </Button>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button variant="destructive" onClick={handleResetSettings}>
-            <Trash2 className="mr-2 h-4 w-4" />
-            Reset Settings
-          </Button>
-          <Button variant="secondary">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Restore Defaults
-          </Button>
-        </CardFooter>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
 
-export default Settings;
+export default AdminSettings;
