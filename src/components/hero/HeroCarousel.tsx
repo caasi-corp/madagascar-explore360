@@ -23,26 +23,26 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ images, backgroundImage }) 
     <>
       {/* Couche d'image précédente avec effet drone */}
       <div 
-        className={`absolute inset-0 w-full h-full transition-all duration-1500 ${isTransitioning ? getTransitionClasses(currentEffect) : ''}`}
+        className={`absolute inset-0 w-full h-full transition-all duration-1000 ${isTransitioning ? getTransitionClasses(currentEffect) : ''}`}
         style={{
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${previousImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           transform: `scale(${dronePosition.scale}) translate(${dronePosition.x}%, ${dronePosition.y}%)`,
-          transition: `transform 2s ease-out, filter 1.5s ease-out`,
+          transition: `transform 1.5s ease-out, filter 1s ease-out`, // Accéléré de 2s à 1.5s pour transform
           filter: isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom') ? 'blur(8px)' : 'blur(0px)',
         }}
       />
       
       {/* Couche d'image actuelle avec effet drone */}
       <div 
-        className={`absolute inset-0 w-full h-full ${isTransitioning ? 'opacity-100' : 'opacity-100'} transition-all duration-1500`}
+        className={`absolute inset-0 w-full h-full ${isTransitioning ? 'opacity-100' : 'opacity-100'} transition-all duration-1000`}
         style={{
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${currentImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           transform: `scale(${dronePosition.scale}) translate(${dronePosition.x}%, ${dronePosition.y}%)`,
-          transition: 'transform 2s ease-out, filter 1.5s ease-out',
+          transition: 'transform 1.5s ease-out, filter 1s ease-out', // Accéléré aussi
           zIndex: isTransitioning ? 0 : 1,
           filter: !isTransitioning && (currentEffect === 'blur-fade' || currentEffect === 'blur-zoom') ? 'blur(0px)' : '',
         }}

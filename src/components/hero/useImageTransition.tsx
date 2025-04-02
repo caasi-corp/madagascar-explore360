@@ -5,7 +5,7 @@ import { UseImageTransitionProps, ImageTransitionState, ImageTransitionResult } 
 
 export const useImageTransition = ({ 
   images, 
-  transitionInterval = 10000 
+  transitionInterval = 8000 // Réduit de 10000 à 8000ms pour des transitions plus rapides
 }: UseImageTransitionProps): ImageTransitionResult => {
   const [transitionState, setTransitionState] = useState<ImageTransitionState>({
     currentImageIndex: 0,
@@ -34,7 +34,7 @@ export const useImageTransition = ({
           currentImageIndex: (prevState.currentImageIndex + 1) % images.length,
           isTransitioning: false
         }));
-      }, 1200); // Durée de transition reste la même pour permettre une transition complète
+      }, 800); // Réduit de 1200ms à 800ms pour une transition plus rapide
       
     }, transitionInterval);
 
@@ -61,7 +61,7 @@ export const useImageTransition = ({
         currentImageIndex: newIndex,
         isTransitioning: false
       }));
-    }, 1200);
+    }, 800); // Réduit de 1200ms à 800ms pour être cohérent
   };
 
   return {
