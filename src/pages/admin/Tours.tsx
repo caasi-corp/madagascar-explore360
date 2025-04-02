@@ -167,7 +167,7 @@ const AdminTours = () => {
                     <TableCell>{tour.duration} jours</TableCell>
                     <TableCell className="text-right">{tour.price} €</TableCell>
                     <TableCell>
-                      <Badge variant={tour.active ? "success" : "secondary"}>
+                      <Badge variant={tour.active ? "default" : "secondary"} className={tour.active ? "bg-green-500 hover:bg-green-600" : ""}>
                         {tour.active ? "Actif" : "Inactif"}
                       </Badge>
                     </TableCell>
