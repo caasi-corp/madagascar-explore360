@@ -13,11 +13,9 @@ export interface TourProps {
   duration: string;
   price: number;
   rating: number;
-  reviews?: number;
   image: string;
   featured?: boolean;
   category?: string;
-  categories?: string[];
 }
 
 interface TourCardProps {
@@ -32,10 +30,6 @@ const TourCard: React.FC<TourCardProps> = ({ tour }) => {
           src={tour.image} 
           alt={tour.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = "/placeholder.svg";
-          }}
         />
         {tour.featured && (
           <Badge className="absolute top-3 left-3 bg-madagascar-yellow text-madagascar-blue">
