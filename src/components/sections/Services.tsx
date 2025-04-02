@@ -11,7 +11,7 @@ interface Service {
   link: string;
 }
 
-interface ServicesProps {
+export interface ServicesProps {
   services: Service[];
 }
 
