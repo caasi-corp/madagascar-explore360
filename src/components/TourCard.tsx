@@ -33,7 +33,7 @@ const TourCard: React.FC<TourCardProps> = ({ tour }) => {
         />
         {tour.featured && (
           <Badge className="absolute top-3 left-3 bg-madagascar-yellow text-madagascar-blue">
-            Featured
+            Mis en avant
           </Badge>
         )}
         {tour.category && (
@@ -64,14 +64,14 @@ const TourCard: React.FC<TourCardProps> = ({ tour }) => {
             <Clock size={16} className="mr-1" />
             <span>{tour.duration}</span>
           </div>
-          <div className="font-bold text-lg text-madagascar-green">${tour.price}</div>
+          <div className="font-bold text-lg text-madagascar-green">{tour.price}€</div>
         </div>
         
         <Link to={`/tours/${tour.id}`}>
           <Button 
             className="w-full mt-2 bg-madagascar-green hover:bg-madagascar-green/80 text-white"
           >
-            View Details
+            Voir les détails
           </Button>
         </Link>
       </div>
