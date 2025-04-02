@@ -178,7 +178,7 @@ const AdminVehicles = () => {
                     <TableCell>{vehicle.transmission}</TableCell>
                     <TableCell className="text-right">{vehicle.pricePerDay} €/jour</TableCell>
                     <TableCell>
-                      <Badge variant={vehicle.available ? "success" : "secondary"}>
+                      <Badge variant={vehicle.available ? "default" : "secondary"} className={vehicle.available ? "bg-green-500" : ""}>
                         {vehicle.available ? "Disponible" : "Non disponible"}
                       </Badge>
                     </TableCell>
