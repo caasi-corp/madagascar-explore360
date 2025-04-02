@@ -1,40 +1,12 @@
 
 import React, { useState } from 'react';
-import { 
-  Search, 
-  Calendar, 
-  Filter, 
-  Download, 
-  Eye, 
-  MoreVertical,
-  CheckCircle,
-  XCircle,
-  AlertCircle
-} from 'lucide-react';
+import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { 
-  DropdownMenu, 
-  DropdownMenuTrigger, 
-  DropdownMenuContent, 
-  DropdownMenuItem,
-  DropdownMenuSeparator
-} from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription,
-  DialogFooter,
-  DialogClose
-} from '@/components/ui/dialog';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
 import { useToast } from '@/components/ui/use-toast';
+import BookingTable from '@/components/admin/booking/BookingTable';
+import BookingFilters from '@/components/admin/booking/BookingFilters';
+import BookingDetailsDialog from '@/components/admin/booking/BookingDetailsDialog';
 
 interface Booking {
   id: string;
@@ -120,6 +92,16 @@ const AdminBookings = () => {
       title: "Statut mis à jour",
       description: `La réservation #${id} est maintenant ${status.toLowerCase()}`,
     });
+    
+    // Update the selected booking if open in dialog
+    if (selectedBooking && selectedBooking.id === id) {
+      setSelectedBooking({ ...selectedBooking, status });
+    }
+  };
+
+  const handleViewBooking = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setIsViewDialogOpen(true);
   };
 
   const filteredBookings = bookings.filter(booking => 
@@ -127,19 +109,6 @@ const AdminBookings = () => {
     booking.tour.toLowerCase().includes(searchTerm.toLowerCase()) ||
     booking.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'Confirmé':
-        return <Badge className="bg-green-500">Confirmé</Badge>;
-      case 'En attente':
-        return <Badge variant="outline" className="text-amber-500 border-amber-500">En attente</Badge>;
-      case 'Annulé':
-        return <Badge variant="destructive">Annulé</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -153,200 +122,25 @@ const AdminBookings = () => {
 
       <Card>
         <CardContent className="pt-6">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
-              <Input 
-                placeholder="Rechercher une réservation..." 
-                className="pl-9"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <Calendar className="mr-2 h-4 w-4" />
-                  Date
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>Aujourd'hui</DropdownMenuItem>
-                <DropdownMenuItem>Cette semaine</DropdownMenuItem>
-                <DropdownMenuItem>Ce mois</DropdownMenuItem>
-                <DropdownMenuItem>Mois dernier</DropdownMenuItem>
-                <DropdownMenuItem>Personnalisé...</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <Filter className="mr-2 h-4 w-4" />
-                  Statut
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>Tous</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Confirmé</DropdownMenuItem>
-                <DropdownMenuItem>En attente</DropdownMenuItem>
-                <DropdownMenuItem>Annulé</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Client</TableHead>
-                <TableHead>Circuit</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-center">Participants</TableHead>
-                <TableHead className="text-right">Montant</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredBookings.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                    Aucune réservation trouvée
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredBookings.map((booking) => (
-                  <TableRow key={booking.id}>
-                    <TableCell className="font-medium">{booking.id}</TableCell>
-                    <TableCell>{booking.customer}</TableCell>
-                    <TableCell>{booking.tour}</TableCell>
-                    <TableCell>
-                      {format(new Date(booking.date), 'dd MMM yyyy', { locale: fr })}
-                    </TableCell>
-                    <TableCell className="text-center">{booking.participants}</TableCell>
-                    <TableCell className="text-right">{booking.amount} €</TableCell>
-                    <TableCell>
-                      {getStatusBadge(booking.status)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="icon"
-                          onClick={() => {
-                            setSelectedBooking(booking);
-                            setIsViewDialogOpen(true);
-                          }}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleUpdateStatus(booking.id, 'Confirmé')}>
-                              <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
-                              Confirmer
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleUpdateStatus(booking.id, 'En attente')}>
-                              <AlertCircle className="mr-2 h-4 w-4 text-amber-500" />
-                              Mettre en attente
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleUpdateStatus(booking.id, 'Annulé')}>
-                              <XCircle className="mr-2 h-4 w-4 text-destructive" />
-                              Annuler
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                              Envoyer un e-mail
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              Imprimer
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+          <BookingFilters 
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
+          
+          <BookingTable 
+            bookings={filteredBookings}
+            onViewBooking={handleViewBooking}
+            onUpdateStatus={handleUpdateStatus}
+          />
         </CardContent>
       </Card>
 
-      {/* Booking details dialog */}
-      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="max-w-md">
-          {selectedBooking && (
-            <>
-              <DialogHeader>
-                <DialogTitle>Détails de la Réservation #{selectedBooking.id}</DialogTitle>
-                <DialogDescription>
-                  {getStatusBadge(selectedBooking.status)}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground">Circuit</h4>
-                    <p className="text-base">{selectedBooking.tour}</p>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground">Montant</h4>
-                    <p className="text-base font-medium">{selectedBooking.amount} €</p>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground">Client</h4>
-                  <p className="text-base">{selectedBooking.customer}</p>
-                  <p className="text-sm text-muted-foreground">{selectedBooking.email}</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground">Date de début</h4>
-                    <p className="text-base">{format(new Date(selectedBooking.date), 'dd MMMM yyyy', { locale: fr })}</p>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground">Date de fin</h4>
-                    <p className="text-base">{format(new Date(selectedBooking.endDate), 'dd MMMM yyyy', { locale: fr })}</p>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground">Participants</h4>
-                  <p className="text-base">{selectedBooking.participants} {selectedBooking.participants > 1 ? 'personnes' : 'personne'}</p>
-                </div>
-              </div>
-              <DialogFooter className="flex justify-between">
-                <div className="flex gap-2">
-                  {selectedBooking.status !== 'Confirmé' && (
-                    <Button onClick={() => handleUpdateStatus(selectedBooking.id, 'Confirmé')} size="sm">
-                      <CheckCircle className="mr-2 h-4 w-4" />
-                      Confirmer
-                    </Button>
-                  )}
-                  {selectedBooking.status !== 'Annulé' && (
-                    <Button variant="outline" onClick={() => handleUpdateStatus(selectedBooking.id, 'Annulé')} size="sm">
-                      <XCircle className="mr-2 h-4 w-4" />
-                      Annuler
-                    </Button>
-                  )}
-                </div>
-                <DialogClose asChild>
-                  <Button variant="outline" size="sm">Fermer</Button>
-                </DialogClose>
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      <BookingDetailsDialog 
+        booking={selectedBooking}
+        isOpen={isViewDialogOpen}
+        onClose={() => setIsViewDialogOpen(false)}
+        onUpdateStatus={handleUpdateStatus}
+      />
     </div>
   );
 };

@@ -4,135 +4,188 @@ import {
   PlusCircle, 
   Edit2, 
   Trash2, 
-  ArrowDown,
-  ArrowUp,
-  Save,
-  X
+  MoreVertical
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/components/ui/use-toast';
 import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
+  DropdownMenu, 
+  DropdownMenuTrigger, 
+  DropdownMenuContent, 
+  DropdownMenuItem,
+  DropdownMenuSeparator
+} from '@/components/ui/dropdown-menu';
+import { 
+  Dialog,
+  DialogContent,
   DialogDescription,
   DialogFooter,
-  DialogClose
+  DialogHeader,
+  DialogTitle
 } from '@/components/ui/dialog';
+import { Card, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/components/ui/use-toast';
 
 interface Category {
   id: string;
   name: string;
   slug: string;
-  count: number;
-  order: number;
+  description: string;
+  tourCount: number;
 }
 
 const AdminTourCategories = () => {
   const [categories, setCategories] = useState<Category[]>([
-    { id: '1', name: 'Nature', slug: 'nature', count: 8, order: 1 },
-    { id: '2', name: 'Aventure', slug: 'aventure', count: 5, order: 2 },
-    { id: '3', name: 'Plage', slug: 'plage', count: 3, order: 3 },
-    { id: '4', name: 'Culture', slug: 'culture', count: 6, order: 4 },
-    { id: '5', name: 'Gastronomie', slug: 'gastronomie', count: 2, order: 5 },
+    { 
+      id: 'C001', 
+      name: 'Nature', 
+      slug: 'nature',
+      description: 'Circuits axés sur la découverte de la nature et des paysages exceptionnels de Madagascar.',
+      tourCount: 5
+    },
+    { 
+      id: 'C002', 
+      name: 'Aventure', 
+      slug: 'aventure',
+      description: 'Circuits offrant des expériences d\'aventure comme la randonnée, le trekking, etc.',
+      tourCount: 3
+    },
+    { 
+      id: 'C003', 
+      name: 'Plage', 
+      slug: 'plage',
+      description: 'Séjours et circuits centrés sur les magnifiques plages de Madagascar.',
+      tourCount: 2
+    },
+    { 
+      id: 'C004', 
+      name: 'Culture', 
+      slug: 'culture',
+      description: 'Découverte des traditions et de la culture malgache.',
+      tourCount: 1
+    },
+    { 
+      id: 'C005', 
+      name: 'Faune', 
+      slug: 'faune',
+      description: 'Observation de la faune unique de Madagascar, notamment les lémuriens.',
+      tourCount: 4
+    },
   ]);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [newCategoryName, setNewCategoryName] = useState('');
+  
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    slug: '',
+    description: '',
+  });
+  
   const { toast } = useToast();
 
-  const handleAdd = () => {
-    if (!newCategoryName.trim()) return;
-    
-    const slug = newCategoryName
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w-]+/g, '');
+  const openDialog = (category?: Category) => {
+    if (category) {
+      setCurrentCategory(category);
+      setFormData({
+        name: category.name,
+        slug: category.slug,
+        description: category.description,
+      });
+    } else {
+      setCurrentCategory(null);
+      setFormData({
+        name: '',
+        slug: '',
+        description: '',
+      });
+    }
+    setIsDialogOpen(true);
+  };
+
+  const openDeleteDialog = (category: Category) => {
+    setCurrentCategory(category);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDelete = () => {
+    if (currentCategory) {
+      setCategories(categories.filter(cat => cat.id !== currentCategory.id));
       
-    const newCategory: Category = {
-      id: Date.now().toString(),
-      name: newCategoryName,
-      slug,
-      count: 0,
-      order: categories.length + 1
-    };
-    
-    setCategories([...categories, newCategory]);
-    setNewCategoryName('');
-    setIsAddDialogOpen(false);
-    
-    toast({
-      title: "Catégorie ajoutée",
-      description: `La catégorie "${newCategoryName}" a été ajoutée avec succès`,
-    });
+      toast({
+        title: "Catégorie supprimée",
+        description: `La catégorie "${currentCategory.name}" a été supprimée avec succès`,
+        variant: "default",
+      });
+      
+      setIsDeleteDialogOpen(false);
+      setCurrentCategory(null);
+    }
   };
 
-  const handleEdit = () => {
-    if (!editingCategory || !editingCategory.name.trim()) return;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
     
-    const slug = editingCategory.name
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w-]+/g, '');
-    
-    setCategories(categories.map(cat => 
-      cat.id === editingCategory.id 
-        ? { ...editingCategory, slug } 
-        : cat
-    ));
-    
-    setEditingCategory(null);
-    
-    toast({
-      title: "Catégorie mise à jour",
-      description: "La catégorie a été modifiée avec succès",
-    });
+    // Auto-generate slug if name field changes and we're creating a new category
+    if (name === 'name' && !currentCategory) {
+      const generatedSlug = value.toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w-]+/g, '');
+      
+      setFormData({
+        ...formData,
+        name: value,
+        slug: generatedSlug
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
   };
 
-  const handleDelete = (id: string) => {
-    setCategories(categories.filter(cat => cat.id !== id));
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     
-    toast({
-      title: "Catégorie supprimée",
-      description: "La catégorie a été supprimée avec succès",
-    });
-  };
-
-  const handleMoveUp = (index: number) => {
-    if (index <= 0) return;
+    if (currentCategory) {
+      // Update existing category
+      setCategories(categories.map(cat => 
+        cat.id === currentCategory.id ? { 
+          ...cat, 
+          name: formData.name, 
+          slug: formData.slug, 
+          description: formData.description 
+        } : cat
+      ));
+      
+      toast({
+        title: "Catégorie mise à jour",
+        description: `La catégorie "${formData.name}" a été mise à jour avec succès`,
+        variant: "default",
+      });
+    } else {
+      // Create new category
+      const newId = `C${(categories.length + 1).toString().padStart(3, '0')}`;
+      setCategories([...categories, { 
+        id: newId, 
+        name: formData.name, 
+        slug: formData.slug, 
+        description: formData.description,
+        tourCount: 0
+      }]);
+      
+      toast({
+        title: "Catégorie créée",
+        description: `La catégorie "${formData.name}" a été créée avec succès`,
+        variant: "default",
+      });
+    }
     
-    const newCategories = [...categories];
-    const temp = newCategories[index];
-    newCategories[index] = newCategories[index - 1];
-    newCategories[index - 1] = temp;
-    
-    // Update order values
-    newCategories.forEach((cat, idx) => {
-      cat.order = idx + 1;
-    });
-    
-    setCategories(newCategories);
-  };
-
-  const handleMoveDown = (index: number) => {
-    if (index >= categories.length - 1) return;
-    
-    const newCategories = [...categories];
-    const temp = newCategories[index];
-    newCategories[index] = newCategories[index + 1];
-    newCategories[index + 1] = temp;
-    
-    // Update order values
-    newCategories.forEach((cat, idx) => {
-      cat.order = idx + 1;
-    });
-    
-    setCategories(newCategories);
+    setIsDialogOpen(false);
   };
 
   return (
@@ -140,7 +193,7 @@ const AdminTourCategories = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Catégories de Circuits</h1>
         <Button 
-          onClick={() => setIsAddDialogOpen(true)}
+          onClick={() => openDialog()} 
           className="bg-madagascar-green hover:bg-madagascar-green/80 text-white"
         >
           <PlusCircle className="mr-2 h-4 w-4" />
@@ -149,140 +202,152 @@ const AdminTourCategories = () => {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Gestion des Catégories</CardTitle>
-          <CardDescription>
-            Organisez vos circuits en catégories pour faciliter la navigation
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Ordre</TableHead>
                 <TableHead>Nom</TableHead>
                 <TableHead>Slug</TableHead>
+                <TableHead>Description</TableHead>
                 <TableHead className="text-center">Circuits</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {categories.map((category, index) => (
-                <TableRow key={category.id}>
-                  <TableCell className="w-[100px]">
-                    <div className="flex items-center gap-2">
-                      <span>{category.order}</span>
-                      <div className="flex flex-col gap-1">
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-5 w-5"
-                          onClick={() => handleMoveUp(index)}
-                          disabled={index === 0}
-                        >
-                          <ArrowUp className="h-3 w-3" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-5 w-5"
-                          onClick={() => handleMoveDown(index)}
-                          disabled={index === categories.length - 1}
-                        >
-                          <ArrowDown className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
+              {categories.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                    Aucune catégorie trouvée
                   </TableCell>
-                  <TableCell>
-                    {editingCategory?.id === category.id ? (
-                      <Input 
-                        value={editingCategory.name}
-                        onChange={(e) => setEditingCategory({...editingCategory, name: e.target.value})}
-                        className="w-full max-w-[200px]"
-                      />
-                    ) : (
-                      <span className="font-medium">{category.name}</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {editingCategory?.id === category.id ? (
-                      editingCategory.name
-                        .toLowerCase()
-                        .replace(/\s+/g, '-')
-                        .replace(/[^\w-]+/g, '')
-                    ) : (
-                      category.slug
-                    )}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge variant="outline">{category.count}</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      {editingCategory?.id === category.id ? (
-                        <>
-                          <Button variant="outline" size="icon" onClick={handleEdit}>
-                            <Save className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => setEditingCategory(null)}>
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </>
-                      ) : (
+                </TableRow>
+              ) : (
+                categories.map((category) => (
+                  <TableRow key={category.id}>
+                    <TableCell className="font-medium">{category.name}</TableCell>
+                    <TableCell>{category.slug}</TableCell>
+                    <TableCell className="max-w-xs truncate">{category.description}</TableCell>
+                    <TableCell className="text-center">{category.tourCount}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
                         <Button 
                           variant="outline" 
                           size="icon"
-                          onClick={() => setEditingCategory(category)}
+                          onClick={() => openDialog(category)}
                         >
                           <Edit2 className="h-4 w-4" />
                         </Button>
-                      )}
-                      <Button 
-                        variant="ghost" 
-                        size="icon"
-                        onClick={() => handleDelete(category.id)}
-                        disabled={category.count > 0}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => openDialog(category)}>
+                              Modifier
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              onClick={() => openDeleteDialog(category)}
+                              className="text-destructive focus:text-destructive"
+                              disabled={category.tourCount > 0}
+                            >
+                              Supprimer
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
 
-      {/* Modal for adding a new category */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+      {/* Dialog for adding/editing category */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Ajouter une catégorie</DialogTitle>
+            <DialogTitle>{currentCategory ? 'Modifier la catégorie' : 'Ajouter une catégorie'}</DialogTitle>
             <DialogDescription>
-              Créez une nouvelle catégorie pour organiser vos circuits
+              {currentCategory 
+                ? 'Modifiez les informations de la catégorie ci-dessous.'
+                : 'Créez une nouvelle catégorie pour vos circuits.'}
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
-            <Input
-              placeholder="Nom de la catégorie"
-              value={newCategoryName}
-              onChange={(e) => setNewCategoryName(e.target.value)}
-            />
-            {newCategoryName && (
-              <p className="mt-2 text-sm text-muted-foreground">
-                Slug: <span className="font-mono">{newCategoryName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')}</span>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Nom de la catégorie</Label>
+              <Input 
+                id="name" 
+                name="name" 
+                value={formData.name} 
+                onChange={handleInputChange} 
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="slug">Slug</Label>
+              <Input 
+                id="slug" 
+                name="slug" 
+                value={formData.slug} 
+                onChange={handleInputChange} 
+                required
+                pattern="[a-z0-9-]+"
+                title="Le slug ne doit contenir que des lettres minuscules, des chiffres et des tirets"
+              />
+              <p className="text-xs text-muted-foreground">
+                Le slug est utilisé dans l'URL de la page de la catégorie.
               </p>
-            )}
-          </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea 
+                id="description" 
+                name="description" 
+                value={formData.description} 
+                onChange={handleInputChange} 
+                rows={3}
+              />
+            </div>
+            
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                Annuler
+              </Button>
+              <Button type="submit" className="bg-madagascar-green hover:bg-madagascar-green/80">
+                {currentCategory ? 'Mettre à jour' : 'Ajouter'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for confirming deletion */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmer la suppression</DialogTitle>
+            <DialogDescription>
+              Êtes-vous sûr de vouloir supprimer la catégorie "{currentCategory?.name}" ?
+              Cette action est irréversible.
+            </DialogDescription>
+          </DialogHeader>
           <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Annuler</Button>
-            </DialogClose>
-            <Button onClick={handleAdd} disabled={!newCategoryName.trim()}>
-              Ajouter
+            <Button type="button" variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+              Annuler
+            </Button>
+            <Button 
+              type="button" 
+              variant="destructive" 
+              onClick={handleDelete}
+            >
+              Supprimer
             </Button>
           </DialogFooter>
         </DialogContent>

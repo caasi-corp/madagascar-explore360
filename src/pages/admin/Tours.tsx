@@ -1,31 +1,12 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  PlusCircle, 
-  Search, 
-  Edit2, 
-  Trash2, 
-  Filter, 
-  ArrowDownAZ, 
-  ArrowUpZA,
-  Eye,
-  MoreVertical 
-} from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { 
-  DropdownMenu, 
-  DropdownMenuTrigger, 
-  DropdownMenuContent, 
-  DropdownMenuItem,
-  DropdownMenuSeparator
-} from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { tourAPI } from '@/lib/store';
 import { useToast } from '@/components/ui/use-toast';
+import TourTable from '@/components/admin/tour/TourTable';
+import TourFilters from '@/components/admin/tour/TourFilters';
 
 interface Tour {
   id: string;
@@ -92,131 +73,17 @@ const AdminTours = () => {
 
       <Card>
         <CardContent className="pt-6">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
-              <Input 
-                placeholder="Rechercher un circuit..." 
-                className="pl-9"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <Filter className="mr-2 h-4 w-4" />
-                  Filtrer
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>Tous les circuits</DropdownMenuItem>
-                <DropdownMenuItem>Circuits actifs</DropdownMenuItem>
-                <DropdownMenuItem>Circuits inactifs</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Mis en avant</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Nature</DropdownMenuItem>
-                <DropdownMenuItem>Aventure</DropdownMenuItem>
-                <DropdownMenuItem>Plage</DropdownMenuItem>
-                <DropdownMenuItem>Culture</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <ArrowDownAZ className="mr-2 h-4 w-4" />
-                  Trier
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>Nom (A-Z)</DropdownMenuItem>
-                <DropdownMenuItem>Nom (Z-A)</DropdownMenuItem>
-                <DropdownMenuItem>Prix (croissant)</DropdownMenuItem>
-                <DropdownMenuItem>Prix (décroissant)</DropdownMenuItem>
-                <DropdownMenuItem>Durée (courte à longue)</DropdownMenuItem>
-                <DropdownMenuItem>Durée (longue à courte)</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom du Circuit</TableHead>
-                <TableHead>Catégorie</TableHead>
-                <TableHead>Durée</TableHead>
-                <TableHead className="text-right">Prix</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Mis en avant</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredTours.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                    Aucun circuit trouvé
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredTours.map((tour) => (
-                  <TableRow key={tour.id}>
-                    <TableCell className="font-medium">{tour.name}</TableCell>
-                    <TableCell>{tour.category}</TableCell>
-                    <TableCell>{tour.duration} jours</TableCell>
-                    <TableCell className="text-right">{tour.price} €</TableCell>
-                    <TableCell>
-                      <Badge variant={tour.active ? "default" : "secondary"} className={tour.active ? "bg-green-500 hover:bg-green-600" : ""}>
-                        {tour.active ? "Actif" : "Inactif"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={tour.featured ? "default" : "outline"}>
-                        {tour.featured ? "Mis en avant" : "Non"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" size="icon" asChild>
-                          <Link to={`/tours/${tour.id}`}>
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                        <Button variant="outline" size="icon" asChild>
-                          <Link to={`/admin/tours/edit/${tour.id}`}>
-                            <Edit2 className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleToggleStatus(tour.id)}>
-                              {tour.active ? "Désactiver" : "Activer"}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleToggleFeatured(tour.id)}>
-                              {tour.featured ? "Retirer de la une" : "Mettre en une"}
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem 
-                              onClick={() => handleDelete(tour.id)}
-                              className="text-destructive focus:text-destructive"
-                            >
-                              Supprimer
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+          <TourFilters 
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
+          
+          <TourTable 
+            tours={filteredTours} 
+            onDelete={handleDelete}
+            onToggleStatus={handleToggleStatus}
+            onToggleFeatured={handleToggleFeatured}
+          />
         </CardContent>
       </Card>
     </div>
