@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Calendar, Car, Speedometer } from 'lucide-react';
+import { Calendar, Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,11 +9,15 @@ export interface VehicleProps {
   id: string;
   name: string;
   type: string;
-  description: string;
+  description?: string;
   seats: number;
   transmission: string;
   price: number;
   image: string;
+  fuelType?: string;
+  pricePerDay?: number; // Added to match usage in the code
+  features?: string[];
+  availability?: boolean;
 }
 
 interface VehicleCardProps {
@@ -21,6 +25,9 @@ interface VehicleCardProps {
 }
 
 const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
+  // Use pricePerDay if it exists, otherwise use price
+  const displayPrice = vehicle.pricePerDay || vehicle.price;
+  
   return (
     <Card className="hover-scale overflow-hidden">
       <div className="relative overflow-hidden h-48">
@@ -34,7 +41,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
           }}
         />
         <Badge className="absolute top-3 right-3 bg-white/80 text-madagascar-blue font-medium">
-          {vehicle.price}€/jour
+          {displayPrice}€/jour
         </Badge>
       </div>
       
@@ -47,7 +54,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
         </div>
         
         <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
-          {vehicle.description}
+          {vehicle.description || ""}
         </p>
         
         <div className="grid grid-cols-2 gap-2 mb-4">
