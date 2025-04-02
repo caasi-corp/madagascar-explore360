@@ -13,9 +13,11 @@ export interface TourProps {
   duration: string;
   price: number;
   rating: number;
+  reviews?: number;
   image: string;
   featured?: boolean;
   category?: string;
+  categories?: string[];
 }
 
 interface TourCardProps {
