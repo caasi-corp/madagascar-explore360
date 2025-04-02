@@ -35,7 +35,7 @@ const NavbarDropdown: React.FC<NavbarDropdownProps> = ({
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 
-          className={`px-3 flex items-center text-base font-medium ${
+          className={`px-3 flex items-center text-base font-sans font-medium ${
             isScrolled || isDark
               ? 'text-foreground hover:text-madagascar-green'
               : 'text-white hover:text-madagascar-yellow'
@@ -47,7 +47,7 @@ const NavbarDropdown: React.FC<NavbarDropdownProps> = ({
       <DropdownMenuContent>
         {items.map((item, index) => (
           <DropdownMenuItem key={index} asChild>
-            <Link to={item.path} onClick={onClick}>
+            <Link to={item.path} onClick={onClick} className="font-sans">
               {item.title}
             </Link>
           </DropdownMenuItem>

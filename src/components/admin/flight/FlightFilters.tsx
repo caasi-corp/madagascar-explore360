@@ -1,12 +1,8 @@
 
 import React from 'react';
-import { 
-  Search, 
-  Filter, 
-  ArrowDownAZ 
-} from 'lucide-react';
+import { Filter, ArrowDownAZ } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import FiltersBase from '@/components/admin/FiltersBase';
 import { 
   DropdownMenu, 
   DropdownMenuTrigger, 
@@ -22,50 +18,45 @@ interface FlightFiltersProps {
 
 const FlightFilters: React.FC<FlightFiltersProps> = ({ searchTerm, onSearchChange }) => {
   return (
-    <div className="flex items-center gap-4 mb-6">
-      <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
-        <Input 
-          placeholder="Rechercher un vol..." 
-          className="pl-9"
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
-      </div>
+    <FiltersBase
+      searchTerm={searchTerm}
+      onSearchChange={onSearchChange}
+      placeholder="Rechercher un vol..."
+    >
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline">
+          <Button variant="outline" className="font-sans">
             <Filter className="mr-2 h-4 w-4" />
             Filtrer
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem>Tous les vols</DropdownMenuItem>
+          <DropdownMenuItem className="font-sans">Tous les vols</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Planifiés</DropdownMenuItem>
-          <DropdownMenuItem>Retardés</DropdownMenuItem>
-          <DropdownMenuItem>Annulés</DropdownMenuItem>
+          <DropdownMenuItem className="font-sans">Planifiés</DropdownMenuItem>
+          <DropdownMenuItem className="font-sans">Retardés</DropdownMenuItem>
+          <DropdownMenuItem className="font-sans">Annulés</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Air Madagascar</DropdownMenuItem>
-          <DropdownMenuItem>Air France</DropdownMenuItem>
+          <DropdownMenuItem className="font-sans">Air Madagascar</DropdownMenuItem>
+          <DropdownMenuItem className="font-sans">Air France</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline">
+          <Button variant="outline" className="font-sans">
             <ArrowDownAZ className="mr-2 h-4 w-4" />
             Trier
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem>Date (plus récente)</DropdownMenuItem>
-          <DropdownMenuItem>Date (plus ancienne)</DropdownMenuItem>
-          <DropdownMenuItem>Prix (croissant)</DropdownMenuItem>
-          <DropdownMenuItem>Prix (décroissant)</DropdownMenuItem>
-          <DropdownMenuItem>Compagnie (A-Z)</DropdownMenuItem>
+          <DropdownMenuItem className="font-sans">Date (plus récente)</DropdownMenuItem>
+          <DropdownMenuItem className="font-sans">Date (plus ancienne)</DropdownMenuItem>
+          <DropdownMenuItem className="font-sans">Prix (croissant)</DropdownMenuItem>
+          <DropdownMenuItem className="font-sans">Prix (décroissant)</DropdownMenuItem>
+          <DropdownMenuItem className="font-sans">Compagnie (A-Z)</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </div>
+    </FiltersBase>
   );
 };
 

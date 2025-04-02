@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Cormorant:wght@400;500;600;700&display=swap');
 
 @tailwind base;
@@ -85,9 +84,13 @@
     --sidebar-border: 224 26% 25%;
     --sidebar-ring: 194 66% 45%;
   }
-}
 
-@layer base {
+  /* Optimized font settings */
+  html {
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    text-rendering: optimizeLegibility;
+  }
+
   * {
     @apply border-border;
   }
@@ -99,6 +102,27 @@
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-display font-bold;
+    letter-spacing: -0.025em;
+  }
+
+  h1 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
+
+  h2 {
+    @apply text-2xl md:text-3xl lg:text-4xl;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl;
+  }
+
+  h4 {
+    @apply text-lg md:text-xl;
+  }
+
+  p {
+    @apply text-base leading-relaxed;
   }
 
   /* 3D Logo Effect */
@@ -182,5 +206,22 @@
     100% {
       left: 200%;
     }
+  }
+
+  /* Add font-based utility classes */
+  .font-heading {
+    @apply font-display font-bold;
+  }
+  
+  .font-body {
+    @apply font-sans;
+  }
+
+  .tracking-tight {
+    letter-spacing: -0.025em;
+  }
+
+  .tracking-wide {
+    letter-spacing: 0.025em;
   }
 }
