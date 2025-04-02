@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Heading2, Lead } from '@/components/common/Typography';
-import { Star, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
+import Rating from '@/components/common/Rating';
 
 const WelcomeSection: React.FC = () => {
   return (
@@ -13,11 +14,7 @@ const WelcomeSection: React.FC = () => {
           de ses paysages spectaculaires à sa faune et flore uniques au monde.
         </Lead>
         <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-          <div className="flex items-center gap-2">
-            <Star className="text-northgascar-yellow h-5 w-5" />
-            <span className="font-bold">4.9/5</span>
-            <span className="text-muted-foreground">(230+ avis)</span>
-          </div>
+          <Rating value={4.9} showValue={true} reviews={230} />
           <div className="flex items-center gap-2">
             <Users className="text-northgascar-teal h-5 w-5" />
             <span>Plus de 5000 clients satisfaits</span>
