@@ -1,17 +1,9 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import ContactForm from '@/components/ContactForm';
 
 const Contact = () => {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Form submission logic would go here
-  };
-
   return (
     <>
       <section className="bg-muted/20 py-16">
@@ -25,67 +17,8 @@ const Contact = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="glass-card p-6 rounded-xl">
-              <h2 className="text-2xl font-bold mb-6">Envoyez-nous un message</h2>
-              
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName" variant="glass">Prénom</Label>
-                    <Input 
-                      id="firstName" 
-                      className="glass-input" 
-                      placeholder="Votre prénom"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName" variant="glass">Nom</Label>
-                    <Input 
-                      id="lastName" 
-                      className="glass-input" 
-                      placeholder="Votre nom"
-                      required
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email" variant="glass">Email</Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    className="glass-input" 
-                    placeholder="votre@email.com"
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="subject" variant="glass">Sujet</Label>
-                  <Input 
-                    id="subject" 
-                    className="glass-input" 
-                    placeholder="Objet de votre message"
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="message" variant="glass">Message</Label>
-                  <Textarea 
-                    id="message" 
-                    className="glass-input min-h-[150px]" 
-                    placeholder="Comment pouvons-nous vous aider ?"
-                    required
-                  />
-                </div>
-                
-                <Button type="submit" variant="glass" className="w-full">
-                  Envoyer le message
-                </Button>
-              </form>
-            </div>
+            {/* Contact Form */}
+            <ContactForm />
             
             <div className="space-y-8">
               <div className="glass-card p-6 rounded-xl mb-8">
