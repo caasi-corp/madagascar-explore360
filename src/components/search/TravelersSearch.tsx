@@ -36,32 +36,23 @@ const TravelersSearch: React.FC<TravelersSearchProps> = ({
       return '1 voyageur';
     }
     
-    let display = `${totalTravelers} voyageurs`;
-    
-    if (children > 0 || infants > 0) {
-      display += ` (${adults} adulte${adults > 1 ? 's' : ''}`;
-      if (children > 0) display += `, ${children} enfant${children > 1 ? 's' : ''}`;
-      if (infants > 0) display += `, ${infants} bébé${infants > 1 ? 's' : ''}`;
-      display += ')';
-    }
-    
-    return display;
+    return `${totalTravelers} voyageurs`;
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-northgascar-teal" size={18} />
       <Popover open={isTravelersOpen} onOpenChange={setIsTravelersOpen}>
         <PopoverTrigger asChild>
           <Button 
             variant="glass"
-            className="w-full pl-10 justify-between font-normal"
+            className="w-full h-11 pl-10 justify-between font-normal text-sm"
           >
-            {formatTravelers()}
-            <ChevronDown className="h-4 w-4 opacity-50" />
+            <span className="truncate">{formatTravelers()}</span>
+            <ChevronDown className="h-4 w-4 opacity-50 flex-shrink-0 ml-2" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-80 p-4" align="start">
+        <PopoverContent className="w-80 p-4 z-50" align="center">
           <div className="space-y-4">
             <TravelerCounter 
               title="Adultes"

@@ -10,7 +10,7 @@ interface SearchButtonProps {
 const SearchButton: React.FC<SearchButtonProps> = ({ onClick }) => {
   return (
     <Button 
-      className="bg-northgascar-teal hover:bg-northgascar-teal/80 text-white h-10 lg:h-full"
+      className="bg-northgascar-teal hover:bg-northgascar-teal/80 text-white h-11 w-full"
       onClick={onClick}
     >
       <Search className="mr-2" size={18} />

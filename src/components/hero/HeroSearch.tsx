@@ -37,29 +37,37 @@ const HeroSearch = () => {
     <div className="glass-card p-4 md:p-6 rounded-lg shadow-lg max-w-4xl mx-auto md:mx-0 animation-delay-600 animate-fade-in">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {/* Destination Field */}
-        <DestinationSearch 
-          destination={destination} 
-          onDestinationChange={setDestination} 
-        />
+        <div className="lg:col-span-1">
+          <DestinationSearch 
+            destination={destination} 
+            onDestinationChange={setDestination} 
+          />
+        </div>
 
         {/* Date Range Picker */}
-        <DateRangeSearch 
-          dateRange={dateRange} 
-          setDateRange={setDateRange} 
-          isCalendarOpen={isCalendarOpen} 
-          setIsCalendarOpen={setIsCalendarOpen} 
-        />
+        <div className="lg:col-span-1">
+          <DateRangeSearch 
+            dateRange={dateRange} 
+            setDateRange={setDateRange} 
+            isCalendarOpen={isCalendarOpen} 
+            setIsCalendarOpen={setIsCalendarOpen} 
+          />
+        </div>
 
         {/* Travelers Selector */}
-        <TravelersSearch 
-          travelers={travelers} 
-          setTravelers={setTravelers} 
-          isTravelersOpen={isTravelersOpen} 
-          setIsTravelersOpen={setIsTravelersOpen} 
-        />
+        <div className="lg:col-span-1">
+          <TravelersSearch 
+            travelers={travelers} 
+            setTravelers={setTravelers} 
+            isTravelersOpen={isTravelersOpen} 
+            setIsTravelersOpen={setIsTravelersOpen} 
+          />
+        </div>
 
         {/* Search Button */}
-        <SearchButton onClick={handleSearch} />
+        <div className="lg:col-span-1">
+          <SearchButton onClick={handleSearch} />
+        </div>
       </div>
     </div>
   );

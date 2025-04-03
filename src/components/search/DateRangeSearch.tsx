@@ -28,30 +28,30 @@ const DateRangeSearch: React.FC<DateRangeSearchProps> = ({
   // Format date range for display
   const formatDateRange = () => {
     if (dateRange.from && dateRange.to) {
-      return `${format(dateRange.from, 'd MMM', { locale: fr })} - ${format(dateRange.to, 'd MMM yyyy', { locale: fr })}`;
+      return `${format(dateRange.from, 'd MMM', { locale: fr })} - ${format(dateRange.to, 'd MMM', { locale: fr })}`;
     }
     
     if (dateRange.from) {
-      return `${format(dateRange.from, 'd MMM yyyy', { locale: fr })}`;
+      return `${format(dateRange.from, 'd MMM', { locale: fr })}`;
     }
     
     return 'Sélectionner des dates';
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-northgascar-teal" size={18} />
       <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="glass"
-            className="w-full pl-10 justify-between font-normal"
+            className="w-full h-11 pl-10 justify-between font-normal text-sm"
           >
-            {formatDateRange()}
-            <ChevronDown className="h-4 w-4 opacity-50" />
+            <span className="truncate">{formatDateRange()}</span>
+            <ChevronDown className="h-4 w-4 opacity-50 flex-shrink-0 ml-2" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-0 z-50" align="center">
           <div className="p-3">
             <CalendarComponent
               initialFocus

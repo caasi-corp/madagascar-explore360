@@ -34,6 +34,7 @@ const DestinationSearch: React.FC<DestinationSearchProps> = ({
   onDestinationChange 
 }) => {
   const [filteredDestinations, setFilteredDestinations] = useState(destinations);
+  const [isOpen, setIsOpen] = useState(false);
 
   // Handle destination search filter
   const handleDestinationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,24 +51,27 @@ const DestinationSearch: React.FC<DestinationSearchProps> = ({
         )
       );
     }
+    
+    setIsOpen(true);
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-northgascar-teal" size={18} />
-      <Popover>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          <div className="cursor-pointer">
+          <div className="cursor-pointer w-full">
             <Input 
               value={destination}
               onChange={handleDestinationChange}
               placeholder="Où aller?" 
-              className="pl-10 pr-4"
+              className="pl-10 pr-4 h-11 text-sm"
               variant="glass"
+              onFocus={() => setIsOpen(true)}
             />
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0 max-h-[300px] overflow-auto" align="start">
+        <PopoverContent className="w-[calc(100%-24px)] p-0 max-h-[300px] overflow-auto z-50" align="center">
           <div className="py-2">
             {filteredDestinations.length > 0 ? (
               filteredDestinations.map((dest, index) => (
@@ -76,7 +80,7 @@ const DestinationSearch: React.FC<DestinationSearchProps> = ({
                   className="px-4 py-2 hover:bg-accent/20 cursor-pointer flex items-center justify-between"
                   onClick={() => {
                     onDestinationChange(dest.name);
-                    setFilteredDestinations(destinations);
+                    setIsOpen(false);
                   }}
                 >
                   <span>{dest.name}</span>
