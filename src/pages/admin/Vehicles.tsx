@@ -8,6 +8,7 @@ import {
   Trash2, 
   Filter, 
   ArrowDownAZ, 
+  ArrowUpZA,
   Eye,
   MoreVertical,
   Car
@@ -24,76 +25,52 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { vehicleAPI } from '@/lib/store';
 import { useToast } from '@/components/ui/use-toast';
 
 interface Vehicle {
   id: string;
   name: string;
   type: string;
-  transmission: string;
+  seats: number;
   pricePerDay: number;
+  transmission: string;
   available: boolean;
+  featured: boolean;
 }
 
 const AdminVehicles = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([
-    { 
-      id: 'V001', 
-      name: 'Toyota Land Cruiser', 
-      type: '4x4', 
-      transmission: 'Automatique', 
-      pricePerDay: 89, 
-      available: true 
-    },
-    { 
-      id: 'V002', 
-      name: 'Renault Duster', 
-      type: 'SUV', 
-      transmission: 'Manuelle', 
-      pricePerDay: 65, 
-      available: true 
-    },
-    { 
-      id: 'V003', 
-      name: 'Yamaha TW200', 
-      type: 'Moto', 
-      transmission: 'Manuelle', 
-      pricePerDay: 45, 
-      available: false 
-    },
-    { 
-      id: 'V004', 
-      name: 'BRP Can-Am Outlander', 
-      type: 'Quad', 
-      transmission: 'Automatique', 
-      pricePerDay: 75, 
-      available: true 
-    },
-    { 
-      id: 'V005', 
-      name: 'Volkswagen Combi', 
-      type: 'Van', 
-      transmission: 'Manuelle', 
-      pricePerDay: 110, 
-      available: true 
-    },
+    { id: 'V001', name: 'Toyota Hilux', type: 'SUV', seats: 5, pricePerDay: 80, transmission: 'Manuel', available: true, featured: true },
+    { id: 'V002', name: 'Renault Clio', type: 'Compact', seats: 5, pricePerDay: 50, transmission: 'Automatique', available: true, featured: false },
+    { id: 'V003', name: 'Hyundai Santa Fe', type: 'SUV', seats: 7, pricePerDay: 95, transmission: 'Automatique', available: true, featured: true },
+    { id: 'V004', name: 'Toyota Coaster', type: 'Minibus', seats: 15, pricePerDay: 150, transmission: 'Manuel', available: false, featured: false },
+    { id: 'V005', name: 'Peugeot 208', type: 'Compact', seats: 5, pricePerDay: 45, transmission: 'Manuel', available: true, featured: false },
   ]);
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
 
   const handleDelete = (id: string) => {
+    // Simule la suppression d'un véhicule
     setVehicles(vehicles.filter(vehicle => vehicle.id !== id));
     
     toast({
       title: "Véhicule supprimé",
       description: "Le véhicule a été supprimé avec succès",
-      variant: "default",
     });
   };
 
   const handleToggleAvailable = (id: string) => {
+    // Simule la modification de la disponibilité
     setVehicles(vehicles.map(vehicle => 
       vehicle.id === id ? { ...vehicle, available: !vehicle.available } : vehicle
+    ));
+  };
+
+  const handleToggleFeatured = (id: string) => {
+    // Simule la modification du statut mis en avant
+    setVehicles(vehicles.map(vehicle => 
+      vehicle.id === id ? { ...vehicle, featured: !vehicle.featured } : vehicle
     ));
   };
 
@@ -106,12 +83,20 @@ const AdminVehicles = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Gestion des Véhicules</h1>
-        <Button asChild className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
-          <Link to="/admin/vehicles/new">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Ajouter un Véhicule
-          </Link>
-        </Button>
+        <div className="flex gap-3">
+          <Button variant="outline" asChild>
+            <Link to="/admin/vehicles/bookings">
+              <Car className="mr-2 h-4 w-4" />
+              Réservations
+            </Link>
+          </Button>
+          <Button asChild className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
+            <Link to="/admin/vehicles/new">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Ajouter un Véhicule
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -138,11 +123,12 @@ const AdminVehicles = () => {
                 <DropdownMenuItem>Véhicules disponibles</DropdownMenuItem>
                 <DropdownMenuItem>Véhicules non disponibles</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>4x4</DropdownMenuItem>
+                <DropdownMenuItem>Mis en avant</DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem>SUV</DropdownMenuItem>
-                <DropdownMenuItem>Moto</DropdownMenuItem>
-                <DropdownMenuItem>Quad</DropdownMenuItem>
-                <DropdownMenuItem>Van</DropdownMenuItem>
+                <DropdownMenuItem>Compact</DropdownMenuItem>
+                <DropdownMenuItem>Berline</DropdownMenuItem>
+                <DropdownMenuItem>Minibus</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <DropdownMenu>
@@ -157,7 +143,8 @@ const AdminVehicles = () => {
                 <DropdownMenuItem>Nom (Z-A)</DropdownMenuItem>
                 <DropdownMenuItem>Prix (croissant)</DropdownMenuItem>
                 <DropdownMenuItem>Prix (décroissant)</DropdownMenuItem>
-                <DropdownMenuItem>Type</DropdownMenuItem>
+                <DropdownMenuItem>Capacité (croissante)</DropdownMenuItem>
+                <DropdownMenuItem>Capacité (décroissante)</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -167,16 +154,18 @@ const AdminVehicles = () => {
               <TableRow>
                 <TableHead>Nom du Véhicule</TableHead>
                 <TableHead>Type</TableHead>
+                <TableHead className="text-center">Places</TableHead>
                 <TableHead>Transmission</TableHead>
                 <TableHead className="text-right">Prix/jour</TableHead>
                 <TableHead>Disponibilité</TableHead>
+                <TableHead>Mis en avant</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredVehicles.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                     Aucun véhicule trouvé
                   </TableCell>
                 </TableRow>
@@ -185,6 +174,7 @@ const AdminVehicles = () => {
                   <TableRow key={vehicle.id}>
                     <TableCell className="font-medium">{vehicle.name}</TableCell>
                     <TableCell>{vehicle.type}</TableCell>
+                    <TableCell className="text-center">{vehicle.seats}</TableCell>
                     <TableCell>{vehicle.transmission}</TableCell>
                     <TableCell className="text-right">{vehicle.pricePerDay} €/jour</TableCell>
                     <TableCell>
@@ -192,10 +182,15 @@ const AdminVehicles = () => {
                         {vehicle.available ? "Disponible" : "Non disponible"}
                       </Badge>
                     </TableCell>
+                    <TableCell>
+                      <Badge variant={vehicle.featured ? "default" : "outline"}>
+                        {vehicle.featured ? "Mis en avant" : "Non"}
+                      </Badge>
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button variant="outline" size="icon" asChild>
-                          <Link to={`/services/car-rental`}>
+                          <Link to={`/services/car-rental#${vehicle.id}`}>
                             <Eye className="h-4 w-4" />
                           </Link>
                         </Button>
@@ -213,6 +208,9 @@ const AdminVehicles = () => {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => handleToggleAvailable(vehicle.id)}>
                               {vehicle.available ? "Marquer indisponible" : "Marquer disponible"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleToggleFeatured(vehicle.id)}>
+                              {vehicle.featured ? "Retirer de la une" : "Mettre en une"}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem 

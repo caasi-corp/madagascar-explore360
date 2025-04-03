@@ -1,14 +1,20 @@
 
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
+  PlusCircle, 
   Search, 
-  Filter, 
   Edit2, 
   Trash2, 
-  UserPlus,
+  Filter, 
+  ArrowDownAZ,
+  Shield,
   MoreVertical,
-  Mail,
   User,
+  Mail,
+  CalendarDays,
+  Eye,
+  UserPlus,
   Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,213 +29,158 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { useToast } from '@/components/ui/use-toast';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/components/ui/use-toast';
 
-interface UserData {
+interface User {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
-  role: 'admin' | 'manager' | 'editor' | 'author';
-  active: boolean;
-  lastLogin: string;
+  role: 'admin' | 'user';
+  status: 'active' | 'inactive' | 'pending';
+  lastLogin: string | null;
+  createdAt: string;
 }
 
 const AdminUserManagement = () => {
-  const [users, setUsers] = useState<UserData[]>([
+  const [users, setUsers] = useState<User[]>([
     { 
       id: 'U001', 
       firstName: 'Admin', 
-      lastName: 'User',
-      email: 'admin@northgascartours.com',
-      role: 'admin',
-      active: true,
-      lastLogin: '2023-09-15'
+      lastName: 'User', 
+      email: 'admin@northgascartours.com', 
+      role: 'admin', 
+      status: 'active',
+      lastLogin: '2023-08-10T12:30:00',
+      createdAt: '2023-01-15T08:00:00'
     },
     { 
       id: 'U002', 
-      firstName: 'Marie', 
-      lastName: 'Martin',
-      email: 'marie.martin@northgascartours.com',
-      role: 'manager',
-      active: true,
-      lastLogin: '2023-09-14'
+      firstName: 'Pierre', 
+      lastName: 'Martin', 
+      email: 'user@northgascartours.com', 
+      role: 'user', 
+      status: 'active',
+      lastLogin: '2023-08-12T09:45:00',
+      createdAt: '2023-02-20T14:30:00'
     },
     { 
       id: 'U003', 
-      firstName: 'Jean', 
-      lastName: 'Dupont',
-      email: 'jean.dupont@northgascartours.com',
-      role: 'editor',
-      active: true,
-      lastLogin: '2023-09-10'
+      firstName: 'Marie', 
+      lastName: 'Dubois', 
+      email: 'marie@example.com', 
+      role: 'user', 
+      status: 'active',
+      lastLogin: '2023-08-05T16:20:00',
+      createdAt: '2023-03-10T11:15:00'
     },
     { 
       id: 'U004', 
+      firstName: 'Jean', 
+      lastName: 'Dupont', 
+      email: 'jean@example.com', 
+      role: 'user', 
+      status: 'inactive',
+      lastLogin: '2023-07-15T10:10:00',
+      createdAt: '2023-04-05T09:00:00'
+    },
+    { 
+      id: 'U005', 
       firstName: 'Sophie', 
-      lastName: 'Lefebvre',
-      email: 'sophie.lefebvre@northgascartours.com',
-      role: 'author',
-      active: false,
-      lastLogin: '2023-08-27'
+      lastName: 'Leroy', 
+      email: 'sophie@example.com', 
+      role: 'user', 
+      status: 'pending',
+      lastLogin: null,
+      createdAt: '2023-08-11T16:45:00'
     },
   ]);
-  
   const [searchTerm, setSearchTerm] = useState('');
-  const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
-  const [formData, setFormData] = useState({
+  const [isNewUserDialogOpen, setIsNewUserDialogOpen] = useState(false);
+  const [newUser, setNewUser] = useState({
     firstName: '',
     lastName: '',
     email: '',
-    role: 'author',
-    password: '',
-    confirmPassword: '',
+    role: 'user',
+    status: 'active',
   });
-  
   const { toast } = useToast();
 
-  const openUserDialog = (user?: UserData) => {
-    if (user) {
-      setSelectedUser(user);
-      setFormData({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        role: user.role,
-        password: '',
-        confirmPassword: '',
-      });
-    } else {
-      setSelectedUser(null);
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        role: 'author',
-        password: '',
-        confirmPassword: '',
-      });
-    }
-    setIsUserDialogOpen(true);
-  };
-
-  const openDeleteDialog = (user: UserData) => {
-    setSelectedUser(user);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const handleDelete = () => {
-    if (selectedUser) {
-      setUsers(users.filter(u => u.id !== selectedUser.id));
-      
-      toast({
-        title: "Utilisateur supprimé",
-        description: `L'utilisateur ${selectedUser.firstName} ${selectedUser.lastName} a été supprimé avec succès`,
-        variant: "default",
-      });
-      
-      setIsDeleteDialogOpen(false);
-      setSelectedUser(null);
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
+  const handleDelete = (id: string) => {
+    // Simule la suppression d'un utilisateur
+    setUsers(users.filter(user => user.id !== id));
+    
+    toast({
+      title: "Utilisateur supprimé",
+      description: "L'utilisateur a été supprimé avec succès",
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validation
-    if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Erreur",
-        description: "Les mots de passe ne correspondent pas",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (selectedUser) {
-      // Mise à jour d'un utilisateur existant
-      setUsers(users.map(u => 
-        u.id === selectedUser.id ? { 
-          ...u, 
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          role: formData.role as 'admin' | 'manager' | 'editor' | 'author'
-        } : u
-      ));
-      
-      toast({
-        title: "Utilisateur mis à jour",
-        description: `L'utilisateur ${formData.firstName} ${formData.lastName} a été mis à jour avec succès`,
-        variant: "default",
-      });
-    } else {
-      // Création d'un nouvel utilisateur
-      const newId = `U${(users.length + 1).toString().padStart(3, '0')}`;
-      setUsers([...users, { 
-        id: newId, 
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        role: formData.role as 'admin' | 'manager' | 'editor' | 'author',
-        active: true,
-        lastLogin: '-'
-      }]);
-      
-      toast({
-        title: "Utilisateur créé",
-        description: `L'utilisateur ${formData.firstName} ${formData.lastName} a été créé avec succès`,
-        variant: "default",
-      });
-    }
-    
-    setIsUserDialogOpen(false);
-  };
-
-  const toggleUserStatus = (id: string) => {
-    setUsers(users.map(u => 
-      u.id === id ? { ...u, active: !u.active } : u
+  const handleToggleStatus = (id: string) => {
+    // Simule la modification du statut de l'utilisateur
+    setUsers(users.map(user => 
+      user.id === id ? { 
+        ...user, 
+        status: user.status === 'active' ? 'inactive' : 'active' 
+      } : user
     ));
     
-    const user = users.find(u => u.id === id);
-    if (user) {
-      toast({
-        title: user.active ? "Utilisateur désactivé" : "Utilisateur activé",
-        description: `L'utilisateur ${user.firstName} ${user.lastName} a été ${user.active ? 'désactivé' : 'activé'} avec succès`,
-        variant: "default",
-      });
-    }
+    toast({
+      title: "Statut mis à jour",
+      description: "Le statut de l'utilisateur a été mis à jour avec succès",
+    });
   };
 
-  const resetPassword = (id: string) => {
-    const user = users.find(u => u.id === id);
-    if (user) {
-      toast({
-        title: "Réinitialisation du mot de passe",
-        description: `Un e-mail de réinitialisation du mot de passe a été envoyé à ${user.email}`,
-        variant: "default",
-      });
-    }
+  const handleRoleChange = (id: string, newRole: 'admin' | 'user') => {
+    // Simule la modification du rôle de l'utilisateur
+    setUsers(users.map(user => 
+      user.id === id ? { ...user, role: newRole } : user
+    ));
+    
+    toast({
+      title: "Rôle mis à jour",
+      description: `L'utilisateur est maintenant ${newRole === 'admin' ? 'administrateur' : 'utilisateur'}`,
+    });
+  };
+
+  const handleNewUserChange = (field: string, value: any) => {
+    setNewUser(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleCreateUser = () => {
+    // Simule la création d'un nouvel utilisateur
+    const newUserId = `U00${users.length + 1}`;
+    
+    setUsers([...users, {
+      id: newUserId,
+      firstName: newUser.firstName,
+      lastName: newUser.lastName,
+      email: newUser.email,
+      role: newUser.role as 'admin' | 'user',
+      status: newUser.status as 'active' | 'inactive' | 'pending',
+      lastLogin: null,
+      createdAt: new Date().toISOString(),
+    }]);
+    
+    setNewUser({
+      firstName: '',
+      lastName: '',
+      email: '',
+      role: 'user',
+      status: 'active',
+    });
+    
+    setIsNewUserDialogOpen(false);
+    
+    toast({
+      title: "Utilisateur créé",
+      description: "Le nouvel utilisateur a été créé avec succès",
+    });
   };
 
   const filteredUsers = users.filter(user => 
@@ -238,18 +189,17 @@ const AdminUserManagement = () => {
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getRoleBadge = (role: string) => {
-    switch (role) {
-      case 'admin':
-        return <Badge className="bg-red-500">Administrateur</Badge>;
-      case 'manager':
-        return <Badge variant="default">Manager</Badge>;
-      case 'editor':
-        return <Badge variant="outline" className="text-blue-500 border-blue-500">Éditeur</Badge>;
-      case 'author':
-        return <Badge variant="secondary">Auteur</Badge>;
+  // Function to get badge variant based on status
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'active':
+        return <Badge variant="default" className="bg-green-500">Actif</Badge>;
+      case 'inactive':
+        return <Badge variant="outline" className="text-muted-foreground">Inactif</Badge>;
+      case 'pending':
+        return <Badge variant="outline" className="text-amber-500 border-amber-500">En attente</Badge>;
       default:
-        return <Badge variant="outline">{role}</Badge>;
+        return <Badge variant="outline">Inconnu</Badge>;
     }
   };
 
@@ -257,13 +207,21 @@ const AdminUserManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Gestion des Utilisateurs</h1>
-        <Button 
-          className="bg-madagascar-green hover:bg-madagascar-green/80 text-white"
-          onClick={() => openUserDialog()}
-        >
-          <UserPlus className="mr-2 h-4 w-4" />
-          Ajouter un Utilisateur
-        </Button>
+        <div className="flex gap-3">
+          <Button variant="outline" asChild>
+            <Link to="/admin/settings">
+              <Shield className="mr-2 h-4 w-4" />
+              Rôles & Permissions
+            </Link>
+          </Button>
+          <Button 
+            className="bg-madagascar-green hover:bg-madagascar-green/80 text-white"
+            onClick={() => setIsNewUserDialogOpen(true)}
+          >
+            <UserPlus className="mr-2 h-4 w-4" />
+            Ajouter un Utilisateur
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -289,12 +247,26 @@ const AdminUserManagement = () => {
                 <DropdownMenuItem>Tous les utilisateurs</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Administrateurs</DropdownMenuItem>
-                <DropdownMenuItem>Managers</DropdownMenuItem>
-                <DropdownMenuItem>Éditeurs</DropdownMenuItem>
-                <DropdownMenuItem>Auteurs</DropdownMenuItem>
+                <DropdownMenuItem>Utilisateurs</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Utilisateurs actifs</DropdownMenuItem>
-                <DropdownMenuItem>Utilisateurs inactifs</DropdownMenuItem>
+                <DropdownMenuItem>Actifs</DropdownMenuItem>
+                <DropdownMenuItem>Inactifs</DropdownMenuItem>
+                <DropdownMenuItem>En attente</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  <ArrowDownAZ className="mr-2 h-4 w-4" />
+                  Trier
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem>Nom (A-Z)</DropdownMenuItem>
+                <DropdownMenuItem>Nom (Z-A)</DropdownMenuItem>
+                <DropdownMenuItem>Date d'inscription (plus récente)</DropdownMenuItem>
+                <DropdownMenuItem>Date d'inscription (plus ancienne)</DropdownMenuItem>
+                <DropdownMenuItem>Dernière connexion</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -302,69 +274,93 @@ const AdminUserManagement = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead><Checkbox /></TableHead>
                 <TableHead>Utilisateur</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Rôle</TableHead>
                 <TableHead>Statut</TableHead>
-                <TableHead>Dernière connexion</TableHead>
+                <TableHead>Date d'inscription</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     Aucun utilisateur trouvé
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredUsers.map((user) => (
                   <TableRow key={user.id}>
+                    <TableCell><Checkbox /></TableCell>
                     <TableCell>
-                      <div className="font-medium">
-                        {user.firstName} {user.lastName}
+                      <div className="flex items-center gap-2">
+                        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                          <User className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <div className="font-medium">{user.firstName} {user.lastName}</div>
+                          <div className="text-sm text-muted-foreground">ID: {user.id}</div>
+                        </div>
                       </div>
                     </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{getRoleBadge(user.role)}</TableCell>
                     <TableCell>
-                      <Badge variant={user.active ? "default" : "secondary"} className={user.active ? "bg-green-500" : ""}>
-                        {user.active ? 'Actif' : 'Inactif'}
+                      <div className="flex items-center gap-1">
+                        <Mail className="h-3 w-3 text-muted-foreground" />
+                        <span>{user.email}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={user.role === 'admin' ? "default" : "outline"}>
+                        {user.role === 'admin' ? 'Administrateur' : 'Utilisateur'}
                       </Badge>
                     </TableCell>
-                    <TableCell>{user.lastLogin === '-' ? 'Jamais' : new Date(user.lastLogin).toLocaleDateString()}</TableCell>
+                    <TableCell>{getStatusBadge(user.status)}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <CalendarDays className="h-3 w-3 text-muted-foreground" />
+                        <span>{new Date(user.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="icon"
-                          onClick={() => openUserDialog(user)}
-                        >
+                        <Button variant="outline" size="sm">
                           <Edit2 className="h-4 w-4" />
                         </Button>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
+                            <Button variant="ghost" size="sm">
                               <MoreVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => toggleUserStatus(user.id)}>
-                              {user.active ? 'Désactiver' : 'Activer'} le compte
+                            <DropdownMenuItem>
+                              <Eye className="mr-2 h-4 w-4" /> Voir le profil
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => resetPassword(user.id)}>
-                              Réinitialiser le mot de passe
+                            <DropdownMenuItem>
+                              <Mail className="mr-2 h-4 w-4" /> Envoyer un email
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Lock className="mr-2 h-4 w-4" /> Réinitialiser le mot de passe
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => openUserDialog(user)}>
-                              Modifier
+                            <DropdownMenuItem onSelect={() => handleToggleStatus(user.id)}>
+                              {user.status === 'active' ? 'Désactiver le compte' : 'Activer le compte'}
                             </DropdownMenuItem>
                             <DropdownMenuItem 
-                              onClick={() => openDeleteDialog(user)}
-                              className="text-destructive focus:text-destructive"
-                              disabled={user.id === 'U001'} // Empêche la suppression de l'utilisateur admin
+                              onSelect={() => handleRoleChange(user.id, user.role === 'admin' ? 'user' : 'admin')}
+                              disabled={user.id === 'U001' && user.role === 'admin'} // Prevent changing the main admin
                             >
-                              Supprimer
+                              {user.role === 'admin' ? 'Changer en Utilisateur' : 'Changer en Administrateur'}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              onSelect={() => handleDelete(user.id)}
+                              className="text-destructive focus:text-destructive"
+                              disabled={user.id === 'U001'} // Prevent deleting the main admin
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" /> Supprimer
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -378,150 +374,80 @@ const AdminUserManagement = () => {
         </CardContent>
       </Card>
 
-      {/* Dialog for adding/editing users */}
-      <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
-        <DialogContent className="max-w-md">
+      <Dialog open={isNewUserDialogOpen} onOpenChange={setIsNewUserDialogOpen}>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>
-              {selectedUser ? 'Modifier l\'utilisateur' : 'Ajouter un utilisateur'}
-            </DialogTitle>
+            <DialogTitle>Ajouter un nouvel utilisateur</DialogTitle>
             <DialogDescription>
-              {selectedUser 
-                ? 'Modifiez les informations de l\'utilisateur ci-dessous.' 
-                : 'Créez un nouvel utilisateur pour le système d\'administration.'}
+              Créez un nouveau compte utilisateur pour votre plateforme.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-4 py-2">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">Prénom</Label>
                 <Input 
-                  id="firstName"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  required
+                  id="firstName" 
+                  value={newUser.firstName}
+                  onChange={(e) => handleNewUserChange('firstName', e.target.value)}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Nom</Label>
                 <Input 
-                  id="lastName"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  required
+                  id="lastName" 
+                  value={newUser.lastName}
+                  onChange={(e) => handleNewUserChange('lastName', e.target.value)}
                 />
               </div>
             </div>
-            
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input 
-                  id="email"
-                  name="email"
-                  type="email"
-                  className="pl-9"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
+              <Input 
+                id="email" 
+                type="email"
+                value={newUser.email}
+                onChange={(e) => handleNewUserChange('email', e.target.value)}
+              />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="role">Rôle</Label>
               <Select 
-                value={formData.role} 
-                onValueChange={(value) => setFormData({...formData, role: value as 'admin' | 'manager' | 'editor' | 'author'})}
+                value={newUser.role} 
+                onValueChange={(value) => handleNewUserChange('role', value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner un rôle" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="user">Utilisateur</SelectItem>
                   <SelectItem value="admin">Administrateur</SelectItem>
-                  <SelectItem value="manager">Manager</SelectItem>
-                  <SelectItem value="editor">Éditeur</SelectItem>
-                  <SelectItem value="author">Auteur</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            
-            {!selectedUser && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Mot de passe</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input 
-                      id="password"
-                      name="password"
-                      type="password"
-                      className="pl-9"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      required={!selectedUser}
-                      minLength={8}
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Au moins 8 caractères.
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input 
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      className="pl-9"
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange}
-                      required={!selectedUser}
-                    />
-                  </div>
-                </div>
-              </>
-            )}
-            
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsUserDialogOpen(false)}>
-                Annuler
-              </Button>
-              <Button type="submit" className="bg-madagascar-green hover:bg-madagascar-green/80">
-                {selectedUser ? 'Mettre à jour' : 'Ajouter'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog for confirming deletion */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirmer la suppression</DialogTitle>
-            <DialogDescription>
-              Êtes-vous sûr de vouloir supprimer l'utilisateur {selectedUser?.firstName} {selectedUser?.lastName} ?
-              Cette action est irréversible.
-            </DialogDescription>
-          </DialogHeader>
+            <div className="space-y-2">
+              <Label htmlFor="status">Statut</Label>
+              <Select 
+                value={newUser.status} 
+                onValueChange={(value) => handleNewUserChange('status', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Actif</SelectItem>
+                  <SelectItem value="inactive">Inactif</SelectItem>
+                  <SelectItem value="pending">En attente</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+            <Button variant="outline" onClick={() => setIsNewUserDialogOpen(false)}>
               Annuler
             </Button>
-            <Button 
-              type="button" 
-              variant="destructive" 
-              onClick={handleDelete}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Supprimer
+            <Button onClick={handleCreateUser} className="bg-madagascar-green hover:bg-madagascar-green/90 text-white">
+              Créer l'utilisateur
             </Button>
           </DialogFooter>
         </DialogContent>

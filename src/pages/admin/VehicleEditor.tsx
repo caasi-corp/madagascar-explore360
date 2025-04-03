@@ -1,261 +1,188 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
-import { ArrowLeft, Save } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ChevronLeft, Save } from 'lucide-react';
 
 const AdminVehicleEditor = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const isEditMode = !!id;
+  const isEditMode = Boolean(id);
   
-  const [vehicle, setVehicle] = useState({
-    name: '',
-    type: '',
-    transmission: 'Automatique',
-    fuelType: 'Essence',
-    pricePerDay: 0,
-    seats: 1,
-    image: '',
-    description: '',
-    features: '',
-    available: true
+  const [vehicleData, setVehicleData] = useState({
+    name: id ? 'Toyota Hilux' : '',
+    type: id ? 'SUV' : '',
+    seats: id ? 5 : 2,
+    transmission: id ? 'Manuel' : 'Manuel',
+    pricePerDay: id ? 80 : 0,
+    description: id ? 'Véhicule 4x4 idéal pour les terrains difficiles de Madagascar.' : '',
+    features: id ? ['Climatisation', '4x4', 'GPS', 'Bluetooth'] : [],
+    available: true,
+    featured: false,
+    images: id ? ['vehicle1.jpg', 'vehicle2.jpg'] : []
   });
 
-  useEffect(() => {
-    if (isEditMode) {
-      // Dans une vraie application, nous ferions un appel API pour récupérer les données du véhicule
-      // Ici, nous simulons des données pour l'exemple
-      setVehicle({
-        name: 'Toyota Land Cruiser',
-        type: '4x4',
-        transmission: 'Automatique',
-        fuelType: 'Diesel',
-        pricePerDay: 89,
-        seats: 7,
-        image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf',
-        description: 'Véhicule robuste et fiable pour tous vos déplacements à Madagascar.',
-        features: 'Climatisation, GPS, Porte-bagages, 4x4, Bluetooth, Ports USB',
-        available: true
-      });
-    }
-  }, [id, isEditMode]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setVehicle({
-      ...vehicle,
-      [name]: name === 'pricePerDay' || name === 'seats' ? Number(value) : value
-    });
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
-    setVehicle({
-      ...vehicle,
-      [name]: value
-    });
-  };
-
-  const handleSwitchChange = (name: string, value: boolean) => {
-    setVehicle({
-      ...vehicle,
-      [name]: value
-    });
+  const handleChange = (field: string, value: any) => {
+    setVehicleData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Simulation de l'enregistrement
+    // Simule un appel API pour sauvegarder le véhicule
     setTimeout(() => {
       toast({
         title: isEditMode ? "Véhicule mis à jour" : "Véhicule créé",
-        description: isEditMode 
-          ? `Le véhicule ${vehicle.name} a été mis à jour avec succès`
-          : `Le véhicule ${vehicle.name} a été ajouté avec succès`,
-        variant: "default",
+        description: `${vehicleData.name} a été ${isEditMode ? 'mis à jour' : 'ajouté'} avec succès.`,
       });
-      
       navigate('/admin/vehicles');
-    }, 1000);
+    }, 500);
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="icon" asChild>
-            <Link to="/admin/vehicles">
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-          </Button>
-          <h1 className="text-2xl font-bold">
-            {isEditMode ? `Modifier le véhicule` : 'Ajouter un véhicule'}
-          </h1>
-        </div>
-        <Button type="submit" form="vehicle-form" className="bg-madagascar-green hover:bg-madagascar-green/80">
-          <Save className="mr-2 h-4 w-4" />
-          Enregistrer
+        <h1 className="text-2xl font-bold">{isEditMode ? 'Modifier le Véhicule' : 'Ajouter un Véhicule'}</h1>
+        <Button variant="outline" onClick={() => navigate('/admin/vehicles')}>
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          Retour à la liste
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Informations du véhicule</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form id="vehicle-form" onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="col-span-1 md:col-span-2">
+            <CardContent className="pt-6 space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Nom du véhicule</Label>
                 <Input 
                   id="name" 
-                  name="name" 
-                  value={vehicle.name} 
-                  onChange={handleChange} 
+                  value={vehicleData.name} 
+                  onChange={(e) => handleChange('name', e.target.value)} 
+                  placeholder="Ex: Toyota Hilux"
                   required
                 />
               </div>
-
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="type">Type de véhicule</Label>
+                  <Select 
+                    value={vehicleData.type} 
+                    onValueChange={(value) => handleChange('type', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner un type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="SUV">SUV</SelectItem>
+                      <SelectItem value="Compact">Compact</SelectItem>
+                      <SelectItem value="Berline">Berline</SelectItem>
+                      <SelectItem value="Minibus">Minibus</SelectItem>
+                      <SelectItem value="4x4">4x4</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="transmission">Transmission</Label>
+                  <Select 
+                    value={vehicleData.transmission} 
+                    onValueChange={(value) => handleChange('transmission', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Manuel">Manuel</SelectItem>
+                      <SelectItem value="Automatique">Automatique</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="seats">Nombre de places</Label>
+                  <Input 
+                    id="seats" 
+                    type="number" 
+                    min={1}
+                    value={vehicleData.seats} 
+                    onChange={(e) => handleChange('seats', parseInt(e.target.value))} 
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="price">Prix par jour (€)</Label>
+                  <Input 
+                    id="price" 
+                    type="number" 
+                    min={0}
+                    value={vehicleData.pricePerDay} 
+                    onChange={(e) => handleChange('pricePerDay', parseInt(e.target.value))} 
+                    required
+                  />
+                </div>
+              </div>
+              
               <div className="space-y-2">
-                <Label htmlFor="type">Type de véhicule</Label>
-                <Select 
-                  value={vehicle.type} 
-                  onValueChange={(value) => handleSelectChange('type', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="4x4">4x4</SelectItem>
-                    <SelectItem value="SUV">SUV</SelectItem>
-                    <SelectItem value="Berline">Berline</SelectItem>
-                    <SelectItem value="Moto">Moto</SelectItem>
-                    <SelectItem value="Quad">Quad</SelectItem>
-                    <SelectItem value="Van">Van</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="transmission">Transmission</Label>
-                <Select 
-                  value={vehicle.transmission} 
-                  onValueChange={(value) => handleSelectChange('transmission', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Automatique">Automatique</SelectItem>
-                    <SelectItem value="Manuelle">Manuelle</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="fuelType">Carburant</Label>
-                <Select 
-                  value={vehicle.fuelType} 
-                  onValueChange={(value) => handleSelectChange('fuelType', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Essence">Essence</SelectItem>
-                    <SelectItem value="Diesel">Diesel</SelectItem>
-                    <SelectItem value="Hybride">Hybride</SelectItem>
-                    <SelectItem value="Électrique">Électrique</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="pricePerDay">Prix par jour (€)</Label>
-                <Input 
-                  id="pricePerDay" 
-                  name="pricePerDay" 
-                  type="number" 
-                  min="0" 
-                  value={vehicle.pricePerDay} 
-                  onChange={handleChange} 
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="seats">Nombre de places</Label>
-                <Input 
-                  id="seats" 
-                  name="seats" 
-                  type="number" 
-                  min="1" 
-                  value={vehicle.seats} 
-                  onChange={handleChange} 
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="image">URL de l'image</Label>
-                <Input 
-                  id="image" 
-                  name="image" 
-                  value={vehicle.image} 
-                  onChange={handleChange} 
-                />
-              </div>
-
-              <div className="space-y-2 flex items-center justify-between">
-                <Label htmlFor="available">Disponible</Label>
-                <Switch 
-                  id="available"
-                  checked={vehicle.available}
-                  onCheckedChange={(checked) => handleSwitchChange('available', checked)}
-                />
-              </div>
-
-              <div className="space-y-2 col-span-1 md:col-span-2">
                 <Label htmlFor="description">Description</Label>
                 <Textarea 
                   id="description" 
-                  name="description" 
-                  value={vehicle.description} 
-                  onChange={handleChange} 
+                  value={vehicleData.description} 
+                  onChange={(e) => handleChange('description', e.target.value)} 
+                  placeholder="Description du véhicule..."
                   rows={4}
                 />
               </div>
-
-              <div className="space-y-2 col-span-1 md:col-span-2">
-                <Label htmlFor="features">Caractéristiques (séparées par des virgules)</Label>
-                <Textarea 
-                  id="features" 
-                  name="features" 
-                  value={vehicle.features} 
-                  onChange={handleChange} 
-                  rows={3}
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="pt-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="available">Disponible</Label>
+                  <div className="text-sm text-muted-foreground">Le véhicule peut être réservé</div>
+                </div>
+                <Switch 
+                  id="available" 
+                  checked={vehicleData.available} 
+                  onCheckedChange={(checked) => handleChange('available', checked)} 
                 />
               </div>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="featured">Mettre en avant</Label>
+                  <div className="text-sm text-muted-foreground">Afficher sur la page d'accueil</div>
+                </div>
+                <Switch 
+                  id="featured" 
+                  checked={vehicleData.featured} 
+                  onCheckedChange={(checked) => handleChange('featured', checked)} 
+                />
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button className="w-full" type="submit">
+                <Save className="mr-2 h-4 w-4" />
+                {isEditMode ? 'Mettre à jour le véhicule' : 'Ajouter le véhicule'}
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      </form>
     </div>
   );
 };
