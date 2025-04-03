@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { MapPin } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
@@ -35,6 +34,7 @@ const DestinationSearch: React.FC<DestinationSearchProps> = ({
 }) => {
   const [filteredDestinations, setFilteredDestinations] = useState(destinations);
   const [isOpen, setIsOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Handle destination search filter
   const handleDestinationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,6 +55,11 @@ const DestinationSearch: React.FC<DestinationSearchProps> = ({
     setIsOpen(true);
   };
 
+  // Add a click handler for the input to keep the popover open
+  const handleInputClick = () => {
+    setIsOpen(true);
+  };
+
   return (
     <div className="relative w-full">
       <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-northgascar-teal" size={18} />
@@ -62,16 +67,17 @@ const DestinationSearch: React.FC<DestinationSearchProps> = ({
         <PopoverTrigger asChild>
           <div className="cursor-pointer w-full">
             <Input 
+              ref={inputRef}
               value={destination}
               onChange={handleDestinationChange}
+              onClick={handleInputClick}
               placeholder="Où aller?" 
               className="pl-10 pr-4 h-11 text-sm"
               variant="glass"
-              onFocus={() => setIsOpen(true)}
             />
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-[calc(100%-24px)] p-0 max-h-[300px] overflow-auto z-50" align="center">
+        <PopoverContent className="w-[calc(100%-24px)] p-0 max-h-[300px] overflow-auto z-50 bg-white/90 backdrop-blur-sm" align="center">
           <div className="py-2">
             {filteredDestinations.length > 0 ? (
               filteredDestinations.map((dest, index) => (
