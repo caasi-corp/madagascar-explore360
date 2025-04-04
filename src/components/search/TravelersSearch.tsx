@@ -7,12 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-
-interface Travelers {
-  adults: number;
-  children: number;
-  infants: number;
-}
+import { Travelers } from './types';
 
 interface TravelersSearchProps {
   travelers: Travelers;
@@ -39,6 +34,15 @@ const TravelersSearch: React.FC<TravelersSearchProps> = ({
     return `${totalTravelers} voyageurs`;
   };
 
+  // Helper function to update travelers state
+  const updateTravelers = (field: keyof Travelers, value: number) => {
+    const updatedTravelers = {
+      ...travelers,
+      [field]: value
+    };
+    setTravelers(updatedTravelers);
+  };
+
   return (
     <div className="relative w-full">
       <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-northgascar-teal" size={18} />
@@ -60,7 +64,7 @@ const TravelersSearch: React.FC<TravelersSearchProps> = ({
               count={travelers.adults}
               min={1}
               max={10}
-              onChange={(value) => setTravelers(prev => ({ ...prev, adults: value }))}
+              onChange={(value) => updateTravelers('adults', value)}
             />
             <TravelerCounter 
               title="Enfants"
@@ -68,7 +72,7 @@ const TravelersSearch: React.FC<TravelersSearchProps> = ({
               count={travelers.children}
               min={0}
               max={6}
-              onChange={(value) => setTravelers(prev => ({ ...prev, children: value }))}
+              onChange={(value) => updateTravelers('children', value)}
             />
             <TravelerCounter 
               title="Bébés"
@@ -76,7 +80,7 @@ const TravelersSearch: React.FC<TravelersSearchProps> = ({
               count={travelers.infants}
               min={0}
               max={4}
-              onChange={(value) => setTravelers(prev => ({ ...prev, infants: value }))}
+              onChange={(value) => updateTravelers('infants', value)}
             />
             <Button 
               className="w-full"

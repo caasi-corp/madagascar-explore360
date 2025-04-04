@@ -79,7 +79,7 @@ const ContactForm = () => {
               name="firstName"
               render={({ field }) => (
                 <FormItem className="space-y-2">
-                  <FormLabel variant="glass">Prénom</FormLabel>
+                  <FormLabel className="glass-label">Prénom</FormLabel>
                   <FormControl>
                     <Input 
                       variant="glass" 
@@ -97,7 +97,7 @@ const ContactForm = () => {
               name="lastName"
               render={({ field }) => (
                 <FormItem className="space-y-2">
-                  <FormLabel variant="glass">Nom</FormLabel>
+                  <FormLabel className="glass-label">Nom</FormLabel>
                   <FormControl>
                     <Input 
                       variant="glass" 
@@ -116,7 +116,7 @@ const ContactForm = () => {
             name="email"
             render={({ field }) => (
               <FormItem className="space-y-2">
-                <FormLabel variant="glass">Email</FormLabel>
+                <FormLabel className="glass-label">Email</FormLabel>
                 <FormControl>
                   <Input 
                     variant="glass" 
@@ -135,7 +135,7 @@ const ContactForm = () => {
             name="subject"
             render={({ field }) => (
               <FormItem className="space-y-2">
-                <FormLabel variant="glass">Sujet</FormLabel>
+                <FormLabel className="glass-label">Sujet</FormLabel>
                 <FormControl>
                   <Input 
                     variant="glass" 
@@ -153,7 +153,7 @@ const ContactForm = () => {
             name="message"
             render={({ field }) => (
               <FormItem className="space-y-2">
-                <FormLabel variant="glass">Message</FormLabel>
+                <FormLabel className="glass-label">Message</FormLabel>
                 <FormControl>
                   <Textarea 
                     variant="glass" 

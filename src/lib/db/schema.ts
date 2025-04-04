@@ -28,6 +28,9 @@ export interface Vehicle {
   image: string;
   features: string[];
   availability: boolean;
+  description?: string;
+  featured?: boolean;
+  images?: string[];
 }
 
 export interface User {
