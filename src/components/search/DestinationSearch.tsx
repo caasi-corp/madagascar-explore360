@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { MapPin } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -77,7 +78,7 @@ const DestinationSearch: React.FC<DestinationSearchProps> = ({
             />
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-[calc(100%-24px)] p-0 max-h-[300px] overflow-auto z-50 bg-white/90 backdrop-blur-sm" align="center">
+        <PopoverContent className="w-[calc(100%-24px)] p-0 max-h-[300px] overflow-auto z-50 backdrop-blur-sm" align="center">
           <div className="py-2">
             {filteredDestinations.length > 0 ? (
               filteredDestinations.map((dest, index) => (
