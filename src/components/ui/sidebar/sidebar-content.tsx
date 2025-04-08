@@ -203,7 +203,6 @@ export const Sidebar = React.forwardRef<
         </DrawerTrigger>
         <DrawerContent
           className="fixed inset-y-0 left-0 w-[--sidebar-width-mobile] p-0"
-          hideCloseButton
         >
           <div className="flex h-svh w-full flex-col gap-0">
             <div className="flex h-14 items-center border-b border-sidebar-border px-4">
