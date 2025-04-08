@@ -198,7 +198,7 @@ export const Sidebar = React.forwardRef<
             }}
           >
             <Menu className="h-4 w-4" />
-            <span className="sr-only">Open menu</span>
+            <span className="sr-only">Ouvrir menu</span>
           </Button>
         </DrawerTrigger>
         <DrawerContent
@@ -212,7 +212,7 @@ export const Sidebar = React.forwardRef<
                 onClick={() => setOpenMobile(false)}
               >
                 <X className="h-4 w-4" />
-                <span className="sr-only">Close</span>
+                <span className="sr-only">Fermer</span>
               </Button>
             </div>
             <div

@@ -1,18 +1,24 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const SidebarLogout: React.FC = () => {
+  const handleLogout = () => {
+    // Logique de déconnexion ici
+    window.location.href = '/login';
+  };
+
   return (
-    <div className="border-t border-border p-3 absolute bottom-0 left-0 right-0 bg-card">
-      <Link
-        to="/logout"
-        className="flex items-center justify-center p-3 rounded-md text-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+    <div className="mt-auto p-4 border-t border-border">
+      <Button 
+        variant="ghost" 
+        className="w-full flex items-center justify-start text-destructive hover:text-destructive"
+        onClick={handleLogout}
       >
-        <LogOut size={18} className="mr-2" />
-        <span className="font-medium">Logout</span>
-      </Link>
+        <LogOut className="mr-2 h-4 w-4" />
+        <span>Déconnexion</span>
+      </Button>
     </div>
   );
 };

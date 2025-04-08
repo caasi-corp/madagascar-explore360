@@ -27,7 +27,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ toggleTheme, theme }) => {
   return (
     <header className="bg-background border-b border-border py-3 px-6 flex justify-between items-center">
       <div className="flex items-center space-x-2">
-        <h1 className="text-xl font-semibold hidden md:block">Admin Dashboard</h1>
+        <h1 className="text-xl font-semibold hidden md:block">Tableau de Bord Administrateur</h1>
       </div>
       
       <div className="flex items-center space-x-4">
@@ -48,24 +48,24 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ toggleTheme, theme }) => {
             <DropdownMenuSeparator />
             <div className="max-h-80 overflow-y-auto">
               <DropdownMenuItem className="cursor-pointer flex flex-col items-start p-3">
-                <div className="font-medium">New Booking Request</div>
-                <div className="text-sm text-muted-foreground">John Doe booked Avenue of Baobabs Tour</div>
-                <div className="text-xs text-muted-foreground mt-1">5 minutes ago</div>
+                <div className="font-medium">Nouvelle demande de réservation</div>
+                <div className="text-sm text-muted-foreground">John Doe a réservé le circuit Avenue des Baobabs</div>
+                <div className="text-xs text-muted-foreground mt-1">Il y a 5 minutes</div>
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer flex flex-col items-start p-3">
-                <div className="font-medium">New Message</div>
-                <div className="text-sm text-muted-foreground">Sandra Adams sent you a message</div>
-                <div className="text-xs text-muted-foreground mt-1">1 hour ago</div>
+                <div className="font-medium">Nouveau message</div>
+                <div className="text-sm text-muted-foreground">Sandra Adams vous a envoyé un message</div>
+                <div className="text-xs text-muted-foreground mt-1">Il y a 1 heure</div>
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer flex flex-col items-start p-3">
-                <div className="font-medium">System Update</div>
-                <div className="text-sm text-muted-foreground">The system has been updated successfully</div>
-                <div className="text-xs text-muted-foreground mt-1">2 hours ago</div>
+                <div className="font-medium">Mise à jour système</div>
+                <div className="text-sm text-muted-foreground">Le système a été mis à jour avec succès</div>
+                <div className="text-xs text-muted-foreground mt-1">Il y a 2 heures</div>
               </DropdownMenuItem>
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer justify-center text-center font-medium text-madagascar-green">
-              View all notifications
+              Voir toutes les notifications
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -78,20 +78,20 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ toggleTheme, theme }) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer">
-              <User className="mr-2 h-4 w-4" /> Profile
+              <User className="mr-2 h-4 w-4" /> Profil
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer">
-              <Settings className="mr-2 h-4 w-4" /> Settings
+              <Settings className="mr-2 h-4 w-4" /> Paramètres
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem 
               className="cursor-pointer text-destructive focus:text-destructive"
               onClick={() => window.location.href = "/"}
             >
-              Log out
+              Déconnexion
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
