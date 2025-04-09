@@ -490,12 +490,12 @@ const ExcursionsCalendar = () => {
                 />
               </div>
               
-              <Select value={filterStatus || ''} onValueChange={(value) => setFilterStatus(value || null)}>
+              <Select value={filterStatus || 'all'} onValueChange={(value) => setFilterStatus(value === 'all' ? null : value)}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Filtrer par statut" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tous les statuts</SelectItem>
+                  <SelectItem value="all">Tous les statuts</SelectItem>
                   <SelectItem value="Confirmé">Confirmé</SelectItem>
                   <SelectItem value="En attente">En attente</SelectItem>
                   <SelectItem value="Annulé">Annulé</SelectItem>
