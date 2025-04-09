@@ -4,8 +4,8 @@ import { useToast } from '@/components/ui/use-toast';
 
 export function useGoogleApiConfig() {
   const [apiKey, setApiKey] = useState('');
-  const [clientId, setClientId] = useState('');
-  const [clientSecret, setClientSecret] = useState('');
+  const [clientId, setClientId] = useState('543266334034-mecmfq4h1jgi0rnqnbc0k9biobp4ecge.apps.googleusercontent.com');
+  const [clientSecret, setClientSecret] = useState('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');
   const [isLoading, setIsLoading] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [isConfigured, setIsConfigured] = useState(false);

@@ -104,7 +104,7 @@ export const GoogleApiConfigDialog: React.FC<GoogleApiConfigDialogProps> = ({
             <Button 
               onClick={handleSaveConfig}
               disabled={isLoading || !apiKey || !clientId || !clientSecret}
-              className="w-full sm:w-auto bg-madagacscar-green hover:bg-madagascar-green/80 text-white group flex items-center gap-2 transition-all"
+              className="w-full sm:w-auto bg-madagascar-green hover:bg-madagascar-green/80 text-white group flex items-center gap-2 transition-all"
             >
               {isLoading ? (
                 <>
