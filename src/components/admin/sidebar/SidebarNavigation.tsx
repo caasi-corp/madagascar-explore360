@@ -1,111 +1,190 @@
 
 import React from 'react';
-import { 
-  LayoutDashboard, 
-  Map, 
-  Calendar, 
-  Bookmark, 
-  Users, 
-  Car, 
-  Building2, 
-  Plane, 
-  PieChart, 
-  MessageSquare, 
-  Settings, 
-  Folder,
-  FolderTree,
-  CalendarCheck
+import { Link, useLocation } from 'react-router-dom';
+import {
+  Home,
+  Map,
+  Calendar,
+  Users,
+  Car,
+  Building,
+  Plane,
+  BarChart,
+  MessageCircle,
+  Settings,
+  LucideIcon
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+interface NavItem {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+  submenu?: NavItem[];
+}
+
+const navItems: NavItem[] = [
+  {
+    name: 'Tableau de bord',
+    href: '/admin',
+    icon: Home
+  },
+  {
+    name: 'Circuits',
+    href: '/admin/tours',
+    icon: Map,
+    submenu: [
+      { name: 'Tous les circuits', href: '/admin/tours', icon: Map },
+      { name: 'Catégories', href: '/admin/tours/categories', icon: Map }
+    ]
+  },
+  {
+    name: 'Réservations',
+    href: '/admin/bookings',
+    icon: Calendar
+  },
+  {
+    name: 'Clients',
+    href: '/admin/customers',
+    icon: Users
+  },
+  {
+    name: 'Véhicules',
+    href: '/admin/vehicles',
+    icon: Car,
+    submenu: [
+      { name: 'Tous les véhicules', href: '/admin/vehicles', icon: Car },
+      { name: 'Réservations', href: '/admin/vehicles/bookings', icon: Calendar }
+    ]
+  },
+  {
+    name: 'Hôtels',
+    href: '/admin/hotels',
+    icon: Building
+  },
+  {
+    name: 'Vols',
+    href: '/admin/flights',
+    icon: Plane
+  },
+  {
+    name: 'Rapports',
+    href: '/admin/reports',
+    icon: BarChart
+  },
+  {
+    name: 'Messages',
+    href: '/admin/messages',
+    icon: MessageCircle
+  },
+  {
+    name: 'Paramètres',
+    href: '/admin/settings',
+    icon: Settings,
+    submenu: [
+      { name: 'Général', href: '/admin/settings', icon: Settings },
+      { name: 'SEO', href: '/admin/settings/seo', icon: Settings },
+      { name: 'Utilisateurs', href: '/admin/settings/users', icon: Users }
+    ]
+  }
+];
 
 const SidebarNavigation: React.FC = () => {
-  const isActive = (path: string) => window.location.pathname === path || window.location.pathname.startsWith(path + '/');
-  
+  const location = useLocation();
+  const [expandedSubmenu, setExpandedSubmenu] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    // Trouver si un élément parent doit être ouvert en fonction de l'URL actuelle
+    const parentItem = navItems.find(item => 
+      item.submenu?.some(subitem => location.pathname === subitem.href)
+    );
+    
+    if (parentItem) {
+      setExpandedSubmenu(parentItem.name);
+    }
+  }, [location.pathname]);
+
+  const toggleSubmenu = (name: string) => {
+    setExpandedSubmenu(expandedSubmenu === name ? null : name);
+  };
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h4 className="px-2 text-xs font-semibold text-muted-foreground mb-3 uppercase">Tableau de bord</h4>
-        <nav className="space-y-1">
-          <div className={`flex items-center p-3 rounded-md mb-1 transition-colors ${isActive('/admin') ? 'bg-madagascar-green/10 text-madagascar-green' : 'hover:bg-madagascar-green/5 text-foreground'}`}>
-            <div className="mr-3"><LayoutDashboard size={18} /></div>
-            <a href="/admin" className="font-medium">Tableau de bord</a>
+    <nav className="space-y-1">
+      {navItems.map((item) => {
+        const isActive = location.pathname === item.href || 
+                         (item.submenu && item.submenu.some(subitem => location.pathname === subitem.href));
+        const hasSubmenu = item.submenu && item.submenu.length > 0;
+        const isSubmenuExpanded = expandedSubmenu === item.name;
+
+        return (
+          <div key={item.name} className="mb-1">
+            {hasSubmenu ? (
+              <button
+                onClick={() => toggleSubmenu(item.name)}
+                className={cn(
+                  "w-full flex items-center px-3 py-2 text-sm rounded-md transition-colors",
+                  isActive 
+                    ? "bg-accent text-accent-foreground" 
+                    : "hover:bg-muted"
+                )}
+              >
+                <item.icon className="mr-2 h-4 w-4" />
+                <span>{item.name}</span>
+                <svg
+                  className={cn(
+                    "ml-auto h-4 w-4 transition-transform",
+                    isSubmenuExpanded ? "rotate-90" : ""
+                  )}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            ) : (
+              <Link
+                to={item.href}
+                className={cn(
+                  "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
+                  isActive 
+                    ? "bg-accent text-accent-foreground" 
+                    : "hover:bg-muted"
+                )}
+              >
+                <item.icon className="mr-2 h-4 w-4" />
+                <span>{item.name}</span>
+              </Link>
+            )}
+
+            {/* Sous-menu */}
+            {hasSubmenu && isSubmenuExpanded && (
+              <div className="mt-1 ml-4 space-y-1">
+                {item.submenu?.map((subitem) => (
+                  <Link
+                    key={subitem.name}
+                    to={subitem.href}
+                    className={cn(
+                      "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
+                      location.pathname === subitem.href
+                        ? "bg-accent text-accent-foreground"
+                        : "hover:bg-muted"
+                    )}
+                  >
+                    <subitem.icon className="mr-2 h-4 w-4" />
+                    <span>{subitem.name}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
-        </nav>
-      </div>
-      
-      <div>
-        <h4 className="px-2 text-xs font-semibold text-muted-foreground mb-3 uppercase">Circuits</h4>
-        <nav className="space-y-1">
-          <div className={`flex items-center p-3 rounded-md mb-1 transition-colors ${isActive('/admin/tours') ? 'bg-madagascar-green/10 text-madagascar-green' : 'hover:bg-madagascar-green/5 text-foreground'}`}>
-            <div className="mr-3"><Map size={18} /></div>
-            <a href="/admin/tours" className="font-medium">Circuits</a>
-          </div>
-          <div className={`flex items-center p-3 rounded-md mb-1 transition-colors ${isActive('/admin/tours/categories') ? 'bg-madagascar-green/10 text-madagascar-green' : 'hover:bg-madagascar-green/5 text-foreground'}`}>
-            <div className="mr-3"><FolderTree size={18} /></div>
-            <a href="/admin/tours/categories" className="font-medium">Catégories</a>
-          </div>
-        </nav>
-      </div>
-      
-      <div>
-        <h4 className="px-2 text-xs font-semibold text-muted-foreground mb-3 uppercase">Réservations</h4>
-        <nav className="space-y-1">
-          <div className={`flex items-center p-3 rounded-md mb-1 transition-colors ${isActive('/admin/bookings') ? 'bg-madagascar-green/10 text-madagascar-green' : 'hover:bg-madagascar-green/5 text-foreground'}`}>
-            <div className="mr-3"><Bookmark size={18} /></div>
-            <a href="/admin/bookings" className="font-medium">Réservations</a>
-          </div>
-          <div className={`flex items-center p-3 rounded-md mb-1 transition-colors ${isActive('/admin/calendar') ? 'bg-madagascar-green/10 text-madagascar-green' : 'hover:bg-madagascar-green/5 text-foreground'}`}>
-            <div className="mr-3"><CalendarCheck size={18} /></div>
-            <a href="/admin/calendar" className="font-medium">Calendrier</a>
-          </div>
-          <div className={`flex items-center p-3 rounded-md mb-1 transition-colors ${isActive('/admin/customers') ? 'bg-madagascar-green/10 text-madagascar-green' : 'hover:bg-madagascar-green/5 text-foreground'}`}>
-            <div className="mr-3"><Users size={18} /></div>
-            <a href="/admin/customers" className="font-medium">Clients</a>
-          </div>
-        </nav>
-      </div>
-      
-      <div>
-        <h4 className="px-2 text-xs font-semibold text-muted-foreground mb-3 uppercase">Transport</h4>
-        <nav className="space-y-1">
-          <div className={`flex items-center p-3 rounded-md mb-1 transition-colors ${isActive('/admin/vehicles') ? 'bg-madagascar-green/10 text-madagascar-green' : 'hover:bg-madagascar-green/5 text-foreground'}`}>
-            <div className="mr-3"><Car size={18} /></div>
-            <a href="/admin/vehicles" className="font-medium">Véhicules</a>
-          </div>
-          <div className={`flex items-center p-3 rounded-md mb-1 transition-colors ${isActive('/admin/hotels') ? 'bg-madagascar-green/10 text-madagascar-green' : 'hover:bg-madagascar-green/5 text-foreground'}`}>
-            <div className="mr-3"><Building2 size={18} /></div>
-            <a href="/admin/hotels" className="font-medium">Hôtels</a>
-          </div>
-          <div className={`flex items-center p-3 rounded-md mb-1 transition-colors ${isActive('/admin/flights') ? 'bg-madagascar-green/10 text-madagascar-green' : 'hover:bg-madagascar-green/5 text-foreground'}`}>
-            <div className="mr-3"><Plane size={18} /></div>
-            <a href="/admin/flights" className="font-medium">Vols</a>
-          </div>
-        </nav>
-      </div>
-      
-      <div>
-        <h4 className="px-2 text-xs font-semibold text-muted-foreground mb-3 uppercase">Informations</h4>
-        <nav className="space-y-1">
-          <div className={`flex items-center p-3 rounded-md mb-1 transition-colors ${isActive('/admin/reports') ? 'bg-madagascar-green/10 text-madagascar-green' : 'hover:bg-madagascar-green/5 text-foreground'}`}>
-            <div className="mr-3"><PieChart size={18} /></div>
-            <a href="/admin/reports" className="font-medium">Rapports</a>
-          </div>
-          <div className={`flex items-center p-3 rounded-md mb-1 transition-colors ${isActive('/admin/messages') ? 'bg-madagascar-green/10 text-madagascar-green' : 'hover:bg-madagascar-green/5 text-foreground'}`}>
-            <div className="mr-3"><MessageSquare size={18} /></div>
-            <a href="/admin/messages" className="font-medium">Messages</a>
-          </div>
-        </nav>
-      </div>
-      
-      <div>
-        <h4 className="px-2 text-xs font-semibold text-muted-foreground mb-3 uppercase">Système</h4>
-        <nav className="space-y-1">
-          <div className={`flex items-center p-3 rounded-md mb-1 transition-colors ${isActive('/admin/settings') ? 'bg-madagascar-green/10 text-madagascar-green' : 'hover:bg-madagascar-green/5 text-foreground'}`}>
-            <div className="mr-3"><Settings size={18} /></div>
-            <a href="/admin/settings" className="font-medium">Paramètres</a>
-          </div>
-        </nav>
-      </div>
-    </div>
+        );
+      })}
+    </nav>
   );
 };
 

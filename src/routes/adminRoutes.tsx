@@ -6,7 +6,6 @@ import AdminTours from '@/pages/admin/Tours';
 import AdminTourEditor from '@/pages/admin/TourEditor';
 import AdminTourCategories from '@/pages/admin/TourCategories';
 import AdminBookings from '@/pages/admin/Bookings';
-import AdminCalendarBookings from '@/pages/admin/CalendarBookings';
 import AdminCustomers from '@/pages/admin/Customers';
 import AdminVehicles from '@/pages/admin/Vehicles';
 import AdminVehicleEditor from '@/pages/admin/VehicleEditor';
@@ -50,10 +49,6 @@ const adminRoutes = {
     {
       path: 'bookings',
       element: <AdminBookings />
-    },
-    {
-      path: 'calendar',
-      element: <AdminCalendarBookings />
     },
     {
       path: 'customers',
