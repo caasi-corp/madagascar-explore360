@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
+import { syncWithGoogleCalendar } from '@/hooks/booking/bookingUtils';
 
 export function useGoogleApiConfig() {
   const [apiKey, setApiKey] = useState('AIzaSyC-yED_EoHW-LtNTdLgCwavTdRiikQ1K_0');
@@ -45,26 +46,42 @@ export function useGoogleApiConfig() {
     }, 1000);
   };
 
-  const handleTestConnection = () => {
+  const handleTestConnection = async () => {
     setIsTesting(true);
     
-    // Simulate a connection test
-    setTimeout(() => {
+    if (!apiKey || !clientId || !clientSecret) {
       setIsTesting(false);
+      toast({
+        title: "Échec de la connexion",
+        description: "Veuillez compléter tous les champs requis.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    try {
+      // Sauvegarde temporaire des identifiants pour le test
+      localStorage.setItem('google_api_key', apiKey);
+      localStorage.setItem('google_client_id', clientId);
+      localStorage.setItem('google_client_secret', clientSecret);
+      localStorage.setItem('google_api_configured', 'true');
       
-      if (apiKey && clientId && clientSecret) {
-        toast({
-          title: "Connexion réussie",
-          description: "La connexion à l'API Google a été testée avec succès.",
-        });
-      } else {
-        toast({
-          title: "Échec de la connexion",
-          description: "Veuillez compléter tous les champs requis.",
-          variant: "destructive",
-        });
-      }
-    }, 1500);
+      // Utiliser la fonction réelle de synchronisation pour tester la connexion
+      await syncWithGoogleCalendar();
+      
+      toast({
+        title: "Connexion réussie",
+        description: "La connexion à l'API Google a été testée avec succès.",
+      });
+    } catch (error) {
+      toast({
+        title: "Échec de la connexion",
+        description: error instanceof Error ? error.message : "Erreur lors du test de la connexion",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTesting(false);
+    }
   };
 
   return {

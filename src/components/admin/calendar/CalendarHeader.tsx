@@ -2,7 +2,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, Plus, Calendar, CalendarDays, CalendarClock, ListTodo } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, CalendarDays, CalendarClock, ListTodo } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CardTitle } from '@/components/ui/card';
 import { NewBookingDialog } from './NewBookingDialog';
@@ -109,16 +109,6 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        
-        <Button 
-          size="sm" 
-          variant="default"
-          onClick={() => setShowNewBookingDialog(true)}
-          className="bg-northgascar-teal hover:bg-northgascar-teal/80"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Nouvelle réservation
-        </Button>
       </div>
       
       <NewBookingDialog 

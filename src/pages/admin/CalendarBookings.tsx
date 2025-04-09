@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
@@ -37,7 +38,8 @@ const CalendarBookings = () => {
     syncWithGoogle, 
     isSyncing,
     isConfigured,
-    bookingsByDate
+    bookingsByDate,
+    deleteBooking
   } = useBookingCalendar();
 
   const [filters, setFilters] = useState({
@@ -60,7 +62,7 @@ const CalendarBookings = () => {
       await syncWithGoogle();
       toast({
         title: "Synchronisation réussie",
-        description: "Le calendrier a été synchronisé avec Google Tasks",
+        description: "Le calendrier a été synchronisé avec Google Calendar",
       });
     } catch (error) {
       toast({
@@ -78,6 +80,7 @@ const CalendarBookings = () => {
 
   const confirmDeleteBooking = () => {
     if (bookingToDelete) {
+      deleteBooking(bookingToDelete);
       toast({
         title: "Réservation supprimée",
         description: `La réservation ${bookingToDelete} a été supprimée avec succès.`,
@@ -127,6 +130,7 @@ const CalendarBookings = () => {
     });
   };
 
+  // Assurez-vous que allTours et allStatuses sont explicitement typés comme string[]
   const allTours: string[] = Array.from(new Set(bookings.map(b => b.tour)));
   const allStatuses: string[] = Array.from(new Set(bookings.map(b => b.status)));
   const filteredBookings = getFilteredBookings();

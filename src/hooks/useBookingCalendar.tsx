@@ -23,6 +23,7 @@ export const useBookingCalendar = () => {
         const mockBookings = generateMockBookings();
         const bookingsByDate = organizeBookingsByDate(mockBookings);
         const isConfigured = checkApiConfiguration();
+        const lastSyncDate = localStorage.getItem('google_calendar_sync_date');
 
         setState({
           bookings: mockBookings,
@@ -32,6 +33,13 @@ export const useBookingCalendar = () => {
           isSyncing: false,
           isConfigured
         });
+        
+        // Afficher une indication dans la console sur le statut de synchronisation
+        if (lastSyncDate) {
+          console.log("Dernière synchronisation Google Calendar:", new Date(lastSyncDate).toLocaleString());
+        } else {
+          console.log("Aucune synchronisation Google Calendar n'a encore été effectuée");
+        }
       } catch (error) {
         setState(prev => ({
           ...prev,
@@ -54,7 +62,17 @@ export const useBookingCalendar = () => {
 
     try {
       await syncWithGoogleCalendar();
-      setState(prev => ({ ...prev, isSyncing: false }));
+      
+      // Après synchronisation, recharger les données
+      const mockBookings = generateMockBookings();
+      const bookingsByDate = organizeBookingsByDate(mockBookings);
+      
+      setState(prev => ({ 
+        ...prev, 
+        isSyncing: false,
+        bookings: mockBookings,
+        bookingsByDate
+      }));
     } catch (error) {
       setState(prev => ({
         ...prev,
