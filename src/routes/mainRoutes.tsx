@@ -3,6 +3,7 @@ import React from 'react';
 import Layout from '@/components/Layout';
 import Index from '@/pages/Index';
 import Tours from '@/pages/Tours';
+import TourDetail from '@/pages/TourDetail';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import NotFound from '@/pages/NotFound';
@@ -27,6 +28,10 @@ const mainRoutes = {
     {
       path: 'tours',
       element: <Tours />
+    },
+    {
+      path: 'tours/:tourId',
+      element: <TourDetail />
     },
     {
       path: 'services/car-rental',

@@ -32,6 +32,12 @@ export const tourAPI = {
     return allTours.filter(tour => tour.featured);
   },
   
+  getRelated: async (id: string, category: string) => {
+    const db = await getDB();
+    const allTours = await db.getAllFromIndex('tours', 'by-category', category);
+    return allTours.filter(tour => tour.id !== id).slice(0, 4);
+  },
+  
   add: async (tour: Omit<Tour, 'id'>) => {
     const db = await getDB();
     const id = crypto.randomUUID();
