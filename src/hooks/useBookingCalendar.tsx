@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 
 // Interface pour les réservations
-interface Booking {
+export interface Booking {
   id: string;
   client: string;
   tour: string;

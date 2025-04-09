@@ -1,34 +1,21 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  Calendar as CalendarIcon, 
-  ChevronLeft, 
-  ChevronRight,
-  Plus,
   RefreshCw,
   Settings,
-  AlertCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-  DialogTrigger
-} from '@/components/ui/dialog';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { format, addMonths, subMonths } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { GoogleApiConfigDialog } from '@/components/admin/GoogleApiConfigDialog';
 import { useBookingCalendar } from '@/hooks/useBookingCalendar';
+import { CalendarHeader } from '@/components/admin/calendar/CalendarHeader';
+import { CalendarDayContent } from '@/components/admin/calendar/CalendarDayContent';
+import { BookingsList } from '@/components/admin/calendar/BookingsList';
+import { ApiConfigAlert } from '@/components/admin/calendar/ApiConfigAlert';
 
 const CalendarBookings = () => {
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
@@ -89,19 +76,7 @@ const CalendarBookings = () => {
   // Cette fonction sera utilisée pour rendre le contenu des jours après la sélection du mois
   const getDayContent = (day: Date) => {
     const events = getDayEvents(day);
-    return (
-      <div className="relative w-full h-full">
-        <div>{day.getDate()}</div>
-        {events.length > 0 && (
-          <Badge 
-            className="absolute bottom-0 right-0 text-[10px] min-w-4 h-4 flex items-center justify-center" 
-            variant="default"
-          >
-            {events.length}
-          </Badge>
-        )}
-      </div>
-    );
+    return <CalendarDayContent day={day} bookings={events} />;
   };
 
   useEffect(() => {
@@ -143,69 +118,21 @@ const CalendarBookings = () => {
         </div>
       </div>
 
-      {!isConfigured && (
-        <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
-              <AlertCircle className="h-4 w-4" />
-              <p>L'API Google n'est pas configurée. Veuillez configurer l'API pour activer la synchronisation.</p>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="ml-auto border-amber-200 text-amber-600"
-                onClick={() => setIsConfigOpen(true)}
-              >
-                Configurer
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <ApiConfigAlert 
+        isConfigured={isConfigured} 
+        onOpenConfig={() => setIsConfigOpen(true)} 
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         <Card className="md:col-span-8">
           <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="icon" onClick={handlePreviousMonth}>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <CardTitle className="text-center min-w-40">
-                  {format(currentMonth, 'MMMM yyyy', { locale: fr })}
-                </CardTitle>
-                <Button variant="outline" size="icon" onClick={handleNextMonth}>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-              <Dialog open={showNewBookingDialog} onOpenChange={setShowNewBookingDialog}>
-                <DialogTrigger asChild>
-                  <Button className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Nouvelle Réservation
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Ajouter une nouvelle réservation</DialogTitle>
-                    <DialogDescription>
-                      Saisissez les détails de la nouvelle réservation
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="py-4">
-                    {/* Contenu du formulaire de réservation */}
-                    <p>Formulaire de réservation à implémenter</p>
-                  </div>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button variant="outline">Annuler</Button>
-                    </DialogClose>
-                    <Button className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
-                      Enregistrer
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
+            <CalendarHeader 
+              currentMonth={currentMonth}
+              onPreviousMonth={handlePreviousMonth}
+              onNextMonth={handleNextMonth}
+              showNewBookingDialog={showNewBookingDialog}
+              setShowNewBookingDialog={setShowNewBookingDialog}
+            />
           </CardHeader>
           <CardContent>
             <Calendar
@@ -220,50 +147,16 @@ const CalendarBookings = () => {
               modifiers={modifiers}
               modifiersClassNames={modifiersClassNames}
               components={{
-                Day: ({ date, displayMonth }) => getDayContent(date)
+                Day: ({ date }) => getDayContent(date)
               }}
             />
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-4">
-          <CardHeader>
-            <CardTitle>
-              {selectedDate ? (
-                format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr })
-              ) : (
-                "Sélectionnez une date"
-              )}
-            </CardTitle>
-            <CardDescription>
-              {selectedDate && getDayEvents(selectedDate).length > 0 
-                ? `${getDayEvents(selectedDate).length} réservation(s) pour ce jour`
-                : "Aucune réservation pour ce jour"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {selectedDate && getDayEvents(selectedDate).length > 0 ? (
-              <div className="space-y-4">
-                {getDayEvents(selectedDate).map((booking, index) => (
-                  <div key={index} className="border p-3 rounded-md">
-                    <div className="font-medium">{booking.client}</div>
-                    <div className="text-sm text-muted-foreground">{booking.tour}</div>
-                    <div className="text-sm flex justify-between mt-1">
-                      <span>{booking.participants} personnes</span>
-                      <Badge>{booking.status}</Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                {selectedDate 
-                  ? "Aucune réservation pour cette date" 
-                  : "Veuillez sélectionner une date pour voir les réservations"}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <BookingsList 
+          selectedDate={selectedDate} 
+          bookings={selectedDate ? getDayEvents(selectedDate) : []} 
+        />
       </div>
 
       <GoogleApiConfigDialog open={isConfigOpen} onOpenChange={setIsConfigOpen} />
