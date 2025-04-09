@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -32,6 +31,7 @@ import {
 import { bookingAPI } from '@/lib/api/bookingAPI';
 import { tourAPI } from '@/lib/api/tourAPI';
 import { useToast } from '@/components/ui/use-toast';
+import { cn } from '@/lib/utils';
 
 interface Excursion {
   id: string;
@@ -58,10 +58,8 @@ const ExcursionsCalendar = () => {
   const { toast } = useToast();
   const [availableTours, setAvailableTours] = useState<{id: string, title: string}[]>([]);
   
-  // Charger les excursions (simule un appel API)
   useEffect(() => {
     const fetchData = async () => {
-      // Cette partie serait remplacée par un vrai appel API
       const mockExcursions: Excursion[] = [
         {
           id: 'EX001',
@@ -117,7 +115,6 @@ const ExcursionsCalendar = () => {
       
       setExcursions(mockExcursions);
       
-      // Simuler le chargement des tours disponibles
       setAvailableTours([
         { id: 'T001', title: 'Avenue des Baobabs' },
         { id: 'T002', title: 'Trekking aux Lémuriens' },
@@ -130,13 +127,11 @@ const ExcursionsCalendar = () => {
     fetchData();
   }, []);
   
-  // Calculer les dates du mois en cours
   const daysInMonth = eachDayOfInterval({
     start: startOfMonth(currentDate),
     end: endOfMonth(currentDate)
   });
   
-  // Filtrer les excursions
   const filteredExcursions = excursions.filter(excursion => {
     const matchesSearch = 
       excursion.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -151,7 +146,6 @@ const ExcursionsCalendar = () => {
     return matchesSearch && matchesStatus && matchesSelectedDate;
   });
   
-  // Navigation dans le calendrier
   const navigatePrevious = () => {
     if (viewMode === 'month') {
       setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
@@ -184,7 +178,6 @@ const ExcursionsCalendar = () => {
     setCurrentDate(new Date());
   };
   
-  // Obtenir les excursions pour une date spécifique
   const getExcursionsForDate = (date: Date) => {
     return excursions.filter(excursion => {
       const startDate = new Date(excursion.date);
@@ -193,7 +186,6 @@ const ExcursionsCalendar = () => {
     });
   };
   
-  // Badge de statut
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'Confirmé':
@@ -207,7 +199,6 @@ const ExcursionsCalendar = () => {
     }
   };
   
-  // Rendu du jour du calendrier
   const renderDay = (day: Date) => {
     const dayExcursions = getExcursionsForDate(day);
     const isToday = isSameDay(day, new Date());
@@ -255,7 +246,6 @@ const ExcursionsCalendar = () => {
     );
   };
   
-  // Rendu en fonction du mode de vue
   const renderViewContent = () => {
     switch (viewMode) {
       case 'month':
@@ -328,7 +318,6 @@ const ExcursionsCalendar = () => {
         );
         
       case 'day':
-        // Vue par jour
         const dayToShow = selectedDate || currentDate;
         const dayExcursions = getExcursionsForDate(dayToShow);
         
@@ -411,7 +400,6 @@ const ExcursionsCalendar = () => {
     }
   };
   
-  // Mise à jour du statut
   const handleUpdateStatus = (id: string, status: 'Confirmé' | 'En attente' | 'Annulé') => {
     setExcursions(excursions.map(excursion => 
       excursion.id === id ? { ...excursion, status } : excursion
@@ -461,7 +449,6 @@ const ExcursionsCalendar = () => {
         </div>
       </div>
       
-      {/* Contrôles et filtres */}
       <Card>
         <CardContent className="p-4">
           <div className="flex flex-wrap gap-4 items-center justify-between">
@@ -551,14 +538,12 @@ const ExcursionsCalendar = () => {
         </CardContent>
       </Card>
       
-      {/* Contenu du calendrier */}
       <Card>
         <CardContent className="p-4">
           {renderViewContent()}
         </CardContent>
       </Card>
       
-      {/* Dialogue détaillé pour une excursion */}
       <Dialog open={isDetailsDialogOpen} onOpenChange={setIsDetailsDialogOpen}>
         <DialogContent className="max-w-md">
           {selectedExcursion && (
