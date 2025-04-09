@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-import { Loader2 } from 'lucide-react';
+import { CheckCircle, Loader2, Settings, Info } from 'lucide-react';
 import { CredentialsTab } from './CredentialsTab';
 import { InstructionsTab } from './InstructionsTab';
 import { useGoogleApiConfig } from './useGoogleApiConfig';
@@ -74,40 +74,48 @@ export const GoogleApiConfigDialog: React.FC<GoogleApiConfigDialogProps> = ({
         
         <Separator className="my-4" />
         
-        <DialogFooter className="flex justify-between items-center">
+        <DialogFooter className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-2">
           <Button 
             variant="outline" 
             onClick={handleTestConnection}
             disabled={isTesting || !apiKey || !clientId || !clientSecret}
+            className="w-full sm:w-auto flex items-center gap-2 transition-all"
           >
             {isTesting ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Test en cours...
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Test en cours...</span>
               </>
             ) : (
-              "Tester la connexion"
+              <>
+                <Settings className="h-4 w-4" />
+                <span>Tester la connexion</span>
+              </>
             )}
           </Button>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Button 
-              variant="ghost" 
+              variant="outline" 
               onClick={() => onOpenChange(false)}
+              className="w-full sm:w-auto"
             >
               Annuler
             </Button>
             <Button 
               onClick={handleSaveConfig}
               disabled={isLoading || !apiKey || !clientId || !clientSecret}
-              className="bg-madagascar-green hover:bg-madagascar-green/80 text-white"
+              className="w-full sm:w-auto bg-madagacscar-green hover:bg-madagascar-green/80 text-white group flex items-center gap-2 transition-all"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Enregistrement...
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Enregistrement...</span>
                 </>
               ) : (
-                "Enregistrer"
+                <>
+                  <CheckCircle className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                  <span>Enregistrer</span>
+                </>
               )}
             </Button>
           </div>
