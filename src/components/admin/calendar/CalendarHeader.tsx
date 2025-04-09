@@ -5,7 +5,6 @@ import { fr } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Calendar, CalendarDays, CalendarClock, ListTodo } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CardTitle } from '@/components/ui/card';
-import { NewBookingDialog } from './NewBookingDialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -111,10 +110,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
         </DropdownMenu>
       </div>
       
-      <NewBookingDialog 
-        open={showNewBookingDialog} 
-        onOpenChange={setShowNewBookingDialog} 
-      />
+      {/* NewBookingDialog component removed as requested */}
     </div>
   );
 };
