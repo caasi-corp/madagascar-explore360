@@ -16,7 +16,7 @@ const AdminDashboard = () => {
       tour: 'Avenue des Baobabs',
       date: '2023-08-15',
       amount: 599,
-      status: 'Confirmé',
+      status: 'Confirmed',
     },
     {
       id: 'B002',
@@ -24,7 +24,7 @@ const AdminDashboard = () => {
       tour: 'Trekking aux Lémuriens',
       date: '2023-08-16',
       amount: 349,
-      status: 'En attente',
+      status: 'Pending',
     },
     {
       id: 'B003',
@@ -32,7 +32,7 @@ const AdminDashboard = () => {
       tour: 'Parc National d\'Isalo',
       date: '2023-08-18',
       amount: 499,
-      status: 'Confirmé',
+      status: 'Confirmed',
     },
     {
       id: 'B004',
@@ -40,7 +40,7 @@ const AdminDashboard = () => {
       tour: 'Île de Nosy Be',
       date: '2023-08-20',
       amount: 699,
-      status: 'Annulé',
+      status: 'Cancelled',
     },
   ];
 

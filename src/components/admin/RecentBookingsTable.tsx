@@ -19,21 +19,31 @@ interface RecentBookingsTableProps {
 }
 
 const RecentBookingsTable: React.FC<RecentBookingsTableProps> = ({ bookings }) => {
+  // Function to translate status to French
+  const getStatusInFrench = (status: string) => {
+    switch(status) {
+      case 'Confirmed': return 'Confirmé';
+      case 'Pending': return 'En attente';
+      case 'Cancelled': return 'Annulé';
+      default: return status;
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Bookings</CardTitle>
-        <CardDescription>Recent tour and rental bookings</CardDescription>
+        <CardTitle>Réservations Récentes</CardTitle>
+        <CardDescription>Réservations récentes de circuits et locations</CardDescription>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>ID</TableHead>
-              <TableHead>Customer</TableHead>
-              <TableHead>Tour</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Client</TableHead>
+              <TableHead>Circuit</TableHead>
+              <TableHead>Montant</TableHead>
+              <TableHead>Statut</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -43,7 +53,7 @@ const RecentBookingsTable: React.FC<RecentBookingsTableProps> = ({ bookings }) =
                 <TableCell>{booking.id}</TableCell>
                 <TableCell>{booking.customer}</TableCell>
                 <TableCell>{booking.tour}</TableCell>
-                <TableCell>${booking.amount}</TableCell>
+                <TableCell>{booking.amount} €</TableCell>
                 <TableCell>
                   <span
                     className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
@@ -54,7 +64,7 @@ const RecentBookingsTable: React.FC<RecentBookingsTableProps> = ({ bookings }) =
                         : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
                     }`}
                   >
-                    {booking.status}
+                    {getStatusInFrench(booking.status)}
                   </span>
                 </TableCell>
                 <TableCell className="text-right">
