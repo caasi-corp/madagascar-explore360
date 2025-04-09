@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
@@ -41,7 +40,6 @@ const CalendarBookings = () => {
     bookingsByDate
   } = useBookingCalendar();
 
-  // Filtres pour les réservations
   const [filters, setFilters] = useState({
     status: 'all',
     tour: 'all',
@@ -80,7 +78,6 @@ const CalendarBookings = () => {
 
   const confirmDeleteBooking = () => {
     if (bookingToDelete) {
-      // Ici, vous implémenteriez la logique de suppression réelle
       toast({
         title: "Réservation supprimée",
         description: `La réservation ${bookingToDelete} a été supprimée avec succès.`,
@@ -90,7 +87,6 @@ const CalendarBookings = () => {
     }
   };
 
-  // Exporter les réservations au format CSV
   const exportCSV = () => {
     const filteredBookings = getFilteredBookings();
     const headers = "ID,Client,Tour,Date,Participants,Statut\n";
@@ -108,27 +104,21 @@ const CalendarBookings = () => {
     document.body.removeChild(link);
   };
 
-  // Imprimer le calendrier
   const printCalendar = () => {
     window.print();
   };
 
-  // Filtrer les réservations selon les critères de recherche et filtres
   const getFilteredBookings = () => {
     return bookings.filter(booking => {
-      // Filtre par recherche
       const matchesSearch = searchQuery === '' || 
         booking.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
         booking.tour.toLowerCase().includes(searchQuery.toLowerCase()) ||
         booking.id.toLowerCase().includes(searchQuery.toLowerCase());
       
-      // Filtre par statut
       const matchesStatus = filters.status === 'all' || booking.status === filters.status;
       
-      // Filtre par tour
       const matchesTour = filters.tour === 'all' || booking.tour === filters.tour;
       
-      // Filtre par nombre de participants
       const matchesParticipants = 
         booking.participants >= filters.minParticipants && 
         booking.participants <= filters.maxParticipants;
@@ -137,8 +127,8 @@ const CalendarBookings = () => {
     });
   };
 
-  const allTours = [...new Set(bookings.map(b => b.tour))];
-  const allStatuses = [...new Set(bookings.map(b => b.status))];
+  const allTours: string[] = Array.from(new Set(bookings.map(b => b.tour)));
+  const allStatuses: string[] = Array.from(new Set(bookings.map(b => b.status)));
   const filteredBookings = getFilteredBookings();
 
   return (
