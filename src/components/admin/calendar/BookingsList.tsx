@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Edit, Trash2, FileText, Mail, Phone } from 'lucide-react';
-import { Booking } from '@/hooks/useBookingCalendar';
+import { Booking } from '@/types/booking';
 import {
   Tooltip,
   TooltipContent,

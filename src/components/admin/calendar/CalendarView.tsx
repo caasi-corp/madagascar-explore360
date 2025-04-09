@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
@@ -8,7 +7,7 @@ import { CalendarHeader } from './CalendarHeader';
 import { CalendarDayContent } from './CalendarDayContent';
 import { CalendarLegend } from './CalendarLegend';
 import { BookingsList } from './BookingsList';
-import { Booking } from '@/hooks/useBookingCalendar';
+import { Booking } from '@/types/booking';
 
 interface CalendarViewProps {
   currentMonth: Date;

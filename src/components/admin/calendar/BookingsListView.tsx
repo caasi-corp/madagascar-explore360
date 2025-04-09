@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { DateRange } from 'react-day-picker';
 import { CalendarDateRangeSelector } from './CalendarDateRangeSelector';
-import { Booking } from '@/hooks/useBookingCalendar';
+import { Booking } from '@/types/booking';
 
 interface BookingsListViewProps {
   bookings: Booking[];

@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Booking } from '@/hooks/useBookingCalendar';
+import { Booking } from '@/types/booking';
 
 interface CalendarDayContentProps {
   day: Date;
