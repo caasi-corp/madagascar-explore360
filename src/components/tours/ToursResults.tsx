@@ -2,10 +2,10 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import TourCard from '@/components/TourCard';
-import { TourProps } from '@/components/TourCard';
+import { Tour } from '@/lib/db/schema';
 
 interface ToursResultsProps {
-  filteredTours: TourProps[];
+  filteredTours: Tour[];
   resetFilters: () => void;
 }
 

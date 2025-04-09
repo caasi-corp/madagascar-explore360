@@ -4,22 +4,10 @@ import { Link } from 'react-router-dom';
 import { CalendarDays, MapPin, Star, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-
-export interface TourProps {
-  id: string;
-  title: string;
-  description: string;
-  location: string;
-  duration: string;
-  price: number;
-  rating: number;
-  image: string;
-  featured?: boolean;
-  category?: string;
-}
+import { Tour } from '@/lib/db/schema';
 
 interface TourCardProps {
-  tour: TourProps;
+  tour: Tour;
 }
 
 const TourCard: React.FC<TourCardProps> = ({ tour }) => {
