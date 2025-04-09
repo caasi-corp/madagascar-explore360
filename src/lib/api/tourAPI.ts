@@ -38,6 +38,54 @@ export const tourAPI = {
     return allTours.filter(tour => tour.id !== id).slice(0, 4);
   },
   
+  search: async (searchParams: {
+    term?: string;
+    category?: string;
+    location?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    featured?: boolean;
+    active?: boolean;
+  }) => {
+    const db = await getDB();
+    let tours = await db.getAll('tours');
+    
+    if (searchParams.term) {
+      const term = searchParams.term.toLowerCase();
+      tours = tours.filter(tour => 
+        tour.title.toLowerCase().includes(term) || 
+        tour.description.toLowerCase().includes(term) || 
+        tour.location.toLowerCase().includes(term)
+      );
+    }
+    
+    if (searchParams.category) {
+      tours = tours.filter(tour => tour.category === searchParams.category);
+    }
+    
+    if (searchParams.location) {
+      tours = tours.filter(tour => tour.location === searchParams.location);
+    }
+    
+    if (searchParams.minPrice !== undefined) {
+      tours = tours.filter(tour => tour.price >= searchParams.minPrice!);
+    }
+    
+    if (searchParams.maxPrice !== undefined) {
+      tours = tours.filter(tour => tour.price <= searchParams.maxPrice!);
+    }
+    
+    if (searchParams.featured !== undefined) {
+      tours = tours.filter(tour => tour.featured === searchParams.featured);
+    }
+    
+    if (searchParams.active !== undefined) {
+      tours = tours.filter(tour => tour.active === searchParams.active);
+    }
+    
+    return tours;
+  },
+  
   add: async (tour: Omit<Tour, 'id'>) => {
     const db = await getDB();
     const id = crypto.randomUUID();
@@ -61,4 +109,31 @@ export const tourAPI = {
     const db = await getDB();
     await db.delete('tours', id);
   },
+  
+  searchByPrice: async (minPrice: number, maxPrice: number) => {
+    const db = await getDB();
+    const allTours = await db.getAll('tours');
+    return allTours.filter(tour => tour.price >= minPrice && tour.price <= maxPrice);
+  },
+  
+  searchByDuration: async (minDays: number, maxDays: number) => {
+    const db = await getDB();
+    const allTours = await db.getAll('tours');
+    return allTours.filter(tour => {
+      const days = parseInt(tour.duration.split(' ')[0]);
+      return days >= minDays && days <= maxDays;
+    });
+  },
+  
+  getAllCategories: async () => {
+    const db = await getDB();
+    const allTours = await db.getAll('tours');
+    return [...new Set(allTours.map(tour => tour.category))].filter(Boolean);
+  },
+  
+  getAllLocations: async () => {
+    const db = await getDB();
+    const allTours = await db.getAll('tours');
+    return [...new Set(allTours.map(tour => tour.location))].filter(Boolean);
+  }
 };
