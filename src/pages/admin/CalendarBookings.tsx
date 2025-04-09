@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { format, addMonths, subMonths } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { GoogleApiConfigDialog } from '@/components/admin/GoogleApiConfigDialog';
+import { GoogleApiConfigDialog } from '@/components/admin/api-config/GoogleApiConfigDialog';
 import { useBookingCalendar } from '@/hooks/useBookingCalendar';
 import { CalendarHeader } from '@/components/admin/calendar/CalendarHeader';
 import { CalendarDayContent } from '@/components/admin/calendar/CalendarDayContent';
