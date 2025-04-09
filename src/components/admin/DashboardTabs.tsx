@@ -13,9 +13,9 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({ recentBookings }) => {
   return (
     <Tabs defaultValue="overview" className="mb-6">
       <TabsList>
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="analytics">Analytics</TabsTrigger>
-        <TabsTrigger value="reports">Reports</TabsTrigger>
+        <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
+        <TabsTrigger value="analytics">Analyses</TabsTrigger>
+        <TabsTrigger value="reports">Rapports</TabsTrigger>
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
       </TabsList>
       <TabsContent value="overview">
@@ -27,22 +27,22 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({ recentBookings }) => {
       <TabsContent value="analytics">
         <Card>
           <CardHeader>
-            <CardTitle>Analytics</CardTitle>
-            <CardDescription>Detailed analytics data and charts</CardDescription>
+            <CardTitle>Analyses</CardTitle>
+            <CardDescription>Données d'analyse détaillées et graphiques</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Analytics content goes here</p>
+            <p>Le contenu des analyses sera affiché ici</p>
           </CardContent>
         </Card>
       </TabsContent>
       <TabsContent value="reports">
         <Card>
           <CardHeader>
-            <CardTitle>Reports</CardTitle>
-            <CardDescription>Generated reports and data exports</CardDescription>
+            <CardTitle>Rapports</CardTitle>
+            <CardDescription>Rapports générés et exportations de données</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Reports content goes here</p>
+            <p>Le contenu des rapports sera affiché ici</p>
           </CardContent>
         </Card>
       </TabsContent>
@@ -50,10 +50,10 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({ recentBookings }) => {
         <Card>
           <CardHeader>
             <CardTitle>Notifications</CardTitle>
-            <CardDescription>System notifications and alerts</CardDescription>
+            <CardDescription>Notifications et alertes du système</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Notifications content goes here</p>
+            <p>Les notifications seront affichées ici</p>
           </CardContent>
         </Card>
       </TabsContent>

@@ -1,4 +1,7 @@
 
+// Je ne modifie qu'une partie de ce fichier car il est très long
+// Voici les changements pour la partie supérieure du composant
+
 import React, { useState } from 'react';
 import { 
   Calendar, 
