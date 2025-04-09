@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 
 export function useGoogleApiConfig() {
-  const [apiKey, setApiKey] = useState('');
+  const [apiKey, setApiKey] = useState('AIzaSyC-yED_EoHW-LtNTdLgCwavTdRiikQ1K_0');
   const [clientId, setClientId] = useState('543266334034-mecmfq4h1jgi0rnqnbc0k9biobp4ecge.apps.googleusercontent.com');
   const [clientSecret, setClientSecret] = useState('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');
   const [isLoading, setIsLoading] = useState(false);
