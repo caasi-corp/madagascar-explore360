@@ -5,6 +5,7 @@ import {
   Home,
   Map,
   Calendar,
+  CalendarDays,
   Users,
   Car,
   Building,
@@ -41,7 +42,11 @@ const navItems: NavItem[] = [
   {
     name: 'Réservations',
     href: '/admin/bookings',
-    icon: Calendar
+    icon: Calendar,
+    submenu: [
+      { name: 'Liste des réservations', href: '/admin/bookings', icon: Calendar },
+      { name: 'Calendrier des excursions', href: '/admin/excursions-calendar', icon: CalendarDays }
+    ]
   },
   {
     name: 'Clients',
