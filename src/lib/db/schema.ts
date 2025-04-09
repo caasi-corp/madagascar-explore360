@@ -1,4 +1,3 @@
-
 /**
  * Database schema definitions for the application
  */
@@ -15,6 +14,7 @@ export interface Tour {
   image: string;
   featured?: boolean;
   category?: string;
+  active?: boolean;
 }
 
 export interface Vehicle {
