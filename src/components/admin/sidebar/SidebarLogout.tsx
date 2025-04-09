@@ -2,11 +2,16 @@
 import React from 'react';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const SidebarLogout: React.FC = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
   const handleLogout = () => {
-    // Logique de déconnexion ici
-    window.location.href = '/login';
+    logout();
+    navigate('/login');
   };
 
   return (

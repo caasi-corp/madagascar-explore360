@@ -6,9 +6,11 @@ import {
   User,
   Moon,
   Sun,
-  Search,
+  LogOut,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +26,14 @@ interface AdminHeaderProps {
 }
 
 const AdminHeader: React.FC<AdminHeaderProps> = ({ toggleTheme, theme }) => {
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <header className="bg-background border-b border-border py-3 px-6 flex justify-between items-center">
       <div className="flex items-center space-x-2">
@@ -89,9 +99,9 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ toggleTheme, theme }) => {
             <DropdownMenuSeparator />
             <DropdownMenuItem 
               className="cursor-pointer text-destructive focus:text-destructive"
-              onClick={() => window.location.href = "/"}
+              onClick={handleLogout}
             >
-              Déconnexion
+              <LogOut className="mr-2 h-4 w-4" /> Déconnexion
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
