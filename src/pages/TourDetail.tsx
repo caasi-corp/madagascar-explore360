@@ -24,7 +24,9 @@ const TourDetail = () => {
         setLoading(true);
         if (!tourId) return;
         
+        console.log('Chargement du circuit avec ID:', tourId);
         const tourData = await tourAPI.getById(tourId);
+        console.log('Données du circuit récupérées:', tourData);
         setTour(tourData);
         
         if (tourData?.category) {

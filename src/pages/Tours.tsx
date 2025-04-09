@@ -19,6 +19,7 @@ const Tours = () => {
       try {
         setLoading(true);
         const toursData = await tourAPI.getAll();
+        console.log('Tours chargés:', toursData);
         setTours(toursData);
       } catch (error) {
         console.error('Error fetching tours:', error);

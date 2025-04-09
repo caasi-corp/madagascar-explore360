@@ -72,7 +72,7 @@ export const useTourFiltering = (tours: Tour[]) => {
       });
     }
 
-    // Only show active tours (if property exists)
+    // Only filter inactive tours if explicitly set to false - otherwise show all tours
     result = result.filter(tour => tour.active !== false);
 
     setFilteredTours(result);

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import TourCard, { TourProps } from '@/components/TourCard';
@@ -27,9 +28,9 @@ const FeaturedToursSection: React.FC<FeaturedToursSectionProps> = ({ tours }) =>
         
         <div className="mt-10 text-center">
           <Button asChild className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
-            <a href="/tours">
+            <Link to="/tours">
               Voir tous les circuits <ArrowRight size={16} className="ml-2" />
-            </a>
+            </Link>
           </Button>
         </div>
       </div>
