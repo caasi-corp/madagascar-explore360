@@ -3,6 +3,10 @@ import React from 'react';
 import UserLayout from '@/components/UserLayout';
 import UserDashboard from '@/pages/UserDashboard';
 import UserSettings from '@/pages/UserSettings';
+import BookingList from '@/pages/user/BookingList';
+import Wishlist from '@/pages/user/Wishlist';
+import PaymentMethods from '@/pages/user/PaymentMethods';
+import Notifications from '@/pages/user/Notifications';
 
 const userRoutes = {
   path: '/user',
@@ -18,19 +22,19 @@ const userRoutes = {
     },
     {
       path: 'bookings',
-      element: <UserDashboard />  // À remplacer plus tard par un composant BookingList
+      element: <BookingList />
     },
     {
       path: 'wishlist',
-      element: <UserDashboard />  // À remplacer plus tard par un composant Wishlist
+      element: <Wishlist />
     },
     {
       path: 'payments',
-      element: <UserDashboard />  // À remplacer plus tard par un composant PaymentMethods
+      element: <PaymentMethods />
     },
     {
       path: 'notifications',
-      element: <UserDashboard />  // À remplacer plus tard par un composant Notifications
+      element: <Notifications />
     }
   ]
 };
