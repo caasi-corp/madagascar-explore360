@@ -10,6 +10,7 @@ import NotFound from '@/pages/NotFound';
 import CarRental from '@/pages/services/CarRental';
 import FlightBooking from '@/pages/services/FlightBooking';
 import HotelBooking from '@/pages/services/HotelBooking';
+import CatamaranCruise from '@/pages/services/CatamaranCruise';
 import About from '@/pages/About';
 import Contact from '@/pages/Contact';
 import PrivacyPolicy from '@/pages/legal/PrivacyPolicy';
@@ -44,6 +45,10 @@ const mainRoutes = {
     {
       path: 'services/hotels',
       element: <HotelBooking />
+    },
+    {
+      path: 'services/catamaran',
+      element: <CatamaranCruise />
     },
     {
       path: 'about',
