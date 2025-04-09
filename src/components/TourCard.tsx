@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tour } from '@/lib/db/schema';
 
+// Export the interface for use in other components
+export interface TourProps extends Tour {}
+
 interface TourCardProps {
   tour: Tour;
 }

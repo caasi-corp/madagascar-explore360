@@ -14,22 +14,15 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { format } from 'date-fns';
+import { TourFilters } from '@/hooks/useTourFiltering';
 
 interface ToursFilterProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   isFilterOpen: boolean;
   setIsFilterOpen: (isOpen: boolean) => void;
-  filters: {
-    priceRange: number[];
-    duration: string;
-    categories: string[];
-  };
-  setFilters: React.Dispatch<React.SetStateAction<{
-    priceRange: number[];
-    duration: string;
-    categories: string[];
-  }>>;
+  filters: TourFilters;
+  setFilters: React.Dispatch<React.SetStateAction<TourFilters>>;
   selectedDate: Date | undefined;
   setSelectedDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
   categories: string[];
@@ -69,6 +62,9 @@ const ToursFilter: React.FC<ToursFilterProps> = ({
       priceRange: [50, 800],
       duration: '',
       categories: [],
+      category: '',
+      minPrice: '',
+      maxPrice: ''
     });
     setSelectedDate(undefined);
   };
