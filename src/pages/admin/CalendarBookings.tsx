@@ -34,6 +34,7 @@ const CalendarBookings = () => {
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [showNewBookingDialog, setShowNewBookingDialog] = useState(false);
   const { toast } = useToast();
   const { 
     bookings, 
@@ -176,12 +177,34 @@ const CalendarBookings = () => {
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
-              <DialogTrigger asChild>
-                <Button className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Nouvelle Réservation
-                </Button>
-              </DialogTrigger>
+              <Dialog open={showNewBookingDialog} onOpenChange={setShowNewBookingDialog}>
+                <DialogTrigger asChild>
+                  <Button className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Nouvelle Réservation
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Ajouter une nouvelle réservation</DialogTitle>
+                    <DialogDescription>
+                      Saisissez les détails de la nouvelle réservation
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="py-4">
+                    {/* Contenu du formulaire de réservation */}
+                    <p>Formulaire de réservation à implémenter</p>
+                  </div>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Annuler</Button>
+                    </DialogClose>
+                    <Button className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
+                      Enregistrer
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </CardHeader>
           <CardContent>
