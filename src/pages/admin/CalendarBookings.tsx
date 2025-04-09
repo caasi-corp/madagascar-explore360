@@ -75,12 +75,22 @@ const CalendarBookings = () => {
     return bookingsByDate[dateStr] || [];
   };
 
-  // Rendu personnalisé pour les jours du calendrier avec des événements
-  const renderDay = (date: Date) => {
-    const events = getDayEvents(date);
+  // Fonction pour personnaliser l'affichage des jours avec des badges
+  const modifiers = {
+    hasEvents: (date: Date) => getDayEvents(date).length > 0
+  };
+
+  // Fonction pour personnaliser le contenu des cellules du calendrier
+  const modifiersClassNames = {
+    hasEvents: 'relative'
+  };
+
+  // Cette fonction sera utilisée pour rendre le contenu des jours après la sélection du mois
+  const getDayContent = (day: Date) => {
+    const events = getDayEvents(day);
     return (
       <div className="relative w-full h-full">
-        <div>{date.getDate()}</div>
+        <div>{day.getDate()}</div>
         {events.length > 0 && (
           <Badge 
             className="absolute bottom-0 right-0 text-[10px] min-w-4 h-4 flex items-center justify-center" 
@@ -184,7 +194,11 @@ const CalendarBookings = () => {
               className="p-3 pointer-events-auto"
               locale={fr}
               showOutsideDays={true}
-              renderDay={renderDay}
+              modifiers={modifiers}
+              modifiersClassNames={modifiersClassNames}
+              components={{
+                Day: ({ date, displayMonth }) => getDayContent(date)
+              }}
             />
           </CardContent>
         </Card>
