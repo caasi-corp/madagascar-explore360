@@ -1,39 +1,80 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
-import { Save } from 'lucide-react';
+import { Save, RefreshCw, FileCode, Upload, Download } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const AdminSeoSettings = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('general');
+  const [isGeneratingSitemap, setIsGeneratingSitemap] = useState(false);
   const [generalSettings, setGeneralSettings] = useState({
     siteTitle: 'North Gasikara Tours - Agence de voyage à Madagascar',
-    metaDescription: 'Découvrez Madagascar avec North Gasikara Tours. Circuits sur mesure, locations de voitures et guides francophones pour explorer la Grande Île.',
-    metaKeywords: 'Madagascar, circuit, voyage, location voiture, guide, Antananarivo, Nosy Be, tourisme',
+    metaDescription: 'Découvrez Madagascar avec North Gasikara Tours. Circuits sur mesure, locations de voitures, croisières en catamaran et guides francophones pour explorer la Grande Île.',
+    metaKeywords: 'Madagascar, circuit, voyage, location voiture, catamaran, guide, Antananarivo, Nosy Be, tourisme, excursion',
     ogTitle: 'North Gasikara Tours | Voyages à Madagascar',
     ogDescription: 'Votre partenaire de confiance pour découvrir toutes les merveilles de Madagascar',
     ogImage: '/images/og-image.jpg',
   });
   
   const [analytics, setAnalytics] = useState({
-    googleAnalyticsId: 'UA-123456789-1',
+    googleAnalyticsId: 'G-XXXXXXXXXX', // Updated to GA4 format
     googleTagManagerId: 'GTM-ABCDEF',
     facebookPixelId: '123456789012345',
+    googleSearchConsoleVerification: '',
   });
   
   const [robots, setRobots] = useState(
-    `User-agent: *
+    `# robots.txt for North Gasikara Tours
+# https://northgasikaratours.com
+
+User-agent: *
 Allow: /
 Disallow: /admin/
-Disallow: /user/
+Disallow: /admin/*
+Disallow: /login
+Disallow: /register
+Disallow: /user-dashboard/
+Disallow: /user-dashboard/*
+
+# Allow Google to index everything
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /admin/*
+
+# Allow Bing to index everything
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /admin/*
+
+# Allow social media crawlers
+User-agent: Twitterbot
+Allow: /
+User-agent: facebookexternalhit
+Allow: /
+
+# Sitemap location
 Sitemap: https://northgasikaratours.com/sitemap.xml`
   );
+
+  const [redirects, setRedirects] = useState([
+    { source: '/circuits', destination: '/tours', isPermanent: true },
+    { source: '/about-us', destination: '/about', isPermanent: true },
+  ]);
+  
+  const [newRedirect, setNewRedirect] = useState({
+    source: '',
+    destination: '',
+    isPermanent: true
+  });
 
   const handleGeneralSettingChange = (field: string, value: string) => {
     setGeneralSettings(prev => ({ ...prev, [field]: value }));
@@ -46,12 +87,48 @@ Sitemap: https://northgasikaratours.com/sitemap.xml`
   const handleRobotsChange = (value: string) => {
     setRobots(value);
   };
+
+  const handleAddRedirect = () => {
+    if (newRedirect.source && newRedirect.destination) {
+      setRedirects([...redirects, newRedirect]);
+      setNewRedirect({ source: '', destination: '', isPermanent: true });
+      toast({
+        title: "Redirection ajoutée",
+        description: `${newRedirect.source} → ${newRedirect.destination}`,
+      });
+    } else {
+      toast({
+        title: "Erreur",
+        description: "Les champs source et destination sont requis.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleRemoveRedirect = (index: number) => {
+    const newRedirects = [...redirects];
+    newRedirects.splice(index, 1);
+    setRedirects(newRedirects);
+  };
   
   const handleSave = () => {
     toast({
       title: "Paramètres SEO sauvegardés",
       description: "Les paramètres SEO ont été mis à jour avec succès.",
     });
+  };
+
+  const handleGenerateSitemap = () => {
+    setIsGeneratingSitemap(true);
+    
+    // Simulation of sitemap generation
+    setTimeout(() => {
+      setIsGeneratingSitemap(false);
+      toast({
+        title: "Sitemap généré",
+        description: "Le fichier sitemap.xml a été mis à jour avec succès.",
+      });
+    }, 2000);
   };
 
   return (
@@ -78,6 +155,9 @@ Sitemap: https://northgasikaratours.com/sitemap.xml`
           <TabsTrigger value="redirects" className="py-2 px-4">
             Redirections
           </TabsTrigger>
+          <TabsTrigger value="sitemap" className="py-2 px-4">
+            Sitemap
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="general" className="pt-4 space-y-4">
@@ -93,7 +173,7 @@ Sitemap: https://northgasikaratours.com/sitemap.xml`
                   value={generalSettings.siteTitle}
                   onChange={(e) => handleGeneralSettingChange('siteTitle', e.target.value)}
                 />
-                <p className="text-sm text-muted-foreground">Ce qui apparaît dans l'onglet du navigateur</p>
+                <p className="text-sm text-muted-foreground">Ce qui apparaît dans l'onglet du navigateur (50-60 caractères recommandés)</p>
               </div>
               
               <div className="space-y-2">
@@ -163,13 +243,14 @@ Sitemap: https://northgasikaratours.com/sitemap.xml`
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="googleAnalyticsId">ID Google Analytics</Label>
+                <Label htmlFor="googleAnalyticsId">ID Google Analytics (GA4)</Label>
                 <Input
                   id="googleAnalyticsId"
                   value={analytics.googleAnalyticsId}
                   onChange={(e) => handleAnalyticsChange('googleAnalyticsId', e.target.value)}
-                  placeholder="UA-XXXXXXXXX-X ou G-XXXXXXXXXX"
+                  placeholder="G-XXXXXXXXXX"
                 />
+                <p className="text-sm text-muted-foreground">Utilisez le format GA4 pour une meilleure analyse des données</p>
               </div>
               
               <div className="space-y-2">
@@ -190,6 +271,17 @@ Sitemap: https://northgasikaratours.com/sitemap.xml`
                   onChange={(e) => handleAnalyticsChange('facebookPixelId', e.target.value)}
                   placeholder="XXXXXXXXXXXXXXX"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="googleSearchConsoleVerification">Code de vérification Google Search Console</Label>
+                <Input
+                  id="googleSearchConsoleVerification"
+                  value={analytics.googleSearchConsoleVerification}
+                  onChange={(e) => handleAnalyticsChange('googleSearchConsoleVerification', e.target.value)}
+                  placeholder="Entrez le code de vérification meta"
+                />
+                <p className="text-sm text-muted-foreground">Pour vérifier la propriété de votre site sur Google Search Console</p>
               </div>
             </CardContent>
           </Card>
@@ -222,11 +314,130 @@ Sitemap: https://northgasikaratours.com/sitemap.xml`
           <Card>
             <CardHeader>
               <CardTitle>Redirections</CardTitle>
+              <CardDescription>
+                Configurez les redirections d'URLs pour améliorer l'expérience utilisateur et le SEO
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">Fonctionnalité de redirections en cours de développement.</p>
-                <p className="text-sm text-muted-foreground mt-2">Cette section sera bientôt disponible.</p>
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
+                  <div className="md:col-span-5 space-y-2">
+                    <Label htmlFor="redirectSource">URL source</Label>
+                    <Input
+                      id="redirectSource"
+                      placeholder="/ancienne-page"
+                      value={newRedirect.source}
+                      onChange={(e) => setNewRedirect({...newRedirect, source: e.target.value})}
+                    />
+                  </div>
+                  <div className="md:col-span-5 space-y-2">
+                    <Label htmlFor="redirectDestination">URL destination</Label>
+                    <Input
+                      id="redirectDestination"
+                      placeholder="/nouvelle-page"
+                      value={newRedirect.destination}
+                      onChange={(e) => setNewRedirect({...newRedirect, destination: e.target.value})}
+                    />
+                  </div>
+                  <div className="md:col-span-2 flex items-end">
+                    <Button className="w-full" onClick={handleAddRedirect}>
+                      Ajouter
+                    </Button>
+                  </div>
+                </div>
+
+                {redirects.length > 0 ? (
+                  <div className="border rounded-md overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-accent">
+                        <tr>
+                          <th className="text-left p-2">Source</th>
+                          <th className="text-left p-2">Destination</th>
+                          <th className="text-left p-2">Type</th>
+                          <th className="text-right p-2">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {redirects.map((redirect, index) => (
+                          <tr key={index} className="border-t">
+                            <td className="p-2">{redirect.source}</td>
+                            <td className="p-2">{redirect.destination}</td>
+                            <td className="p-2">{redirect.isPermanent ? '301 (Permanent)' : '302 (Temporaire)'}</td>
+                            <td className="p-2 text-right">
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => handleRemoveRedirect(index)}
+                              >
+                                Supprimer
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-6 border rounded-md">
+                    <p className="text-muted-foreground">Aucune redirection configurée</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="sitemap" className="pt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Gestion du Sitemap</CardTitle>
+              <CardDescription>
+                Le sitemap aide les moteurs de recherche à indexer votre site plus efficacement
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button 
+                  onClick={handleGenerateSitemap} 
+                  disabled={isGeneratingSitemap}
+                  className="flex-1"
+                >
+                  {isGeneratingSitemap ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      Génération en cours...
+                    </>
+                  ) : (
+                    <>
+                      <FileCode className="mr-2 h-4 w-4" />
+                      Générer le sitemap.xml
+                    </>
+                  )}
+                </Button>
+                <Button variant="outline" className="flex-1">
+                  <Download className="mr-2 h-4 w-4" />
+                  Télécharger le sitemap
+                </Button>
+              </div>
+
+              <Alert>
+                <AlertDescription>
+                  Le sitemap sera généré à l'adresse: <strong>https://northgasikaratours.com/sitemap.xml</strong> 
+                  <br />N'oubliez pas de soumettre votre sitemap à Google Search Console pour améliorer l'indexation.
+                </AlertDescription>
+              </Alert>
+
+              <div className="space-y-2">
+                <Label>Pages incluses dans le sitemap</Label>
+                <div className="border rounded-md p-4 space-y-2">
+                  <p className="text-sm">✅ Page d'accueil</p>
+                  <p className="text-sm">✅ Pages de circuits</p>
+                  <p className="text-sm">✅ Pages de services</p>
+                  <p className="text-sm">✅ Pages à propos et contact</p>
+                  <p className="text-sm">✅ Pages légales (sauf mentions contraires)</p>
+                  <p className="text-sm">❌ Pages administrateur</p>
+                  <p className="text-sm">❌ Pages de connexion/inscription</p>
+                </div>
               </div>
             </CardContent>
           </Card>

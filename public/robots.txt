@@ -1,14 +1,33 @@
-User-agent: Googlebot
-Allow: /
 
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
+# robots.txt for North Gasikara Tours
+# https://northgasikaratours.com
 
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /admin/*
+Disallow: /login
+Disallow: /register
+Disallow: /user-dashboard/
+Disallow: /user-dashboard/*
+
+# Allow Google to index everything
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /admin/*
+
+# Allow Bing to index everything
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /admin/*
+
+# Allow social media crawlers
+User-agent: Twitterbot
+Allow: /
+User-agent: facebookexternalhit
+Allow: /
+
+# Sitemap location
+Sitemap: https://northgasikaratours.com/sitemap.xml
