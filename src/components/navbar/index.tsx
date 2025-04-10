@@ -64,7 +64,6 @@ const Navbar: React.FC = () => {
       path: '#', 
       dropdown: [
         { title: 'Location de Voiture', path: '/services/car-rental' },
-        { title: 'Croisières en Catamaran', path: '/services/catamaran' },
         { title: 'Réservation de Vol', path: '/services/flights' },
         { title: 'Réservation d\'Hôtel', path: '/services/hotels' },
       ]
