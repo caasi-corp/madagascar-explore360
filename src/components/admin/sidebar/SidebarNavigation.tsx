@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -66,11 +65,6 @@ const navItems: NavItem[] = [
     name: 'Hôtels',
     href: '/admin/hotels',
     icon: Building
-  },
-  {
-    name: 'Vols',
-    href: '/admin/flights',
-    icon: Plane
   },
   {
     name: 'Rapports',

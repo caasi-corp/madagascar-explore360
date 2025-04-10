@@ -12,7 +12,6 @@ import AdminVehicles from '@/pages/admin/Vehicles';
 import AdminVehicleEditor from '@/pages/admin/VehicleEditor';
 import AdminVehicleBookings from '@/pages/admin/VehicleBookings';
 import AdminHotels from '@/pages/admin/Hotels';
-import AdminFlights from '@/pages/admin/Flights';
 import AdminReports from '@/pages/admin/Reports';
 import AdminMessages from '@/pages/admin/Messages';
 import AdminSettings from '@/pages/admin/Settings';
@@ -82,10 +81,6 @@ const adminRoutes = {
         {
           path: 'hotels',
           element: <AdminHotels />
-        },
-        {
-          path: 'flights',
-          element: <AdminFlights />
         },
         {
           path: 'reports',
