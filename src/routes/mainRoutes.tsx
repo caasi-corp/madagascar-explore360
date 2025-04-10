@@ -8,7 +8,7 @@ import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import NotFound from '@/pages/NotFound';
 import CarRental from '@/pages/services/CarRental';
-import FlightBooking from '@/pages/services/FlightBooking';
+import CatamaranCruise from '@/pages/services/CatamaranCruise';
 import HotelBooking from '@/pages/services/HotelBooking';
 import About from '@/pages/About';
 import Contact from '@/pages/Contact';
@@ -38,8 +38,8 @@ const mainRoutes = {
       element: <CarRental />
     },
     {
-      path: 'services/flights',
-      element: <FlightBooking />
+      path: 'services/catamaran',
+      element: <CatamaranCruise />
     },
     {
       path: 'services/hotels',

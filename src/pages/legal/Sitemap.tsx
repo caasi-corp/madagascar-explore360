@@ -19,7 +19,7 @@ const Sitemap = () => {
       category: 'Services',
       pages: [
         { title: 'Location de Voiture', path: '/services/car-rental', description: 'Louez un véhicule pour explorer Madagascar' },
-        { title: 'Réservation de Vol', path: '/services/flights', description: 'Trouvez et réservez vos vols' },
+        { title: 'Croisières en Catamaran', path: '/services/catamaran', description: 'Découvrez Madagascar à bord d\'un catamaran' },
         { title: 'Réservation d\'Hôtel', path: '/services/hotels', description: 'Trouvez l\'hébergement idéal pour votre séjour' }
       ]
     },

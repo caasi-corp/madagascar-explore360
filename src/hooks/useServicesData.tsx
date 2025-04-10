@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Map, Car, Plane, Building } from 'lucide-react';
+import { Map, Car, Building, Ship } from 'lucide-react';
 
 export interface ServiceItem {
   title: string;
@@ -24,10 +24,10 @@ export function useServicesData(): ServiceItem[] {
       link: '/services/car-rental',
     },
     {
-      title: 'Réservation de Vols',
-      description: 'Réservations de vols nationaux et internationaux à des prix compétitifs.',
-      icon: <Plane className="h-8 w-8 text-madagascar-green" />,
-      link: '/services/flights',
+      title: 'Croisières en Catamaran',
+      description: 'Découvrez les merveilles de Madagascar lors d\'une croisière exclusive en catamaran.',
+      icon: <Ship className="h-8 w-8 text-madagascar-green" />,
+      link: '/services/catamaran',
     },
     {
       title: 'Réservation d\'Hôtels',
