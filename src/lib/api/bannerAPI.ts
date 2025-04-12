@@ -83,7 +83,7 @@ export const bannerAPI = {
     
     // Si on active cette bannière, désactiver les autres de la même page
     if (updates.isActive && !banner.isActive) {
-      const existingBanners = await db.getAllFromIndex('banners', 'by-page', banner.page);
+      const existingBanners = await db.getAllFromIndex('banners', 'by-page', updates.page || banner.page);
       const tx = db.transaction('banners', 'readwrite');
       
       for (const existingBanner of existingBanners) {

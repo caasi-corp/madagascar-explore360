@@ -1,4 +1,3 @@
-
 /**
  * Database schema definitions for the application
  */
@@ -85,6 +84,7 @@ export interface Banner {
   name: string;
   imagePath: string;
   page: string;
+  description?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -145,7 +145,7 @@ export interface NorthGascarDB extends DBSchema {
     value: Banner;
     indexes: {
       'by-page': string;
-      'by-isActive': string; // Changed from boolean to string to match expected type
+      'by-isActive': string;
     };
   };
 }
