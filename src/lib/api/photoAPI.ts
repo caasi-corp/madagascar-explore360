@@ -120,8 +120,16 @@ export const seedPhotos = async () => {
       }
     ];
     
+    const photoTx = db.transaction('photos', 'readwrite');
+    const photoStore = photoTx.objectStore('photos');
+    
     for (const photo of defaultBanners) {
-      await db.add('photos', photo);
+      await photoStore.add(photo);
     }
+    
+    await photoTx.done;
+    console.log("Photos par défaut ajoutées avec succès");
+  } else {
+    console.log(`${count} photos existent déjà dans la base de données`);
   }
 };

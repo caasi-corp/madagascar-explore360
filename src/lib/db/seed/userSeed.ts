@@ -8,9 +8,17 @@ import { NorthGascarDB, User } from '../schema';
  * @returns Whether the seeding was successful
  */
 export const seedUsers = async (db: IDBPDatabase<NorthGascarDB>): Promise<boolean> => {
-  console.log("Création des utilisateurs de test...");
+  console.log("Vérification des utilisateurs de test...");
   
   try {
+    // Vérifier si des utilisateurs existent déjà
+    const existingUsers = await db.getAll('users');
+    if (existingUsers.length > 0) {
+      console.log(`${existingUsers.length} utilisateurs existent déjà dans la base de données`);
+      return true; // Pas besoin d'ajouter des utilisateurs s'ils existent déjà
+    }
+    
+    // Si aucun utilisateur n'existe, alors ajouter les utilisateurs par défaut
     const users: User[] = [
       {
         id: 'admin1',
@@ -38,7 +46,7 @@ export const seedUsers = async (db: IDBPDatabase<NorthGascarDB>): Promise<boolea
       }
     ];
     
-    // Use a single transaction for users
+    // Utiliser une seule transaction pour ajouter les utilisateurs
     console.log("Ajout des utilisateurs...");
     const tx = db.transaction('users', 'readwrite');
     const userStore = tx.objectStore('users');
@@ -51,12 +59,13 @@ export const seedUsers = async (db: IDBPDatabase<NorthGascarDB>): Promise<boolea
     await tx.done;
     console.log("Transaction utilisateurs terminée avec succès");
     
-    // Verify users were added
+    // Vérifier que les utilisateurs ont été ajoutés
     const addedUsers = await db.getAll('users');
     console.log(`${addedUsers.length} utilisateurs ajoutés:`, JSON.stringify(addedUsers));
     return true;
   } catch (e) {
-    console.error("Erreur critique lors de l'ajout des utilisateurs:", e);
-    throw e; // This is critical, so we rethrow
+    console.error("Erreur lors de l'ajout des utilisateurs:", e);
+    // Ne pas relancer l'erreur, car ce n'est pas critique si les utilisateurs existent déjà
+    return false;
   }
 };
