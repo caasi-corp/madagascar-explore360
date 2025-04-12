@@ -1,15 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, ImagePlus } from 'lucide-react';
-import { Photo } from '@/lib/db/schema';
-import { photoAPI } from '@/lib/api/photoAPI';
 import { usePhotos } from '@/hooks/usePhotos';
 import PhotosFilter from '@/components/admin/photos/PhotosFilter';
 import PhotosGrid from '@/components/admin/photos/PhotosGrid';
 import PhotoEditForm from '@/components/admin/photos/PhotoEditForm';
+import type { Photo } from '@/lib/db/schema';
 
 const PhotosAdmin = () => {
   const { photos, isLoading, refresh, addPhoto, updatePhoto, togglePhotoActive, deletePhoto } = usePhotos();

@@ -5,7 +5,8 @@ import { Experience } from '@/components/services/catamaran/ExperienceCard';
 import { Destination } from '@/components/services/catamaran/DestinationCard';
 import { CruiseOption } from '@/components/services/catamaran/CruiseCard';
 import { Catamaran } from '@/components/services/catamaran/CatamaranCard';
-import { photoAPI, Photo } from '@/lib/api/photoAPI';
+import { photoAPI } from '@/lib/api/photoAPI';
+import type { Photo } from '@/lib/db/schema';
 
 export const useCatamaranData = () => {
   const [heroImages, setHeroImages] = useState<string[]>([]);

@@ -4,9 +4,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Eye, Pencil, Trash, PowerOff, Power } from 'lucide-react';
-import { Photo } from '@/lib/api/photoAPI';
 import { format } from 'date-fns';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import type { Photo } from '@/lib/db/schema';
 
 interface PhotoCardProps {
   photo: Photo;

@@ -1,8 +1,8 @@
 
 import React from 'react';
 import PhotoCard from './PhotoCard';
-import { Photo } from '@/lib/api/photoAPI';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { Photo } from '@/lib/db/schema';
 
 interface PhotosGridProps {
   photos: Photo[];

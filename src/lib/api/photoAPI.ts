@@ -1,10 +1,10 @@
 
 import { initDB } from "../db/db";
-import { Photo } from "../db/schema";
+import type { Photo } from "../db/schema";
 
 export type PhotoCategory = 'hero' | 'catamaran' | 'destination' | 'cruise' | 'experience';
 
-export { Photo };
+export type { Photo };
 
 const defaultPhotos: Photo[] = [
   // Hero images

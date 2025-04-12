@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { LucideIcon } from 'lucide-react';
 import SidebarNavItem from './SidebarNavItem';
 import SidebarSubmenu from './SidebarSubmenu';
+import { cn } from '@/lib/utils';
 
 interface NavItemType {
   name: string;

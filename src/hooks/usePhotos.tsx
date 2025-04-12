@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
-import { photoAPI, Photo } from '@/lib/api/photoAPI';
+import { photoAPI } from '@/lib/api/photoAPI';
+import type { Photo } from '@/lib/db/schema';
 
 type PhotoCategory = 'hero' | 'catamaran' | 'destination' | 'cruise' | 'experience';
 
