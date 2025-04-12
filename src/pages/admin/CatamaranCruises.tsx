@@ -240,196 +240,190 @@ const CatamaranCruises = () => {
             <Filter className="h-4 w-4" />
           </Button>
         </div>
-        
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-auto">
-          <TabsList>
-            <TabsTrigger value="cruises">
-              Croisières
-            </TabsTrigger>
-            <TabsTrigger value="catamarans">
-              Catamarans
-            </TabsTrigger>
-            <TabsTrigger value="departures">
-              Départs
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
       </div>
 
-      <Card>
-        <CardContent className="p-0">
-          <TabsContent value="cruises" className="mt-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>
-                    <div className="flex items-center">
-                      Nom
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </div>
-                  </TableHead>
-                  <TableHead>Destination</TableHead>
-                  <TableHead>Durée</TableHead>
-                  <TableHead>
-                    <div className="flex items-center">
-                      Prix (€)
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </div>
-                  </TableHead>
-                  <TableHead>Catamaran</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead>Réservations</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {cruises.map((cruise) => (
-                  <TableRow key={cruise.id}>
-                    <TableCell>{cruise.id}</TableCell>
-                    <TableCell>{cruise.name}</TableCell>
-                    <TableCell>{cruise.destination}</TableCell>
-                    <TableCell>{cruise.duration}</TableCell>
-                    <TableCell>{cruise.price}</TableCell>
-                    <TableCell>{cruise.catamaran}</TableCell>
-                    <TableCell>
-                      <Badge variant={cruise.status === 'active' ? 'default' : 'outline'}>
-                        {cruise.status === 'active' ? 'Actif' : 'Inactif'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{cruise.bookings}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Trash className="h-4 w-4 text-destructive" />
-                        </Button>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="mb-4">
+          <TabsTrigger value="cruises">Croisières</TabsTrigger>
+          <TabsTrigger value="catamarans">Catamarans</TabsTrigger>
+          <TabsTrigger value="departures">Départs</TabsTrigger>
+        </TabsList>
+
+        <Card>
+          <CardContent className="p-0">
+            <TabsContent value="cruises" className="mt-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>
+                      <div className="flex items-center">
+                        Nom
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TabsContent>
-          
-          <TabsContent value="catamarans" className="mt-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Nom</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Capacité</TableHead>
-                  <TableHead>Cabines</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead>Réservations</TableHead>
-                  <TableHead>Prochaine maintenance</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {catamarans.map((catamaran) => (
-                  <TableRow key={catamaran.id}>
-                    <TableCell>{catamaran.id}</TableCell>
-                    <TableCell>{catamaran.name}</TableCell>
-                    <TableCell>{catamaran.type}</TableCell>
-                    <TableCell>{catamaran.capacity} pers.</TableCell>
-                    <TableCell>{catamaran.cabins}</TableCell>
-                    <TableCell>
-                      <Badge variant={catamaran.status === 'available' ? 'default' : 'secondary'}>
-                        {catamaran.status === 'available' ? 'Disponible' : 'En maintenance'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{catamaran.bookings}</TableCell>
-                    <TableCell>{catamaran.nextMaintenance}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Trash className="h-4 w-4 text-destructive" />
-                        </Button>
+                    </TableHead>
+                    <TableHead>Destination</TableHead>
+                    <TableHead>Durée</TableHead>
+                    <TableHead>
+                      <div className="flex items-center">
+                        Prix (€)
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
                       </div>
-                    </TableCell>
+                    </TableHead>
+                    <TableHead>Catamaran</TableHead>
+                    <TableHead>Statut</TableHead>
+                    <TableHead>Réservations</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TabsContent>
-          
-          <TabsContent value="departures" className="mt-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Croisière</TableHead>
-                  <TableHead>Catamaran</TableHead>
-                  <TableHead>
-                    <div className="flex items-center">
-                      Date de départ
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </div>
-                  </TableHead>
-                  <TableHead>Passagers</TableHead>
-                  <TableHead>Capacité</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {upcomingDepartures.map((departure) => (
-                  <TableRow key={departure.id}>
-                    <TableCell>{departure.id}</TableCell>
-                    <TableCell>{departure.cruise}</TableCell>
-                    <TableCell>{departure.catamaran}</TableCell>
-                    <TableCell>{departure.departure}</TableCell>
-                    <TableCell>{departure.passengersBooked}</TableCell>
-                    <TableCell>{departure.capacity}</TableCell>
-                    <TableCell>
-                      <Badge variant={
-                        departure.status === 'confirmed' 
-                          ? 'default' 
-                          : departure.status === 'full'
-                            ? 'destructive'
-                            : 'outline'
-                      }>
-                        {departure.status === 'confirmed' 
-                          ? 'Confirmé' 
-                          : departure.status === 'full'
-                            ? 'Complet'
-                            : 'En attente'
-                        }
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Calendar className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Edit className="h-4 w-4" />
-                        </Button>
+                </TableHeader>
+                <TableBody>
+                  {cruises.map((cruise) => (
+                    <TableRow key={cruise.id}>
+                      <TableCell>{cruise.id}</TableCell>
+                      <TableCell>{cruise.name}</TableCell>
+                      <TableCell>{cruise.destination}</TableCell>
+                      <TableCell>{cruise.duration}</TableCell>
+                      <TableCell>{cruise.price}</TableCell>
+                      <TableCell>{cruise.catamaran}</TableCell>
+                      <TableCell>
+                        <Badge variant={cruise.status === 'active' ? 'default' : 'outline'}>
+                          {cruise.status === 'active' ? 'Actif' : 'Inactif'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{cruise.bookings}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button variant="ghost" size="icon">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon">
+                            <Trash className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TabsContent>
+            
+            <TabsContent value="catamarans" className="mt-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Nom</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Capacité</TableHead>
+                    <TableHead>Cabines</TableHead>
+                    <TableHead>Statut</TableHead>
+                    <TableHead>Réservations</TableHead>
+                    <TableHead>Prochaine maintenance</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {catamarans.map((catamaran) => (
+                    <TableRow key={catamaran.id}>
+                      <TableCell>{catamaran.id}</TableCell>
+                      <TableCell>{catamaran.name}</TableCell>
+                      <TableCell>{catamaran.type}</TableCell>
+                      <TableCell>{catamaran.capacity} pers.</TableCell>
+                      <TableCell>{catamaran.cabins}</TableCell>
+                      <TableCell>
+                        <Badge variant={catamaran.status === 'available' ? 'default' : 'secondary'}>
+                          {catamaran.status === 'available' ? 'Disponible' : 'En maintenance'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{catamaran.bookings}</TableCell>
+                      <TableCell>{catamaran.nextMaintenance}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button variant="ghost" size="icon">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon">
+                            <Trash className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TabsContent>
+            
+            <TabsContent value="departures" className="mt-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Croisière</TableHead>
+                    <TableHead>Catamaran</TableHead>
+                    <TableHead>
+                      <div className="flex items-center">
+                        Date de départ
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
                       </div>
-                    </TableCell>
+                    </TableHead>
+                    <TableHead>Passagers</TableHead>
+                    <TableHead>Capacité</TableHead>
+                    <TableHead>Statut</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TabsContent>
-        </CardContent>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                  {upcomingDepartures.map((departure) => (
+                    <TableRow key={departure.id}>
+                      <TableCell>{departure.id}</TableCell>
+                      <TableCell>{departure.cruise}</TableCell>
+                      <TableCell>{departure.catamaran}</TableCell>
+                      <TableCell>{departure.departure}</TableCell>
+                      <TableCell>{departure.passengersBooked}</TableCell>
+                      <TableCell>{departure.capacity}</TableCell>
+                      <TableCell>
+                        <Badge variant={
+                          departure.status === 'confirmed' 
+                            ? 'default' 
+                            : departure.status === 'full'
+                              ? 'destructive'
+                              : 'outline'
+                        }>
+                          {departure.status === 'confirmed' 
+                            ? 'Confirmé' 
+                            : departure.status === 'full'
+                              ? 'Complet'
+                              : 'En attente'
+                          }
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button variant="ghost" size="icon">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon">
+                            <Calendar className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TabsContent>
+          </CardContent>
+        </Card>
+      </Tabs>
     </div>
   );
 };
