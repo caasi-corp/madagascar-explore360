@@ -7,7 +7,7 @@ export const bannerAPI = {
    * Récupère toutes les bannières
    */
   getAll: async (): Promise<Banner[]> => {
-    const db = await openDB<NorthGascarDB>('north-gascar-db', 1);
+    const db = await openDB<NorthGascarDB>('northgascar-db', 1);
     return db.getAll('banners');
   },
 
@@ -15,7 +15,7 @@ export const bannerAPI = {
    * Récupère les bannières actives pour une page spécifique
    */
   getActiveByPage: async (page: string): Promise<Banner | undefined> => {
-    const db = await openDB<NorthGascarDB>('north-gascar-db', 1);
+    const db = await openDB<NorthGascarDB>('northgascar-db', 1);
     const banners = await db.getAllFromIndex(
       'banners',
       'by-page',
