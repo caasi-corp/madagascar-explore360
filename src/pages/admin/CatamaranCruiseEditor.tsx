@@ -45,17 +45,17 @@ const CatamaranCruiseEditor = () => {
   });
   
   // Fonction pour ajouter un élément à un tableau
-  const addItem = (field, value) => {
+  const addItem = (field: keyof typeof formData, value: string) => {
     if (value.trim() === "") return;
     setFormData({
       ...formData,
-      [field]: [...formData[field], value]
+      [field]: [...(formData[field] as string[]), value]
     });
   };
   
   // Fonction pour supprimer un élément d'un tableau
-  const removeItem = (field, index) => {
-    const newArray = [...formData[field]];
+  const removeItem = (field: keyof typeof formData, index: number) => {
+    const newArray = [...(formData[field] as any[])];
     newArray.splice(index, 1);
     setFormData({
       ...formData,
@@ -72,7 +72,7 @@ const CatamaranCruiseEditor = () => {
   };
   
   // Fonction pour mettre à jour un élément de l'itinéraire
-  const updateItineraryItem = (index, field, value) => {
+  const updateItineraryItem = (index: number, field: "time" | "description", value: string) => {
     const newItinerary = [...formData.itinerary];
     newItinerary[index][field] = value;
     setFormData({
@@ -82,7 +82,7 @@ const CatamaranCruiseEditor = () => {
   };
   
   // Fonction pour supprimer un élément de l'itinéraire
-  const removeItineraryItem = (index) => {
+  const removeItineraryItem = (index: number) => {
     const newItinerary = [...formData.itinerary];
     newItinerary.splice(index, 1);
     setFormData({
@@ -299,17 +299,20 @@ const CatamaranCruiseEditor = () => {
                         placeholder="Ajouter un élément"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
-                            addItem("includes", e.target.value);
-                            e.target.value = "";
+                            const input = e.currentTarget as HTMLInputElement;
+                            addItem("includes", input.value);
+                            input.value = "";
                           }
                         }}
                       />
                       <Button 
                         variant="outline"
                         onClick={() => {
-                          const input = document.getElementById("includeItem");
-                          addItem("includes", input.value);
-                          input.value = "";
+                          const input = document.getElementById("includeItem") as HTMLInputElement;
+                          if (input) {
+                            addItem("includes", input.value);
+                            input.value = "";
+                          }
                         }}
                       >
                         Ajouter
@@ -342,17 +345,20 @@ const CatamaranCruiseEditor = () => {
                         placeholder="Ajouter un élément"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
-                            addItem("excludes", e.target.value);
-                            e.target.value = "";
+                            const input = e.currentTarget as HTMLInputElement;
+                            addItem("excludes", input.value);
+                            input.value = "";
                           }
                         }}
                       />
                       <Button 
                         variant="outline"
                         onClick={() => {
-                          const input = document.getElementById("excludeItem");
-                          addItem("excludes", input.value);
-                          input.value = "";
+                          const input = document.getElementById("excludeItem") as HTMLInputElement;
+                          if (input) {
+                            addItem("excludes", input.value);
+                            input.value = "";
+                          }
                         }}
                       >
                         Ajouter
@@ -435,17 +441,20 @@ const CatamaranCruiseEditor = () => {
                     placeholder="URL de l'image"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
-                        addItem("gallery", e.target.value);
-                        e.target.value = "";
+                        const input = e.currentTarget as HTMLInputElement;
+                        addItem("gallery", input.value);
+                        input.value = "";
                       }
                     }}
                   />
                   <Button 
                     variant="outline"
                     onClick={() => {
-                      const input = document.getElementById("galleryImage");
-                      addItem("gallery", input.value);
-                      input.value = "";
+                      const input = document.getElementById("galleryImage") as HTMLInputElement;
+                      if (input) {
+                        addItem("gallery", input.value);
+                        input.value = "";
+                      }
                     }}
                   >
                     Ajouter
