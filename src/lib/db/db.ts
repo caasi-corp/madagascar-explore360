@@ -1,5 +1,5 @@
 
-import { openDB } from 'idb';
+import { openDB, IDBPDatabase } from 'idb';
 import { NorthGascarDB } from './schema';
 import { seedTours } from './seed/tourSeed';
 import { seedVehicles } from './seed/vehicleSeed';
@@ -8,10 +8,10 @@ import { seedBookings } from './seed/bookingSeed';
 import { seedPhotos } from '../api/photoAPI';
 
 // Database instance reference
-let dbInstance: Promise<IDBDatabase> | null = null;
+let dbInstance: Promise<IDBPDatabase<NorthGascarDB>> | null = null;
 
 // Initialize the database
-export const initDB = async () => {
+export const initDB = async (): Promise<IDBPDatabase<NorthGascarDB>> => {
   const db = await openDB<NorthGascarDB>('northgascar-db', 1, {
     upgrade(db) {
       // Create object stores if they don't exist
@@ -73,7 +73,7 @@ export const initDB = async () => {
 };
 
 // Get database instance
-export const getDB = async () => {
+export const getDB = async (): Promise<IDBPDatabase<NorthGascarDB>> => {
   if (!dbInstance) {
     dbInstance = initDB();
   }
@@ -81,7 +81,7 @@ export const getDB = async () => {
 };
 
 // Reset database (for development/testing purposes)
-export const resetDB = async () => {
+export const resetDB = async (): Promise<IDBPDatabase<NorthGascarDB>> => {
   // Delete the database completely
   await window.indexedDB.deleteDatabase('northgascar-db');
   console.log("Database deleted successfully");
