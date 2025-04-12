@@ -64,7 +64,7 @@ export const initDB = async () => {
             flightsStore.createIndex('by-departureDate', 'departureDate');
           }
           
-          // Create banners store
+          // Create banners store - S'assurer que ce store est toujours créé
           if (!db.objectStoreNames.contains('banners')) {
             console.log("Création du store 'banners'");
             const bannersStore = db.createObjectStore('banners', { keyPath: 'id' });
@@ -97,6 +97,22 @@ export const initDB = async () => {
         }
       } else {
         console.log("Des utilisateurs existent déjà dans la base");
+      }
+      
+      // Vérification explicite du store banners
+      try {
+        if (db.objectStoreNames.contains('banners')) {
+          const bannersCount = await db.count('banners');
+          console.log(`Store 'banners' existe avec ${bannersCount} entrées`);
+        } else {
+          console.error("Le store 'banners' n'a pas été créé correctement");
+          
+          // Forcer la réinitialisation de la base de données
+          await resetDB();
+          return initDB();
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification du store 'banners':", error);
       }
       
     } catch (error) {

@@ -1,6 +1,20 @@
 
 import { openDB } from 'idb';
 import { NorthGascarDB, Banner } from '../db/schema';
+import { initDB, resetDB } from '../db/db';
+
+// Fonction utilitaire pour vérifier si le store banners existe
+const ensureBannersStoreExists = async () => {
+  const db = await openDB<NorthGascarDB>('northgascar-db', 1);
+  if (!db.objectStoreNames.contains('banners')) {
+    console.warn('Le store banners n\'existe pas. Réinitialisation de la base de données...');
+    db.close();
+    await resetDB();
+    return false;
+  }
+  db.close();
+  return true;
+};
 
 export const bannerAPI = {
   /**
@@ -8,24 +22,37 @@ export const bannerAPI = {
    */
   getAll: async (): Promise<Banner[]> => {
     try {
+      // S'assurer que la base de données est initialisée correctement
+      await initDB();
+      
+      // Vérifier que le store existe
+      const storeExists = await ensureBannersStoreExists();
+      if (!storeExists) {
+        await initDB(); // Réinitialiser après le reset
+      }
+      
       const db = await openDB<NorthGascarDB>('northgascar-db', 1);
       console.log('Connexion à la base de données réussie pour getAll');
       
-      // Vérifier si le store banners existe
+      // Double vérification du store
       if (!db.objectStoreNames.contains('banners')) {
-        console.warn('Le store banners n\'existe pas dans la base de données!');
+        console.warn('Le store banners n\'existe toujours pas après réinitialisation!');
+        await db.close();
         return [];
       }
       
-      return db.getAll('banners');
+      const banners = await db.getAll('banners');
+      await db.close();
+      return banners;
     } catch (error) {
       console.error('Erreur lors de la récupération des bannières:', error);
       // Réessayer une fois après initialisation
       try {
-        const { initDB } = await import('../db/db');
-        await initDB();
+        await resetDB();
         const db = await openDB<NorthGascarDB>('northgascar-db', 1);
-        return db.getAll('banners');
+        const banners = await db.getAll('banners');
+        await db.close();
+        return banners;
       } catch (retryError) {
         console.error('Échec de la récupération même après réinitialisation:', retryError);
         return [];
@@ -38,12 +65,22 @@ export const bannerAPI = {
    */
   getActiveByPage: async (page: string): Promise<Banner | undefined> => {
     try {
+      // S'assurer que la base de données est initialisée correctement
+      await initDB();
+      
+      // Vérifier que le store existe
+      const storeExists = await ensureBannersStoreExists();
+      if (!storeExists) {
+        await initDB(); // Réinitialiser après le reset
+      }
+      
       const db = await openDB<NorthGascarDB>('northgascar-db', 1);
       console.log(`Récupération de la bannière active pour la page ${page}`);
       
       // Vérifier si le store banners existe et si l'index by-page existe
       if (!db.objectStoreNames.contains('banners')) {
-        console.warn('Le store banners n\'existe pas dans la base de données!');
+        console.warn('Le store banners n\'existe toujours pas après réinitialisation!');
+        await db.close();
         return undefined;
       }
       
@@ -56,6 +93,7 @@ export const bannerAPI = {
         // On tente quand même de récupérer toutes les bannières et de filtrer
         const allBanners = await db.getAll('banners');
         await transaction.done;
+        await db.close();
         return allBanners.find(banner => banner.page === page && banner.isActive);
       }
       
@@ -65,15 +103,16 @@ export const bannerAPI = {
         page
       );
       
+      await db.close();
       return banners.find(banner => banner.isActive);
     } catch (error) {
       console.error(`Erreur lors de la récupération de la bannière active pour ${page}:`, error);
       // Réessayer une fois après initialisation
       try {
-        const { initDB } = await import('../db/db');
-        await initDB();
+        await resetDB();
         const db = await openDB<NorthGascarDB>('northgascar-db', 1);
         const banners = await db.getAllFromIndex('banners', 'by-page', page);
+        await db.close();
         return banners.find(banner => banner.isActive);
       } catch (retryError) {
         console.error('Échec de la récupération même après réinitialisation:', retryError);
@@ -87,8 +126,11 @@ export const bannerAPI = {
    */
   getById: async (id: string): Promise<Banner | undefined> => {
     try {
+      await initDB();
       const db = await openDB<NorthGascarDB>('northgascar-db', 1);
-      return db.get('banners', id);
+      const banner = await db.get('banners', id);
+      await db.close();
+      return banner;
     } catch (error) {
       console.error(`Erreur lors de la récupération de la bannière ${id}:`, error);
       return undefined;
@@ -100,6 +142,7 @@ export const bannerAPI = {
    */
   add: async (banner: Omit<Banner, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> => {
     try {
+      await initDB();
       const db = await openDB<NorthGascarDB>('northgascar-db', 1);
       const now = new Date().toISOString();
       
@@ -129,6 +172,11 @@ export const bannerAPI = {
       };
       
       await db.add('banners', newBanner);
+      await db.close();
+      
+      // Déclencher l'événement de mise à jour
+      window.dispatchEvent(new Event('banner-updated'));
+      
       return id;
     } catch (error) {
       console.error('Erreur lors de l\'ajout de la bannière:', error);
@@ -141,11 +189,13 @@ export const bannerAPI = {
    */
   update: async (id: string, updates: Partial<Omit<Banner, 'id' | 'createdAt' | 'updatedAt'>>): Promise<boolean> => {
     try {
+      await initDB();
       const db = await openDB<NorthGascarDB>('northgascar-db', 1);
       const banner = await db.get('banners', id);
       
       if (!banner) {
         console.warn(`La bannière ${id} n'existe pas et ne peut pas être mise à jour`);
+        await db.close();
         return false;
       }
 
@@ -175,6 +225,11 @@ export const bannerAPI = {
       };
       
       await db.put('banners', updatedBanner);
+      await db.close();
+      
+      // Déclencher l'événement de mise à jour
+      window.dispatchEvent(new Event('banner-updated'));
+      
       return true;
     } catch (error) {
       console.error(`Erreur lors de la mise à jour de la bannière ${id}:`, error);
@@ -187,8 +242,14 @@ export const bannerAPI = {
    */
   delete: async (id: string): Promise<boolean> => {
     try {
+      await initDB();
       const db = await openDB<NorthGascarDB>('northgascar-db', 1);
       await db.delete('banners', id);
+      await db.close();
+      
+      // Déclencher l'événement de mise à jour
+      window.dispatchEvent(new Event('banner-updated'));
+      
       return true;
     } catch (error) {
       console.error(`Erreur lors de la suppression de la bannière ${id}:`, error);

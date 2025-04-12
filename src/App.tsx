@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router-dom';
 import router from './router';
 import { Toaster } from './components/ui/sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { initDB } from './lib/store';
+import { initDB, resetDB } from './lib/store';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './components/ui/dialog';
 import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -30,12 +30,36 @@ function App() {
     const initialize = async () => {
       try {
         setIsInitializing(true);
+        
+        // Tenter d'abord de vérifier la base de données
+        try {
+          const db = await initDB();
+          
+          // Vérifier explicitement que le store banners existe
+          if (!db.objectStoreNames.contains('banners')) {
+            console.warn("Le store 'banners' n'existe pas, réinitialisation de la base de données...");
+            await resetDB();
+          }
+        } catch (checkError) {
+          console.warn("Erreur lors de la vérification de la base de données, tentative de réinitialisation...", checkError);
+          await resetDB();
+        }
+        
+        // Initialiser la base de données (après une éventuelle réinitialisation)
         const db = await initDB();
         console.log("Base de données initialisée avec succès");
         
         // Vérifier que les utilisateurs ont bien été créés
         const users = await db.getAll('users');
         console.log(`La base contient ${users.length} utilisateurs:`, JSON.stringify(users));
+        
+        // Vérifier aussi le store banners
+        if (db.objectStoreNames.contains('banners')) {
+          const banners = await db.getAll('banners');
+          console.log(`La base contient ${banners.length} bannières`);
+        } else {
+          console.error("Le store 'banners' n'existe toujours pas après initialisation!");
+        }
         
         setIsDbReady(true);
       } catch (error) {
