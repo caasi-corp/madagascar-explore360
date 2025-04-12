@@ -20,6 +20,7 @@ import AdminUserManagement from '@/pages/admin/UserManagement';
 import AdminRoute from '@/components/auth/AdminRoute';
 import CatamaranCruises from '@/pages/admin/CatamaranCruises';
 import CatamaranCruiseEditor from '@/pages/admin/CatamaranCruiseEditor';
+import PhotosAdmin from '@/pages/admin/PhotosAdmin';
 
 const adminRoutes = {
   path: '/admin',
@@ -91,6 +92,10 @@ const adminRoutes = {
         {
           path: 'catamaran-cruises/edit/:id',
           element: <CatamaranCruiseEditor />
+        },
+        {
+          path: 'photos',
+          element: <PhotosAdmin />
         },
         {
           path: 'hotels',
