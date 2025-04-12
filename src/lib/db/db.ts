@@ -12,6 +12,10 @@ let dbInstance: Promise<IDBPDatabase<NorthGascarDB>> | null = null;
 
 // Initialize the database
 export const initDB = async (): Promise<IDBPDatabase<NorthGascarDB>> => {
+  if (dbInstance) {
+    return dbInstance;
+  }
+  
   const db = await openDB<NorthGascarDB>('northgascar-db', 1, {
     upgrade(db) {
       // Create object stores if they don't exist

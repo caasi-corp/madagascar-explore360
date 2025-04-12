@@ -1,3 +1,4 @@
+
 import { IDBPDatabase } from 'idb';
 import { NorthGascarDB, Tour } from '../schema';
 
@@ -93,13 +94,21 @@ export const seedTours = async (db: IDBPDatabase<NorthGascarDB>): Promise<void> 
       },
     ];
     
-    const toursTx = db.transaction('tours', 'readwrite');
-    const toursStore = toursTx.objectStore('tours');
-    for (const tour of tours) {
-      await toursStore.put(tour);
+    try {
+      const toursTx = db.transaction('tours', 'readwrite');
+      const toursStore = toursTx.objectStore('tours');
+      for (const tour of tours) {
+        try {
+          await toursStore.put(tour);
+        } catch (err) {
+          console.warn(`Impossible d'ajouter le circuit ${tour.id}, il existe peut-être déjà.`);
+        }
+      }
+      await toursTx.done;
+      console.log("Tours ajoutés avec succès");
+    } catch (err) {
+      console.error("Erreur lors de la transaction d'ajout de tours:", err);
     }
-    await toursTx.done;
-    console.log("Tours ajoutés avec succès");
   } catch (e) {
     console.error("Erreur lors de l'ajout des tours:", e);
   }

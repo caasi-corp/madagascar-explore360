@@ -32,13 +32,21 @@ export const seedBookings = async (db: IDBPDatabase<NorthGascarDB>): Promise<voi
       },
     ];
     
-    const bookingsTx = db.transaction('bookings', 'readwrite');
-    const bookingsStore = bookingsTx.objectStore('bookings');
-    for (const booking of bookings) {
-      await bookingsStore.put(booking);
+    try {
+      const bookingsTx = db.transaction('bookings', 'readwrite');
+      const bookingsStore = bookingsTx.objectStore('bookings');
+      for (const booking of bookings) {
+        try {
+          await bookingsStore.put(booking);
+        } catch (err) {
+          console.warn(`Impossible d'ajouter la réservation ${booking.id}, elle existe peut-être déjà.`);
+        }
+      }
+      await bookingsTx.done;
+      console.log("Réservations ajoutées avec succès");
+    } catch (err) {
+      console.error("Erreur lors de la transaction d'ajout de réservations:", err);
     }
-    await bookingsTx.done;
-    console.log("Réservations ajoutées avec succès");
   } catch (e) {
     console.error("Erreur lors de l'ajout des réservations:", e);
   }

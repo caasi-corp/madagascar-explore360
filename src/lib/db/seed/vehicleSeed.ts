@@ -1,3 +1,4 @@
+
 import { IDBPDatabase } from 'idb';
 import { NorthGascarDB, Vehicle } from '../schema';
 
@@ -57,13 +58,21 @@ export const seedVehicles = async (db: IDBPDatabase<NorthGascarDB>): Promise<voi
       },
     ];
     
-    const vehiclesTx = db.transaction('vehicles', 'readwrite');
-    const vehiclesStore = vehiclesTx.objectStore('vehicles');
-    for (const vehicle of vehicles) {
-      await vehiclesStore.put(vehicle);
+    try {
+      const vehiclesTx = db.transaction('vehicles', 'readwrite');
+      const vehiclesStore = vehiclesTx.objectStore('vehicles');
+      for (const vehicle of vehicles) {
+        try {
+          await vehiclesStore.put(vehicle);
+        } catch (err) {
+          console.warn(`Impossible d'ajouter le véhicule ${vehicle.id}, il existe peut-être déjà.`);
+        }
+      }
+      await vehiclesTx.done;
+      console.log("Véhicules ajoutés avec succès");
+    } catch (err) {
+      console.error("Erreur lors de la transaction d'ajout de véhicules:", err);
     }
-    await vehiclesTx.done;
-    console.log("Véhicules ajoutés avec succès");
   } catch (e) {
     console.error("Erreur lors de l'ajout des véhicules:", e);
   }

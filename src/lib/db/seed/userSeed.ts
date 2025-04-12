@@ -52,16 +52,17 @@ export const seedUsers = async (db: IDBPDatabase<NorthGascarDB>): Promise<boolea
     const userStore = tx.objectStore('users');
     
     for (const user of users) {
-      await userStore.add(user);
-      console.log(`Utilisateur ajouté: ${user.email}`);
+      try {
+        await userStore.add(user);
+        console.log(`Utilisateur ajouté: ${user.email}`);
+      } catch (err) {
+        console.warn(`Impossible d'ajouter l'utilisateur ${user.email}, il existe peut-être déjà.`);
+      }
     }
     
     await tx.done;
     console.log("Transaction utilisateurs terminée avec succès");
     
-    // Vérifier que les utilisateurs ont été ajoutés
-    const addedUsers = await db.getAll('users');
-    console.log(`${addedUsers.length} utilisateurs ajoutés:`, JSON.stringify(addedUsers));
     return true;
   } catch (e) {
     console.error("Erreur lors de l'ajout des utilisateurs:", e);
