@@ -76,7 +76,7 @@ export const useCatamaranData = () => {
       description: "Notre catamaran le plus confortable avec 4 grandes cabines doubles et un spacieux salon extérieur.",
       features: ["Cuisine équipée", "Kayaks", "Équipement de plongée", "Paddle", "Sound system"],
       images: [
-        "https://images.unsplash.com/photo-1588401273872-095b5e8b1a8c",
+        "https://images.unsplash.com/photo-1563296291-14f26f10c20c", // Remplacé l'image qui ne fonctionne pas
         "https://images.unsplash.com/photo-1605281317010-fe5ffe798166",
         "https://images.unsplash.com/photo-1542066559-83d5c27d5d6e"
       ]
