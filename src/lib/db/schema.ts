@@ -145,7 +145,7 @@ export interface NorthGascarDB extends DBSchema {
     value: Banner;
     indexes: {
       'by-page': string;
-      'by-isActive': boolean;
+      'by-isActive': string; // Changed from boolean to string to match expected type
     };
   };
 }

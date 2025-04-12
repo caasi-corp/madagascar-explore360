@@ -134,7 +134,7 @@ export const resetDB = async () => {
     }
     
     // Delete the database
-    await indexedDB.deleteDatabase('north-gascar-db');
+    await indexedDB.deleteDatabase('northgascar-db');
     console.log("Base de données supprimée avec succès");
     
     // Reinitialize
