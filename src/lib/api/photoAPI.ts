@@ -1,17 +1,10 @@
 
 import { initDB } from "../db/db";
+import { Photo } from "../db/schema";
 
-type PhotoCategory = 'hero' | 'catamaran' | 'destination' | 'cruise' | 'experience';
+export type PhotoCategory = 'hero' | 'catamaran' | 'destination' | 'cruise' | 'experience';
 
-export interface Photo {
-  id: string;
-  url: string;
-  category: PhotoCategory;
-  title: string;
-  description?: string;
-  isActive: boolean;
-  createdAt: Date;
-}
+export { Photo };
 
 const defaultPhotos: Photo[] = [
   // Hero images
@@ -188,24 +181,46 @@ const defaultPhotos: Photo[] = [
 export const photoAPI = {
   getAll: async (): Promise<Photo[]> => {
     const db = await initDB();
-    let photos = await db.getAll('photos');
-    if (!photos || photos.length === 0) {
-      await db.putBulk('photos', defaultPhotos);
-      photos = defaultPhotos;
+    
+    try {
+      let photos = await db.getAll('photos');
+      
+      if (!photos || photos.length === 0) {
+        // Initialize with default photos if none exist
+        for (const photo of defaultPhotos) {
+          await db.put('photos', photo);
+        }
+        photos = defaultPhotos;
+      }
+      
+      return photos;
+    } catch (error) {
+      console.error("Error getting photos:", error);
+      return defaultPhotos;
     }
-    return photos;
   },
 
   getByCategory: async (category: PhotoCategory): Promise<Photo[]> => {
     const db = await initDB();
-    let allPhotos = await db.getAll('photos');
     
-    if (!allPhotos || allPhotos.length === 0) {
-      await db.putBulk('photos', defaultPhotos);
-      allPhotos = defaultPhotos;
+    try {
+      const allPhotos = await db.getAll('photos');
+      
+      if (!allPhotos || allPhotos.length === 0) {
+        // Initialize with default photos if none exist
+        for (const photo of defaultPhotos) {
+          await db.put('photos', photo);
+        }
+        
+        // Filter by category and return
+        return defaultPhotos.filter(photo => photo.category === category);
+      }
+      
+      return allPhotos.filter(photo => photo.category === category);
+    } catch (error) {
+      console.error("Error getting photos by category:", error);
+      return defaultPhotos.filter(photo => photo.category === category);
     }
-    
-    return allPhotos.filter(photo => photo.category === category);
   },
 
   getActiveByCategory: async (category: PhotoCategory): Promise<Photo[]> => {
@@ -215,7 +230,12 @@ export const photoAPI = {
 
   getById: async (id: string): Promise<Photo | undefined> => {
     const db = await initDB();
-    return await db.get('photos', id);
+    try {
+      return await db.get('photos', id);
+    } catch (error) {
+      console.error("Error getting photo by ID:", error);
+      return undefined;
+    }
   },
 
   add: async (photo: Omit<Photo, 'id' | 'createdAt'>): Promise<Photo> => {
@@ -225,25 +245,37 @@ export const photoAPI = {
       id: `${photo.category}-${Date.now()}`,
       createdAt: new Date(),
     };
-    await db.put('photos', newPhoto);
-    return newPhoto;
+    
+    try {
+      await db.put('photos', newPhoto);
+      return newPhoto;
+    } catch (error) {
+      console.error("Error adding photo:", error);
+      throw error;
+    }
   },
 
   update: async (id: string, photo: Partial<Photo>): Promise<Photo | undefined> => {
     const db = await initDB();
-    const existingPhoto = await db.get('photos', id);
     
-    if (!existingPhoto) {
-      return undefined;
+    try {
+      const existingPhoto = await db.get('photos', id);
+      
+      if (!existingPhoto) {
+        return undefined;
+      }
+      
+      const updatedPhoto = {
+        ...existingPhoto,
+        ...photo,
+      };
+      
+      await db.put('photos', updatedPhoto);
+      return updatedPhoto;
+    } catch (error) {
+      console.error("Error updating photo:", error);
+      throw error;
     }
-    
-    const updatedPhoto = {
-      ...existingPhoto,
-      ...photo,
-    };
-    
-    await db.put('photos', updatedPhoto);
-    return updatedPhoto;
   },
 
   toggleActive: async (id: string): Promise<Photo | undefined> => {
@@ -255,7 +287,12 @@ export const photoAPI = {
 
   delete: async (id: string): Promise<boolean> => {
     const db = await initDB();
-    await db.delete('photos', id);
-    return true;
+    try {
+      await db.delete('photos', id);
+      return true;
+    } catch (error) {
+      console.error("Error deleting photo:", error);
+      throw error;
+    }
   }
 };

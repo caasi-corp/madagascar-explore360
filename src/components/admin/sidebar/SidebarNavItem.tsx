@@ -4,32 +4,42 @@ import { Link, useLocation } from 'react-router-dom';
 import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface NavItemProps {
+interface SidebarNavItemProps {
   name: string;
   href: string;
   icon: LucideIcon;
-  isActive: boolean;
+  isActive?: boolean;
   hasSubmenu?: boolean;
   isSubmenuExpanded?: boolean;
   onToggle?: () => void;
 }
 
-const SidebarNavItem: React.FC<NavItemProps> = ({
+const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
   name,
   href,
   icon: Icon,
-  isActive,
+  isActive = false,
   hasSubmenu = false,
   isSubmenuExpanded = false,
   onToggle
 }) => {
+  const location = useLocation();
+  
+  // Check if current route is active
+  const checkIsActive = () => {
+    if (isActive !== undefined) return isActive;
+    return location.pathname === href;
+  };
+  
+  const isCurrentActive = checkIsActive();
+  
   if (hasSubmenu) {
     return (
       <button
         onClick={onToggle}
         className={cn(
           "w-full flex items-center px-3 py-2 text-sm rounded-md transition-colors",
-          isActive 
+          isCurrentActive 
             ? "bg-accent text-accent-foreground" 
             : "hover:bg-muted"
         )}
@@ -60,7 +70,7 @@ const SidebarNavItem: React.FC<NavItemProps> = ({
       to={href}
       className={cn(
         "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
-        isActive 
+        isCurrentActive 
           ? "bg-accent text-accent-foreground" 
           : "hover:bg-muted"
       )}

@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 interface SubmenuItemProps {
   name: string;
   href: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
 }
 
 interface SidebarSubmenuProps {
@@ -33,7 +33,7 @@ const SidebarSubmenu: React.FC<SidebarSubmenuProps> = ({ items, isExpanded }) =>
               : "hover:bg-muted"
           )}
         >
-          <item.icon className="mr-2 h-4 w-4" />
+          {item.icon && <item.icon className="mr-2 h-4 w-4" />}
           <span>{item.name}</span>
         </Link>
       ))}

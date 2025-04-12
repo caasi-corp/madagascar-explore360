@@ -1,3 +1,4 @@
+
 import { openDB, IDBPDatabase } from 'idb';
 import { NorthGascarDB } from './schema';
 import { seedData } from './seed';
@@ -61,6 +62,13 @@ export const initDB = async () => {
             flightsStore.createIndex('by-departure', 'departure');
             flightsStore.createIndex('by-arrival', 'arrival');
             flightsStore.createIndex('by-departureDate', 'departureDate');
+          }
+          
+          // Create photos store
+          if (!db.objectStoreNames.contains('photos')) {
+            console.log("Création du store 'photos'");
+            const photosStore = db.createObjectStore('photos', { keyPath: 'id' });
+            photosStore.createIndex('by-category', 'category');
           }
         },
       });

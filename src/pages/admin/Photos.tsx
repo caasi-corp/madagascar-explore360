@@ -4,7 +4,8 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, ImagePlus } from 'lucide-react';
-import { Photo, photoAPI } from '@/lib/api/photoAPI';
+import { Photo } from '@/lib/db/schema';
+import { photoAPI } from '@/lib/api/photoAPI';
 import { usePhotos } from '@/hooks/usePhotos';
 import PhotosFilter from '@/components/admin/photos/PhotosFilter';
 import PhotosGrid from '@/components/admin/photos/PhotosGrid';
@@ -83,6 +84,15 @@ const PhotosAdmin = () => {
     setIsPhotoDialogOpen(false);
   };
   
+  // Fix the type issues by wrapping the callback functions
+  const handleToggleActive = async (id: string): Promise<void> => {
+    await togglePhotoActive(id);
+  };
+  
+  const handleDelete = async (id: string): Promise<void> => {
+    await deletePhoto(id);
+  };
+  
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -110,9 +120,9 @@ const PhotosAdmin = () => {
       <PhotosGrid
         photos={filteredPhotos}
         isLoading={isLoading}
-        onToggleActive={togglePhotoActive}
+        onToggleActive={handleToggleActive}
         onEdit={handleEditPhoto}
-        onDelete={deletePhoto}
+        onDelete={handleDelete}
         onView={handleViewPhoto}
       />
       
