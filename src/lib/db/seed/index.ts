@@ -1,37 +1,31 @@
 
 import { IDBPDatabase } from 'idb';
 import { NorthGascarDB } from '../schema';
-import { seedUsers } from './userSeed';
 import { seedTours } from './tourSeed';
 import { seedVehicles } from './vehicleSeed';
+import { seedUsers } from './userSeed';
 import { seedBookings } from './bookingSeed';
+import { seedBanners } from './bannerSeed';
 
 /**
  * Seeds the database with initial data
  * @param db The database connection
+ * @returns Whether the seeding was successful
  */
-export const seedData = async (db: IDBPDatabase<NorthGascarDB>) => {
-  console.log("Début du processus de seed de la base de données");
-  
+export const seedDatabase = async (db: IDBPDatabase<NorthGascarDB>): Promise<boolean> => {
   try {
-    // Vérifier d'abord si des données existent déjà
-    const existingUsers = await db.getAll('users');
-    if (existingUsers.length > 0) {
-      console.log("Des utilisateurs existent déjà, le seed ne sera pas exécuté");
-      return;
-    }
-    
-    // Seed users first - CRITICAL
+    // Seed the database with users (this is critical, so we throw if it fails)
     await seedUsers(db);
     
-    // Seed other data only if users were successfully added
+    // Seed the rest of the data (these are not critical, so we catch errors internally)
     await seedTours(db);
     await seedVehicles(db);
     await seedBookings(db);
+    await seedBanners(db);
     
-    console.log("Seed de la base de données terminé avec succès");
-  } catch (error) {
-    console.error("Erreur générale durant le seed de la base de données:", error);
-    throw error;
+    return true;
+  } catch (e) {
+    console.error("Erreur critique lors de l'initialisation de la base de données:", e);
+    return false;
   }
 };

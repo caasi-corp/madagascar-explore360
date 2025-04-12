@@ -1,3 +1,4 @@
+
 /**
  * Database schema definitions for the application
  */
@@ -79,6 +80,16 @@ export interface Flight {
   availableSeats: number;
 }
 
+export interface Banner {
+  id: string;
+  name: string;
+  imagePath: string;
+  page: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Define the database schema
 import { DBSchema } from 'idb';
 
@@ -127,6 +138,14 @@ export interface NorthGascarDB extends DBSchema {
       'by-departure': string;
       'by-arrival': string;
       'by-departureDate': string;
+    };
+  };
+  banners: {
+    key: string;
+    value: Banner;
+    indexes: {
+      'by-page': string;
+      'by-isActive': boolean;
     };
   };
 }
