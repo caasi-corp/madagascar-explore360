@@ -1,6 +1,6 @@
 
 import { Photo } from '../db/schema';
-import { initDB } from '../db/db';
+import { getDB } from '../db/db';
 
 // Fonction pour générer un ID unique
 const generateId = () => {
@@ -11,26 +11,26 @@ const generateId = () => {
 export const photoAPI = {
   // Récupérer toutes les photos
   async getAllPhotos(): Promise<Photo[]> {
-    const db = await initDB();
+    const db = await getDB();
     return db.getAll('photos');
   },
 
   // Récupérer les photos par catégorie
   async getPhotosByCategory(category: Photo['category']): Promise<Photo[]> {
-    const db = await initDB();
+    const db = await getDB();
     const index = db.transaction('photos').store.index('by-category');
     return index.getAll(category);
   },
 
   // Récupérer une photo par son ID
   async getPhotoById(id: string): Promise<Photo | undefined> {
-    const db = await initDB();
+    const db = await getDB();
     return db.get('photos', id);
   },
 
   // Ajouter une nouvelle photo
   async addPhoto(photo: Omit<Photo, 'id' | 'createdAt'>): Promise<Photo> {
-    const db = await initDB();
+    const db = await getDB();
     const newPhoto: Photo = {
       id: generateId(),
       ...photo,
@@ -42,7 +42,7 @@ export const photoAPI = {
 
   // Mettre à jour une photo existante
   async updatePhoto(id: string, updates: Partial<Omit<Photo, 'id' | 'createdAt'>>): Promise<Photo | undefined> {
-    const db = await initDB();
+    const db = await getDB();
     const existingPhoto = await db.get('photos', id);
     
     if (!existingPhoto) {
@@ -60,7 +60,7 @@ export const photoAPI = {
 
   // Supprimer une photo
   async deletePhoto(id: string): Promise<boolean> {
-    const db = await initDB();
+    const db = await getDB();
     await db.delete('photos', id);
     return true;
   }
@@ -68,7 +68,7 @@ export const photoAPI = {
 
 // Données initiales pour amorcer la base de données
 export const seedPhotos = async () => {
-  const db = await initDB();
+  const db = await getDB();
   const count = await db.count('photos');
   
   if (count === 0) {

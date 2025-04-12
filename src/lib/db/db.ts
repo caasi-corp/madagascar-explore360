@@ -7,6 +7,9 @@ import { seedUsers } from './seed/userSeed';
 import { seedBookings } from './seed/bookingSeed';
 import { seedPhotos } from '../api/photoAPI';
 
+// Database instance reference
+let dbInstance: Promise<IDBDatabase> | null = null;
+
 // Initialize the database
 export const initDB = async () => {
   const db = await openDB<NorthGascarDB>('northgascar-db', 1, {
@@ -60,11 +63,32 @@ export const initDB = async () => {
   });
 
   // Seed the database with initial data
-  await seedTours();
-  await seedVehicles();
-  await seedUsers();
-  await seedBookings();
+  await seedTours(db);
+  await seedVehicles(db);
+  await seedUsers(db);
+  await seedBookings(db);
   await seedPhotos();
 
   return db;
+};
+
+// Get database instance
+export const getDB = async () => {
+  if (!dbInstance) {
+    dbInstance = initDB();
+  }
+  return dbInstance;
+};
+
+// Reset database (for development/testing purposes)
+export const resetDB = async () => {
+  // Delete the database completely
+  await window.indexedDB.deleteDatabase('northgascar-db');
+  console.log("Database deleted successfully");
+  
+  // Reset the instance
+  dbInstance = null;
+  
+  // Re-initialize the database
+  return await getDB();
 };
