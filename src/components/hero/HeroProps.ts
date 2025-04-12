@@ -1,4 +1,3 @@
-
 /**
  * Props interface for the Hero component
  */
@@ -31,4 +30,9 @@ export interface HeroProps {
    * @default "h-screen"
    */
   height?: string;
+  
+  /**
+   * Optional array of custom images to display in the hero section
+   */
+  customImages?: string[];
 }
