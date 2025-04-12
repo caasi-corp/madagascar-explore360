@@ -1,98 +1,140 @@
-
 import { openDB, IDBPDatabase } from 'idb';
 import { NorthGascarDB } from './schema';
-import { seedTours } from './seed/tourSeed';
-import { seedVehicles } from './seed/vehicleSeed';
-import { seedUsers } from './seed/userSeed';
-import { seedBookings } from './seed/bookingSeed';
-import { seedPhotos } from '../api/photoAPI';
+import { seedData } from './seed';
 
-// Database instance reference
-let dbInstance: Promise<IDBPDatabase<NorthGascarDB>> | null = null;
+let dbPromise: Promise<IDBPDatabase<NorthGascarDB>>;
 
-// Initialize the database
-export const initDB = async (): Promise<IDBPDatabase<NorthGascarDB>> => {
-  if (dbInstance) {
-    return dbInstance;
-  }
+/**
+ * Initializes the IndexedDB database
+ * @returns A promise of the database connection
+ */
+export const initDB = async () => {
+  console.log("Initialisation de la base de données...");
   
-  const db = await openDB<NorthGascarDB>('northgascar-db', 1, {
-    upgrade(db) {
-      // Create object stores if they don't exist
-      if (!db.objectStoreNames.contains('tours')) {
-        const tourStore = db.createObjectStore('tours', { keyPath: 'id' });
-        tourStore.createIndex('by-category', 'category');
-        tourStore.createIndex('by-location', 'location');
-      }
-
-      if (!db.objectStoreNames.contains('vehicles')) {
-        const vehicleStore = db.createObjectStore('vehicles', { keyPath: 'id' });
-        vehicleStore.createIndex('by-type', 'type');
-      }
-
-      if (!db.objectStoreNames.contains('users')) {
-        const userStore = db.createObjectStore('users', { keyPath: 'id' });
-        userStore.createIndex('by-email', 'email', { unique: true });
-      }
-
-      if (!db.objectStoreNames.contains('bookings')) {
-        const bookingStore = db.createObjectStore('bookings', { keyPath: 'id' });
-        bookingStore.createIndex('by-userId', 'userId');
-        bookingStore.createIndex('by-status', 'status');
-      }
-
-      if (!db.objectStoreNames.contains('hotels')) {
-        const hotelStore = db.createObjectStore('hotels', { keyPath: 'id' });
-        hotelStore.createIndex('by-location', 'location');
-      }
-
-      if (!db.objectStoreNames.contains('flights')) {
-        const flightStore = db.createObjectStore('flights', { keyPath: 'id' });
-        flightStore.createIndex('by-departure', 'departure');
-        flightStore.createIndex('by-arrival', 'arrival');
-        flightStore.createIndex('by-departureDate', 'departureDate');
+  if (!dbPromise) {
+    try {
+      dbPromise = openDB<NorthGascarDB>('north-gascar-db', 1, {
+        upgrade(db, oldVersion, newVersion, transaction) {
+          console.log(`Mise à jour de la base de données de la version ${oldVersion} vers ${newVersion}`);
+          
+          // Create tours store
+          if (!db.objectStoreNames.contains('tours')) {
+            console.log("Création du store 'tours'");
+            const toursStore = db.createObjectStore('tours', { keyPath: 'id' });
+            toursStore.createIndex('by-category', 'category');
+            toursStore.createIndex('by-location', 'location');
+          }
+          
+          // Create vehicles store
+          if (!db.objectStoreNames.contains('vehicles')) {
+            console.log("Création du store 'vehicles'");
+            const vehiclesStore = db.createObjectStore('vehicles', { keyPath: 'id' });
+            vehiclesStore.createIndex('by-type', 'type');
+          }
+          
+          // Create users store
+          if (!db.objectStoreNames.contains('users')) {
+            console.log("Création du store 'users'");
+            const usersStore = db.createObjectStore('users', { keyPath: 'id' });
+            usersStore.createIndex('by-email', 'email', { unique: true });
+          }
+          
+          // Create bookings store
+          if (!db.objectStoreNames.contains('bookings')) {
+            console.log("Création du store 'bookings'");
+            const bookingsStore = db.createObjectStore('bookings', { keyPath: 'id' });
+            bookingsStore.createIndex('by-userId', 'userId');
+            bookingsStore.createIndex('by-status', 'status');
+          }
+          
+          // Create hotels store
+          if (!db.objectStoreNames.contains('hotels')) {
+            console.log("Création du store 'hotels'");
+            const hotelsStore = db.createObjectStore('hotels', { keyPath: 'id' });
+            hotelsStore.createIndex('by-location', 'location');
+          }
+          
+          // Create flights store
+          if (!db.objectStoreNames.contains('flights')) {
+            console.log("Création du store 'flights'");
+            const flightsStore = db.createObjectStore('flights', { keyPath: 'id' });
+            flightsStore.createIndex('by-departure', 'departure');
+            flightsStore.createIndex('by-arrival', 'arrival');
+            flightsStore.createIndex('by-departureDate', 'departureDate');
+          }
+        },
+      });
+      
+      // Maintenant que la base de données est initialisée, on peut ajouter les données initiales
+      const db = await dbPromise;
+      console.log("Base de données initialisée, vérification des données");
+      
+      // Vérifier si des utilisateurs existent déjà
+      const usersCount = await db.count('users');
+      console.log(`Nombre d'utilisateurs trouvés: ${usersCount}`);
+      
+      // Si aucun utilisateur n'existe, ajouter les données de démo
+      if (usersCount === 0) {
+        console.log("Aucun utilisateur trouvé, ajout des données initiales...");
+        try {
+          await seedData(db);
+          
+          // Vérifier que les données ont bien été ajoutées
+          const usersAfterSeed = await db.getAll('users');
+          console.log(`Après le seed: ${usersAfterSeed.length} utilisateurs trouvés`);
+          console.log("Utilisateurs:", JSON.stringify(usersAfterSeed));
+        } catch (error) {
+          console.error("Erreur lors de l'ajout des données initiales:", error);
+        }
+      } else {
+        console.log("Des utilisateurs existent déjà dans la base");
       }
       
-      if (!db.objectStoreNames.contains('photos')) {
-        const photoStore = db.createObjectStore('photos', { keyPath: 'id' });
-        photoStore.createIndex('by-category', 'category');
-      }
-    },
-    blocking() {
-      console.log('Another version of the database was opened in another tab');
-    },
-    blocked() {
-      console.log('Database upgrade is blocked by another connection');
-    },
-  });
-
-  // Seed the database with initial data
-  await seedTours(db);
-  await seedVehicles(db);
-  await seedUsers(db);
-  await seedBookings(db);
-  await seedPhotos();
-
-  return db;
-};
-
-// Get database instance
-export const getDB = async (): Promise<IDBPDatabase<NorthGascarDB>> => {
-  if (!dbInstance) {
-    dbInstance = initDB();
+    } catch (error) {
+      console.error("Erreur lors de l'initialisation de la base de données:", error);
+      throw error;
+    }
   }
-  return dbInstance;
+  
+  return dbPromise;
 };
 
-// Reset database (for development/testing purposes)
-export const resetDB = async (): Promise<IDBPDatabase<NorthGascarDB>> => {
-  // Delete the database completely
-  await window.indexedDB.deleteDatabase('northgascar-db');
-  console.log("Database deleted successfully");
+/**
+ * Gets the database connection
+ * @returns A promise of the database connection
+ */
+export const getDB = async () => {
+  if (!dbPromise) {
+    return initDB();
+  }
+  return dbPromise;
+};
+
+/**
+ * Resets the database by deleting it and reinitializing
+ */
+export const resetDB = async () => {
+  console.log("Réinitialisation de la base de données...");
   
-  // Reset the instance
-  dbInstance = null;
-  
-  // Re-initialize the database
-  return await getDB();
+  try {
+    // Close any existing connections
+    if (dbPromise) {
+      const db = await dbPromise;
+      db.close();
+      dbPromise = null;
+    }
+    
+    // Delete the database
+    await indexedDB.deleteDatabase('north-gascar-db');
+    console.log("Base de données supprimée avec succès");
+    
+    // Reinitialize
+    const newDb = await initDB();
+    console.log("Base de données réinitialisée avec succès");
+    
+    return newDb;
+  } catch (error) {
+    console.error("Erreur lors de la réinitialisation de la base de données:", error);
+    throw error;
+  }
 };

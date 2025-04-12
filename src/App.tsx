@@ -23,27 +23,18 @@ const queryClient = new QueryClient({
 function App() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [initError, setInitError] = useState<string | null>(null);
-  const [initRetries, setInitRetries] = useState(0);
 
   useEffect(() => {
     // Initialiser la base de données au chargement de l'application
     const initialize = async () => {
       try {
         setIsInitializing(true);
-        console.log("Démarrage de l'initialisation de la base de données...");
-        
-        // Ajouter un timeout pour éviter un blocage infini
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error("L'initialisation a pris trop de temps")), 10000);
-        });
-        
-        // Race entre l'initialisation et le timeout
-        const db = await Promise.race([
-          initDB(),
-          timeoutPromise
-        ]) as any;
-        
+        const db = await initDB();
         console.log("Base de données initialisée avec succès");
+        
+        // Vérifier que les utilisateurs ont bien été créés
+        const users = await db.getAll('users');
+        console.log(`La base contient ${users.length} utilisateurs:`, JSON.stringify(users));
         
       } catch (error) {
         console.error("Erreur lors de l'initialisation de la base de données:", error);
@@ -54,13 +45,7 @@ function App() {
     };
     
     initialize();
-  }, [initRetries]);
-
-  const handleRetry = () => {
-    setInitError(null);
-    setIsInitializing(true);
-    setInitRetries(prev => prev + 1);
-  };
+  }, []);
 
   if (isInitializing) {
     return (
@@ -81,7 +66,7 @@ function App() {
               Une erreur est survenue lors de l'initialisation de la base de données: {initError}
             </DialogDescription>
           </DialogHeader>
-          <Button onClick={handleRetry}>
+          <Button onClick={() => window.location.reload()}>
             Réessayer
           </Button>
         </DialogContent>

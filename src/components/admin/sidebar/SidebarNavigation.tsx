@@ -14,7 +14,6 @@ import {
   MessageCircle,
   Settings,
   Ship,
-  Image,
   LucideIcon
 } from 'lucide-react';
 import SidebarNavGroup from './SidebarNavGroup';
@@ -73,11 +72,6 @@ const navItems: NavItem[] = [
       { name: 'Toutes les croisières', href: '/admin/catamaran-cruises', icon: Ship },
       { name: 'Nouvelle croisière', href: '/admin/catamaran-cruises/new', icon: Ship }
     ]
-  },
-  {
-    name: 'Photos',
-    href: '/admin/photos',
-    icon: Image
   },
   {
     name: 'Hôtels',

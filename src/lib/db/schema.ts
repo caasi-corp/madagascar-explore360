@@ -1,4 +1,3 @@
-
 /**
  * Database schema definitions for the application
  */
@@ -80,16 +79,6 @@ export interface Flight {
   availableSeats: number;
 }
 
-export interface Photo {
-  id: string;
-  title: string;
-  url: string;
-  description?: string;
-  category: 'banner' | 'gallery' | 'tour' | 'vehicle' | 'hotel' | 'catamaran';
-  active: boolean;
-  createdAt: string;
-}
-
 // Define the database schema
 import { DBSchema } from 'idb';
 
@@ -138,13 +127,6 @@ export interface NorthGascarDB extends DBSchema {
       'by-departure': string;
       'by-arrival': string;
       'by-departureDate': string;
-    };
-  };
-  photos: {
-    key: string;
-    value: Photo;
-    indexes: {
-      'by-category': string;
     };
   };
 }
