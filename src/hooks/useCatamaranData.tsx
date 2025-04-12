@@ -1,69 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Fish, Shell, Compass, Waves, Sun } from 'lucide-react';
 import { Experience } from '@/components/services/catamaran/ExperienceCard';
 import { Destination } from '@/components/services/catamaran/DestinationCard';
 import { CruiseOption } from '@/components/services/catamaran/CruiseCard';
 import { Catamaran } from '@/components/services/catamaran/CatamaranCard';
-import { photoAPI } from '@/lib/api/photoAPI';
-import type { Photo } from '@/lib/db/schema';
 
 export const useCatamaranData = () => {
-  const [heroImages, setHeroImages] = useState<string[]>([]);
-  const [cruiseImages, setCruiseImages] = useState<Record<string, string>>({});
-  const [destinationImages, setDestinationImages] = useState<Record<string, string>>({});
-  const [catamaranImages, setCatamaranImages] = useState<Record<string, string[]>>({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadImages = async () => {
-      try {
-        // Load hero images
-        const heroPhotos = await photoAPI.getActiveByCategory('hero');
-        setHeroImages(heroPhotos.map(photo => photo.url));
-        
-        // Load cruise images
-        const cruisePhotos = await photoAPI.getActiveByCategory('cruise');
-        const cruiseMap: Record<string, string> = {};
-        cruisePhotos.forEach(photo => {
-          cruiseMap[photo.title] = photo.url;
-        });
-        setCruiseImages(cruiseMap);
-        
-        // Load destination images
-        const destinationPhotos = await photoAPI.getActiveByCategory('destination');
-        const destinationMap: Record<string, string> = {};
-        destinationPhotos.forEach(photo => {
-          destinationMap[photo.title] = photo.url;
-        });
-        setDestinationImages(destinationMap);
-        
-        // Load catamaran images
-        const catamaranPhotos = await photoAPI.getActiveByCategory('catamaran');
-        const catamaranMap: Record<string, string[]> = {
-          'Paradis Bleu': [],
-          'Océan Nomade': []
-        };
-        
-        catamaranPhotos.forEach(photo => {
-          if (photo.title.includes('Paradis Bleu')) {
-            catamaranMap['Paradis Bleu'].push(photo.url);
-          } else if (photo.title.includes('Océan Nomade')) {
-            catamaranMap['Océan Nomade'].push(photo.url);
-          }
-        });
-        
-        setCatamaranImages(catamaranMap);
-      } catch (error) {
-        console.error('Error loading images:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    loadImages();
-  }, []);
-  
   const cruiseOptions: CruiseOption[] = [
     {
       id: 1,
@@ -71,7 +14,7 @@ export const useCatamaranData = () => {
       duration: "1 jour",
       description: "Explorez les eaux cristallines autour de Nosy Be à bord d'un catamaran de luxe.",
       price: 180,
-      image: cruiseImages["Croisière Nosy Be"] || "https://images.unsplash.com/photo-1540541338287-41700207dee6"
+      image: "https://images.unsplash.com/photo-1540541338287-41700207dee6"
     },
     {
       id: 2,
@@ -79,7 +22,7 @@ export const useCatamaranData = () => {
       duration: "3 jours",
       description: "Croisière vers l'archipel de Mitsio avec plongée, pêche et détente sur des plages désertes.",
       price: 650,
-      image: cruiseImages["Croisière Mitsio"] || "https://images.unsplash.com/photo-1500375592092-40eb2168fd21"
+      image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21"
     },
     {
       id: 3,
@@ -87,7 +30,7 @@ export const useCatamaranData = () => {
       duration: "2 jours",
       description: "Excursion vers l'île aux lémuriens avec nuit à bord et baignade avec les tortues marines.",
       price: 380,
-      image: cruiseImages["Croisière Nosy Komba"] || "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb"
+      image: "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb"
     },
     {
       id: 4,
@@ -95,29 +38,29 @@ export const useCatamaranData = () => {
       duration: "5 jours",
       description: "Aventure vers les îles Radama avec leurs récifs coralliens exceptionnels et villages de pêcheurs.",
       price: 990,
-      image: cruiseImages["Croisière Radama"] || "https://images.unsplash.com/photo-1518877593221-1f28583780b4"
+      image: "https://images.unsplash.com/photo-1518877593221-1f28583780b4"
     }
   ];
   
   const destinations: Destination[] = [
     {
       name: "Nosy Be",
-      image: destinationImages["Nosy Be"] || "https://images.unsplash.com/photo-1590523278191-304df6c77268",
+      image: "https://images.unsplash.com/photo-1590523278191-304df6c77268",
       description: "L'île parfumée, point de départ de toutes nos croisières"
     },
     {
       name: "Archipel de Mitsio",
-      image: destinationImages["Archipel de Mitsio"] || "https://images.unsplash.com/photo-1465447142348-e9952c393450",
+      image: "https://images.unsplash.com/photo-1465447142348-e9952c393450",
       description: "Un paradis de biodiversité marine aux eaux turquoise"
     },
     {
       name: "Nosy Komba",
-      image: destinationImages["Nosy Komba"] || "https://images.unsplash.com/photo-1501179691627-eeaa65ea017c",
+      image: "https://images.unsplash.com/photo-1501179691627-eeaa65ea017c",
       description: "L'île aux lémuriens avec ses plages sauvages"
     },
     {
       name: "Îles Radama",
-      image: destinationImages["Îles Radama"] || "https://images.unsplash.com/photo-1562523331-9ddcaeda6477",
+      image: "https://images.unsplash.com/photo-1562523331-9ddcaeda6477",
       description: "Archipel préservé aux eaux cristallines et à la biodiversité exceptionnelle"
     }
   ];
@@ -132,13 +75,11 @@ export const useCatamaranData = () => {
       length: "12.8m",
       description: "Notre catamaran le plus confortable avec 4 grandes cabines doubles et un spacieux salon extérieur.",
       features: ["Cuisine équipée", "Kayaks", "Équipement de plongée", "Paddle", "Sound system"],
-      images: catamaranImages["Paradis Bleu"]?.length > 0 
-        ? catamaranImages["Paradis Bleu"] 
-        : [
-            "https://images.unsplash.com/photo-1563296291-14f26f10c20c",
-            "https://images.unsplash.com/photo-1605281317010-fe5ffe798166",
-            "https://images.unsplash.com/photo-1542066559-83d5c27d5d6e"
-          ]
+      images: [
+        "https://images.unsplash.com/photo-1563296291-14f26f10c20c", // Remplacé l'image qui ne fonctionne pas
+        "https://images.unsplash.com/photo-1605281317010-fe5ffe798166",
+        "https://images.unsplash.com/photo-1542066559-83d5c27d5d6e"
+      ]
     },
     {
       id: 2,
@@ -149,13 +90,11 @@ export const useCatamaranData = () => {
       length: "11.4m",
       description: "Catamaran rapide idéal pour les amateurs de navigations sportives et les petits groupes.",
       features: ["Générateur", "Dessalinisateur", "Wifi", "Équipement de pêche", "Toilettes électriques"],
-      images: catamaranImages["Océan Nomade"]?.length > 0
-        ? catamaranImages["Océan Nomade"]
-        : [
-            "https://images.unsplash.com/photo-1563296291-14f26f10c20c",
-            "https://images.unsplash.com/photo-1556216576-a2eac9d8e7b7",
-            "https://images.unsplash.com/photo-1562521623-d77d771453e0"
-          ]
+      images: [
+        "https://images.unsplash.com/photo-1563296291-14f26f10c20c",
+        "https://images.unsplash.com/photo-1556216576-a2eac9d8e7b7",
+        "https://images.unsplash.com/photo-1562521623-d77d771453e0"
+      ]
     }
   ];
 
@@ -186,8 +125,6 @@ export const useCatamaranData = () => {
     cruiseOptions,
     destinations,
     catamarans,
-    experiences,
-    heroImages,
-    loading
+    experiences
   };
 };

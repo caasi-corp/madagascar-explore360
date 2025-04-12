@@ -1,179 +1,134 @@
 
 import React from 'react';
-import SidebarNavGroup from './SidebarNavGroup';
-import SidebarNavItem from './SidebarNavItem';
-import SidebarSubmenu from './SidebarSubmenu';
+import { useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard,
+  Home,
   Map,
+  Calendar,
   CalendarDays,
   Users,
-  CarFront,
-  HotelIcon,
-  FileBarChart2,
-  MessageSquare,
+  Car,
+  Building,
+  Plane,
+  BarChart,
+  MessageCircle,
   Settings,
-  Globe,
   Ship,
-  Image,
+  LucideIcon
 } from 'lucide-react';
+import SidebarNavGroup from './SidebarNavGroup';
 
-const SidebarNavigation = () => {
+interface NavItem {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+  submenu?: NavItem[];
+}
+
+// Navigation data
+const navItems: NavItem[] = [
+  {
+    name: 'Tableau de bord',
+    href: '/admin',
+    icon: Home
+  },
+  {
+    name: 'Circuits',
+    href: '/admin/tours',
+    icon: Map,
+    submenu: [
+      { name: 'Tous les circuits', href: '/admin/tours', icon: Map },
+      { name: 'Catégories', href: '/admin/tours/categories', icon: Map }
+    ]
+  },
+  {
+    name: 'Réservations',
+    href: '/admin/bookings',
+    icon: Calendar,
+    submenu: [
+      { name: 'Liste des réservations', href: '/admin/bookings', icon: Calendar },
+      { name: 'Calendrier des excursions', href: '/admin/excursions-calendar', icon: CalendarDays }
+    ]
+  },
+  {
+    name: 'Clients',
+    href: '/admin/customers',
+    icon: Users
+  },
+  {
+    name: 'Véhicules',
+    href: '/admin/vehicles',
+    icon: Car,
+    submenu: [
+      { name: 'Tous les véhicules', href: '/admin/vehicles', icon: Car },
+      { name: 'Réservations', href: '/admin/vehicles/bookings', icon: Calendar }
+    ]
+  },
+  {
+    name: 'Croisières Catamaran',
+    href: '/admin/catamaran-cruises',
+    icon: Ship,
+    submenu: [
+      { name: 'Toutes les croisières', href: '/admin/catamaran-cruises', icon: Ship },
+      { name: 'Nouvelle croisière', href: '/admin/catamaran-cruises/new', icon: Ship }
+    ]
+  },
+  {
+    name: 'Hôtels',
+    href: '/admin/hotels',
+    icon: Building
+  },
+  {
+    name: 'Rapports',
+    href: '/admin/reports',
+    icon: BarChart
+  },
+  {
+    name: 'Messages',
+    href: '/admin/messages',
+    icon: MessageCircle
+  },
+  {
+    name: 'Paramètres',
+    href: '/admin/settings',
+    icon: Settings,
+    submenu: [
+      { name: 'Général', href: '/admin/settings', icon: Settings },
+      { name: 'SEO', href: '/admin/settings/seo', icon: Settings },
+      { name: 'Utilisateurs', href: '/admin/settings/users', icon: Users }
+    ]
+  }
+];
+
+const SidebarNavigation: React.FC = () => {
+  const location = useLocation();
   const [expandedSubmenu, setExpandedSubmenu] = React.useState<string | null>(null);
-  
-  const handleToggleSubmenu = (name: string) => {
-    setExpandedSubmenu(prev => prev === name ? null : name);
-  };
-  
-  const navGroups = [
-    {
-      title: "Excursions",
-      items: [
-        {
-          name: "Circuits",
-          href: "/admin/tours",
-          icon: Map,
-        },
-        {
-          name: "Catégories",
-          href: "/admin/tours/categories",
-          icon: Globe,
-        },
-        {
-          name: "Calendrier",
-          href: "/admin/excursions-calendar",
-          icon: CalendarDays,
-        }
-      ]
-    },
-    {
-      title: "Services",
-      items: [
-        {
-          name: "Véhicules",
-          href: "/admin/vehicles",
-          icon: CarFront,
-        },
-        {
-          name: "Croisières en Catamaran",
-          href: "/admin/catamaran-cruises",
-          icon: Ship,
-        },
-        {
-          name: "Hôtels",
-          href: "/admin/hotels",
-          icon: HotelIcon,
-        }
-      ]
-    },
-    {
-      title: "Réservations",
-      items: [
-        {
-          name: "Réservations",
-          href: "/admin/bookings",
-          icon: CalendarDays,
-        },
-        {
-          name: "Clients",
-          href: "/admin/customers",
-          icon: Users,
-        }
-      ]
+
+  React.useEffect(() => {
+    // Trouver si un élément parent doit être ouvert en fonction de l'URL actuelle
+    const parentItem = navItems.find(item => 
+      item.submenu?.some(subitem => location.pathname === subitem.href)
+    );
+    
+    if (parentItem) {
+      setExpandedSubmenu(parentItem.name);
     }
-  ];
+  }, [location.pathname]);
+
+  const toggleSubmenu = (name: string) => {
+    setExpandedSubmenu(expandedSubmenu === name ? null : name);
+  };
 
   return (
-    <nav className="space-y-2 mt-4">
-      <SidebarNavItem 
-        name="Tableau de bord"
-        href="/admin/dashboard"
-        icon={LayoutDashboard}
-        isActive={false}
-      />
-
-      {navGroups.map(group => (
-        <div key={group.title} className="mb-2">
-          <div className="px-3 mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            {group.title}
-          </div>
-          {group.items.map(item => (
-            <SidebarNavItem
-              key={item.name}
-              name={item.name}
-              href={item.href}
-              icon={item.icon}
-              isActive={false}
-            />
-          ))}
-        </div>
+    <nav className="space-y-1">
+      {navItems.map((item) => (
+        <SidebarNavGroup
+          key={item.name}
+          item={item}
+          expandedSubmenu={expandedSubmenu}
+          onToggleSubmenu={toggleSubmenu}
+        />
       ))}
-
-      <SidebarNavItem
-        name="Gestion des Photos"
-        href="/admin/photos"
-        icon={Image}
-        isActive={false}
-      />
-
-      <SidebarNavItem
-        name="Rapports"
-        href="/admin/reports"
-        icon={FileBarChart2}
-        isActive={false}
-      />
-
-      <SidebarNavItem
-        name="Messages"
-        href="/admin/messages"
-        icon={MessageSquare}
-        isActive={false}
-      />
-
-      <div className="px-3 my-2">
-        <div
-          className="flex items-center px-3 py-2 text-sm rounded-md cursor-pointer hover:bg-muted"
-          onClick={() => handleToggleSubmenu("Paramètres")}
-        >
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Paramètres</span>
-          <svg
-            className={`ml-auto h-4 w-4 transition-transform ${expandedSubmenu === "Paramètres" ? "rotate-90" : ""}`}
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </div>
-        
-        {expandedSubmenu === "Paramètres" && (
-          <div className="ml-6 pl-3 border-l border-border space-y-1 my-1">
-            <a
-              href="/admin/settings"
-              className="flex items-center p-2 rounded-md text-sm hover:bg-muted"
-            >
-              Général
-            </a>
-            <a
-              href="/admin/settings/seo"
-              className="flex items-center p-2 rounded-md text-sm hover:bg-muted"
-            >
-              SEO
-            </a>
-            <a
-              href="/admin/settings/users"
-              className="flex items-center p-2 rounded-md text-sm hover:bg-muted"
-            >
-              Utilisateurs
-            </a>
-          </div>
-        )}
-      </div>
     </nav>
   );
 };

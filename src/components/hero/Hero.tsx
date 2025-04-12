@@ -9,8 +9,7 @@ const Hero: React.FC<HeroProps> = ({
   subtitle = "Vivez l'expérience d'une biodiversité unique et de paysages à couper le souffle avec nos guides locaux experts",
   showSearch = true,
   backgroundImage,
-  height = "h-screen",
-  customImages
+  height = "h-screen"
 }) => {
   const natureImages = [
     "https://images.unsplash.com/photo-1500375592092-40eb2168fd21", // plage, vagues
@@ -20,13 +19,11 @@ const Hero: React.FC<HeroProps> = ({
     "https://images.unsplash.com/photo-1482881497185-d4a9ddbe4151", // dunes de sable
   ];
 
-  const imagesToUse = customImages && customImages.length > 0 ? customImages : natureImages;
-
   return (
     <div 
       className={`relative ${height} flex items-center overflow-hidden`}
     >
-      <HeroCarousel images={imagesToUse} backgroundImage={backgroundImage} />
+      <HeroCarousel images={natureImages} backgroundImage={backgroundImage} />
       
       <div className="container mx-auto px-4 z-10 text-center md:text-left">
         <h1 

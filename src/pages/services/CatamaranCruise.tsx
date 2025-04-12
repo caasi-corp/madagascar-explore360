@@ -1,6 +1,6 @@
 
 import React from 'react';
-import HeroSection from '@/components/services/catamaran/HeroSection';
+import Hero from '@/components/Hero';
 import SearchForm from '@/components/services/catamaran/SearchForm';
 import CruisesList from '@/components/services/catamaran/CruisesList';
 import CatamaransList from '@/components/services/catamaran/CatamaransList';
@@ -9,11 +9,17 @@ import CallToAction from '@/components/services/catamaran/CallToAction';
 import { useCatamaranData } from '@/hooks/useCatamaranData';
 
 const CatamaranCruise = () => {
-  const { cruiseOptions, destinations, catamarans, experiences, heroImages } = useCatamaranData();
+  const { cruiseOptions, destinations, catamarans, experiences } = useCatamaranData();
 
   return (
     <>
-      <HeroSection heroImages={heroImages} />
+      <Hero
+        title="Croisières en Catamaran à Madagascar"
+        subtitle="Explorez les îles paradisiaques de Madagascar à bord de nos catamarans de luxe"
+        showSearch={false}
+        height="h-[60vh]"
+        backgroundImage="https://images.unsplash.com/photo-1540541338287-41700207dee6"
+      />
 
       <section className="py-16 px-4 bg-muted/20">
         <div className="container mx-auto">
