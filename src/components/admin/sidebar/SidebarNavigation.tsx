@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import {
   Home,
   Map,
@@ -16,7 +16,7 @@ import {
   Ship,
   LucideIcon
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import SidebarNavGroup from './SidebarNavGroup';
 
 interface NavItem {
   name: string;
@@ -25,6 +25,7 @@ interface NavItem {
   submenu?: NavItem[];
 }
 
+// Navigation data
 const navItems: NavItem[] = [
   {
     name: 'Tableau de bord',
@@ -120,80 +121,14 @@ const SidebarNavigation: React.FC = () => {
 
   return (
     <nav className="space-y-1">
-      {navItems.map((item) => {
-        const isActive = location.pathname === item.href || 
-                         (item.submenu && item.submenu.some(subitem => location.pathname === subitem.href));
-        const hasSubmenu = item.submenu && item.submenu.length > 0;
-        const isSubmenuExpanded = expandedSubmenu === item.name;
-
-        return (
-          <div key={item.name} className="mb-1">
-            {hasSubmenu ? (
-              <button
-                onClick={() => toggleSubmenu(item.name)}
-                className={cn(
-                  "w-full flex items-center px-3 py-2 text-sm rounded-md transition-colors",
-                  isActive 
-                    ? "bg-accent text-accent-foreground" 
-                    : "hover:bg-muted"
-                )}
-              >
-                <item.icon className="mr-2 h-4 w-4" />
-                <span>{item.name}</span>
-                <svg
-                  className={cn(
-                    "ml-auto h-4 w-4 transition-transform",
-                    isSubmenuExpanded ? "rotate-90" : ""
-                  )}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
-            ) : (
-              <Link
-                to={item.href}
-                className={cn(
-                  "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
-                  isActive 
-                    ? "bg-accent text-accent-foreground" 
-                    : "hover:bg-muted"
-                )}
-              >
-                <item.icon className="mr-2 h-4 w-4" />
-                <span>{item.name}</span>
-              </Link>
-            )}
-
-            {/* Sous-menu */}
-            {hasSubmenu && isSubmenuExpanded && (
-              <div className="mt-1 ml-4 space-y-1">
-                {item.submenu?.map((subitem) => (
-                  <Link
-                    key={subitem.name}
-                    to={subitem.href}
-                    className={cn(
-                      "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
-                      location.pathname === subitem.href
-                        ? "bg-accent text-accent-foreground"
-                        : "hover:bg-muted"
-                    )}
-                  >
-                    <subitem.icon className="mr-2 h-4 w-4" />
-                    <span>{subitem.name}</span>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })}
+      {navItems.map((item) => (
+        <SidebarNavGroup
+          key={item.name}
+          item={item}
+          expandedSubmenu={expandedSubmenu}
+          onToggleSubmenu={toggleSubmenu}
+        />
+      ))}
     </nav>
   );
 };

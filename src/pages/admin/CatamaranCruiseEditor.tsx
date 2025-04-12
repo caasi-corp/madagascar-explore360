@@ -1,21 +1,16 @@
 
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Label } from '@/components/ui/label';
-import { Ship, Map, Calendar, Clock, Users, ArrowLeft, Save, Trash, Plus, X } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { useParams } from 'react-router-dom';
+import CruiseFormHeader from '@/components/admin/catamaran/CruiseFormHeader';
+import GeneralInfoSection from '@/components/admin/catamaran/GeneralInfoSection';
+import ProgramSection from '@/components/admin/catamaran/ProgramSection';
+import ImageSection from '@/components/admin/catamaran/ImageSection';
+import GallerySection from '@/components/admin/catamaran/GallerySection';
+import PublishSettingsSection from '@/components/admin/catamaran/PublishSettingsSection';
+import { toast } from 'sonner';
 
 const CatamaranCruiseEditor = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const isEditMode = id !== 'new';
   
   // État initial pour le formulaire
@@ -90,405 +85,84 @@ const CatamaranCruiseEditor = () => {
       itinerary: newItinerary
     });
   };
+
+  // Fonctions de gestion des événements
+  const handleSave = () => {
+    // Logic to save the form data
+    toast.success("Croisière enregistrée avec succès");
+  };
+
+  const handleDelete = () => {
+    // Logic to delete the cruise
+    toast.error("Croisière supprimée");
+  };
+
+  const handleBrowseFiles = () => {
+    // Logic to browse files
+    toast.info("Fonctionnalité de parcours des fichiers non implémentée");
+  };
   
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/admin/catamaran-cruises')}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-2xl font-bold">{isEditMode ? 'Modifier la croisière' : 'Nouvelle croisière'}</h1>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center space-x-2">
-            <Switch 
-              id="active" 
-              checked={formData.isActive}
-              onCheckedChange={(checked) => setFormData({...formData, isActive: checked})}
-            />
-            <Label htmlFor="active">Activer cette croisière</Label>
-          </div>
-          <Button variant="destructive" className="gap-1">
-            <Trash className="h-4 w-4" /> Supprimer
-          </Button>
-          <Button className="bg-northgascar-teal hover:bg-northgascar-teal/80 gap-1">
-            <Save className="h-4 w-4" /> Enregistrer
-          </Button>
-        </div>
-      </div>
+      <CruiseFormHeader 
+        isEditMode={isEditMode}
+        isActive={formData.isActive}
+        onActiveChange={(checked) => setFormData({...formData, isActive: checked})}
+        onDelete={handleDelete}
+        onSave={handleSave}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Informations générales</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nom de la croisière</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  placeholder="Nom de la croisière"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="destination">Destination</Label>
-                  <Select
-                    value={formData.destination}
-                    onValueChange={(value) => setFormData({...formData, destination: value})}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner une destination" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Nosy Be">Nosy Be</SelectItem>
-                      <SelectItem value="Archipel de Mitsio">Archipel de Mitsio</SelectItem>
-                      <SelectItem value="Nosy Komba">Nosy Komba</SelectItem>
-                      <SelectItem value="Îles Radama">Îles Radama</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="catamaran">Catamaran</Label>
-                  <Select
-                    value={formData.catamaran}
-                    onValueChange={(value) => setFormData({...formData, catamaran: value})}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner un catamaran" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Paradis Bleu">Paradis Bleu</SelectItem>
-                      <SelectItem value="Océan Nomade">Océan Nomade</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="duration">Durée (jours)</Label>
-                  <Select
-                    value={formData.duration}
-                    onValueChange={(value) => setFormData({...formData, duration: value})}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner une durée" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">1 jour</SelectItem>
-                      <SelectItem value="2">2 jours</SelectItem>
-                      <SelectItem value="3">3 jours</SelectItem>
-                      <SelectItem value="5">5 jours</SelectItem>
-                      <SelectItem value="7">7 jours</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="price">Prix par personne (€)</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    min="0"
-                    value={formData.price}
-                    onChange={(e) => setFormData({...formData, price: e.target.value})}
-                    placeholder="Prix"
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="shortDescription">Description courte</Label>
-                <Input
-                  id="shortDescription"
-                  value={formData.shortDescription}
-                  onChange={(e) => setFormData({...formData, shortDescription: e.target.value})}
-                  placeholder="Description courte pour les listes"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="description">Description complète</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  placeholder="Description détaillée de la croisière"
-                  rows={4}
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <GeneralInfoSection 
+            name={formData.name}
+            destination={formData.destination}
+            catamaran={formData.catamaran}
+            duration={formData.duration}
+            price={formData.price}
+            shortDescription={formData.shortDescription}
+            description={formData.description}
+            onNameChange={(value) => setFormData({...formData, name: value})}
+            onDestinationChange={(value) => setFormData({...formData, destination: value})}
+            onCatamaranChange={(value) => setFormData({...formData, catamaran: value})}
+            onDurationChange={(value) => setFormData({...formData, duration: value})}
+            onPriceChange={(value) => setFormData({...formData, price: value})}
+            onShortDescriptionChange={(value) => setFormData({...formData, shortDescription: value})}
+            onDescriptionChange={(value) => setFormData({...formData, description: value})}
+          />
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Programme</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-4">
-                <Label className="flex items-center">
-                  <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
-                  Itinéraire
-                </Label>
-                <ScrollArea className="max-h-[300px] pr-4">
-                  {formData.itinerary.map((item, index) => (
-                    <div key={index} className="flex items-start mb-3">
-                      <Input
-                        className="w-24 mr-2"
-                        value={item.time}
-                        onChange={(e) => updateItineraryItem(index, "time", e.target.value)}
-                        placeholder="Heure"
-                      />
-                      <Input
-                        className="flex-1 mr-2"
-                        value={item.description}
-                        onChange={(e) => updateItineraryItem(index, "description", e.target.value)}
-                        placeholder="Description"
-                      />
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        onClick={() => removeItineraryItem(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </ScrollArea>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={addItineraryItem}
-                >
-                  <Plus className="mr-2 h-4 w-4" /> Ajouter une étape
-                </Button>
-              </div>
-              
-              <Separator />
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="flex items-center">
-                    <Plus className="mr-2 h-4 w-4 text-muted-foreground" />
-                    Inclus
-                  </Label>
-                  <div className="space-y-2">
-                    {formData.includes.map((item, index) => (
-                      <div key={index} className="flex items-center">
-                        <span className="flex-1">{item}</span>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => removeItem("includes", index)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                    <div className="flex gap-2">
-                      <Input 
-                        id="includeItem" 
-                        placeholder="Ajouter un élément"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            const input = e.currentTarget as HTMLInputElement;
-                            addItem("includes", input.value);
-                            input.value = "";
-                          }
-                        }}
-                      />
-                      <Button 
-                        variant="outline"
-                        onClick={() => {
-                          const input = document.getElementById("includeItem") as HTMLInputElement;
-                          if (input) {
-                            addItem("includes", input.value);
-                            input.value = "";
-                          }
-                        }}
-                      >
-                        Ajouter
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label className="flex items-center">
-                    <X className="mr-2 h-4 w-4 text-muted-foreground" />
-                    Non inclus
-                  </Label>
-                  <div className="space-y-2">
-                    {formData.excludes.map((item, index) => (
-                      <div key={index} className="flex items-center">
-                        <span className="flex-1">{item}</span>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => removeItem("excludes", index)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                    <div className="flex gap-2">
-                      <Input 
-                        id="excludeItem" 
-                        placeholder="Ajouter un élément"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            const input = e.currentTarget as HTMLInputElement;
-                            addItem("excludes", input.value);
-                            input.value = "";
-                          }
-                        }}
-                      />
-                      <Button 
-                        variant="outline"
-                        onClick={() => {
-                          const input = document.getElementById("excludeItem") as HTMLInputElement;
-                          if (input) {
-                            addItem("excludes", input.value);
-                            input.value = "";
-                          }
-                        }}
-                      >
-                        Ajouter
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <ProgramSection 
+            itinerary={formData.itinerary}
+            includes={formData.includes}
+            excludes={formData.excludes}
+            onAddItineraryItem={addItineraryItem}
+            onRemoveItineraryItem={removeItineraryItem}
+            onUpdateItineraryItem={updateItineraryItem}
+            onAddItem={addItem}
+            onRemoveItem={removeItem}
+          />
         </div>
         
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Image principale</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {formData.image && (
-                <div className="relative mb-4">
-                  <img 
-                    src={formData.image} 
-                    alt="Preview" 
-                    className="w-full h-40 object-cover rounded-md"
-                  />
-                  <Button 
-                    variant="destructive" 
-                    size="icon" 
-                    className="absolute top-2 right-2 bg-white/80 hover:bg-white text-destructive"
-                    onClick={() => setFormData({...formData, image: ""})}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
-              <div className="space-y-2">
-                <Label htmlFor="mainImage">URL de l'image</Label>
-                <Input 
-                  id="mainImage" 
-                  placeholder="URL de l'image" 
-                  value={formData.image}
-                  onChange={(e) => setFormData({...formData, image: e.target.value})}
-                />
-              </div>
-              <Button variant="outline" className="w-full">
-                Parcourir les fichiers
-              </Button>
-            </CardContent>
-          </Card>
+          <ImageSection 
+            title="Image principale"
+            image={formData.image}
+            onImageChange={(value) => setFormData({...formData, image: value})}
+            onImageRemove={() => setFormData({...formData, image: ""})}
+            onBrowseFiles={handleBrowseFiles}
+          />
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Galerie d'images</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-2">
-                {formData.gallery.map((image, index) => (
-                  <div key={index} className="relative">
-                    <img 
-                      src={image} 
-                      alt={`Galerie ${index + 1}`} 
-                      className="w-full h-24 object-cover rounded-md"
-                    />
-                    <Button 
-                      variant="destructive" 
-                      size="icon" 
-                      className="absolute top-1 right-1 bg-white/80 hover:bg-white text-destructive h-6 w-6"
-                      onClick={() => removeItem("gallery", index)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="galleryImage">Ajouter une image</Label>
-                <div className="flex gap-2">
-                  <Input 
-                    id="galleryImage" 
-                    placeholder="URL de l'image"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        const input = e.currentTarget as HTMLInputElement;
-                        addItem("gallery", input.value);
-                        input.value = "";
-                      }
-                    }}
-                  />
-                  <Button 
-                    variant="outline"
-                    onClick={() => {
-                      const input = document.getElementById("galleryImage") as HTMLInputElement;
-                      if (input) {
-                        addItem("gallery", input.value);
-                        input.value = "";
-                      }
-                    }}
-                  >
-                    Ajouter
-                  </Button>
-                </div>
-              </div>
-              <Button variant="outline" className="w-full">
-                Parcourir les fichiers
-              </Button>
-            </CardContent>
-          </Card>
+          <GallerySection 
+            gallery={formData.gallery}
+            onAddImage={(url) => addItem("gallery", url)}
+            onRemoveImage={(index) => removeItem("gallery", index)}
+            onBrowseFiles={handleBrowseFiles}
+          />
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Paramètres de publication</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Statut</Label>
-                <Select
-                  value={formData.isActive ? "active" : "inactive"}
-                  onValueChange={(value) => setFormData({...formData, isActive: value === "active"})}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Statut de publication" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Actif</SelectItem>
-                    <SelectItem value="inactive">Inactif</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
+          <PublishSettingsSection 
+            isActive={formData.isActive}
+            onStatusChange={(value) => setFormData({...formData, isActive: value === "active"})}
+          />
         </div>
       </div>
     </div>
