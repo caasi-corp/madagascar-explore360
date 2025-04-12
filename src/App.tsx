@@ -23,6 +23,7 @@ const queryClient = new QueryClient({
 function App() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [initError, setInitError] = useState<string | null>(null);
+  const [isDbReady, setIsDbReady] = useState(false);
 
   useEffect(() => {
     // Initialiser la base de données au chargement de l'application
@@ -36,6 +37,7 @@ function App() {
         const users = await db.getAll('users');
         console.log(`La base contient ${users.length} utilisateurs:`, JSON.stringify(users));
         
+        setIsDbReady(true);
       } catch (error) {
         console.error("Erreur lors de l'initialisation de la base de données:", error);
         setInitError((error as Error).message || "Erreur lors de l'initialisation de la base de données");
@@ -71,6 +73,16 @@ function App() {
           </Button>
         </DialogContent>
       </Dialog>
+    );
+  }
+
+  // Ne rendre l'application que lorsque la base de données est prête
+  if (!isDbReady) {
+    return (
+      <div className="h-screen w-screen flex flex-col items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-madagascar-green" />
+        <p className="mt-4">Préparation de l'application...</p>
+      </div>
     );
   }
 

@@ -17,7 +17,13 @@ interface AuthContextType {
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Créer le contexte avec une valeur par défaut
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  isLoading: true,
+  login: async () => null,
+  logout: () => {}
+});
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -49,6 +55,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (error) {
         console.error("Erreur lors de la vérification de l'état d'authentification:", error);
+        // En cas d'erreur, nettoyer le localStorage par sécurité
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userRole');
       } finally {
         setIsLoading(false);
       }
