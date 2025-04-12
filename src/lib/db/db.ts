@@ -1,6 +1,7 @@
+
 import { openDB, IDBPDatabase } from 'idb';
 import { NorthGascarDB } from './schema';
-import { seedData } from './seed';
+import { seedDatabase } from './seed';
 
 let dbPromise: Promise<IDBPDatabase<NorthGascarDB>>;
 
@@ -13,7 +14,7 @@ export const initDB = async () => {
   
   if (!dbPromise) {
     try {
-      dbPromise = openDB<NorthGascarDB>('north-gascar-db', 1, {
+      dbPromise = openDB<NorthGascarDB>('northgascar-db', 1, {
         upgrade(db, oldVersion, newVersion, transaction) {
           console.log(`Mise à jour de la base de données de la version ${oldVersion} vers ${newVersion}`);
           
@@ -62,6 +63,14 @@ export const initDB = async () => {
             flightsStore.createIndex('by-arrival', 'arrival');
             flightsStore.createIndex('by-departureDate', 'departureDate');
           }
+          
+          // Create banners store
+          if (!db.objectStoreNames.contains('banners')) {
+            console.log("Création du store 'banners'");
+            const bannersStore = db.createObjectStore('banners', { keyPath: 'id' });
+            bannersStore.createIndex('by-page', 'page');
+            bannersStore.createIndex('by-isActive', 'isActive');
+          }
         },
       });
       
@@ -77,7 +86,7 @@ export const initDB = async () => {
       if (usersCount === 0) {
         console.log("Aucun utilisateur trouvé, ajout des données initiales...");
         try {
-          await seedData(db);
+          await seedDatabase(db);
           
           // Vérifier que les données ont bien été ajoutées
           const usersAfterSeed = await db.getAll('users');
