@@ -18,6 +18,8 @@ import AdminSettings from '@/pages/admin/Settings';
 import AdminSeoSettings from '@/pages/admin/SeoSettings';
 import AdminUserManagement from '@/pages/admin/UserManagement';
 import AdminRoute from '@/components/auth/AdminRoute';
+import CatamaranCruises from '@/pages/admin/CatamaranCruises';
+import CatamaranCruiseEditor from '@/pages/admin/CatamaranCruiseEditor';
 
 const adminRoutes = {
   path: '/admin',
@@ -77,6 +79,18 @@ const adminRoutes = {
         {
           path: 'vehicles/bookings',
           element: <AdminVehicleBookings />
+        },
+        {
+          path: 'catamaran-cruises',
+          element: <CatamaranCruises />
+        },
+        {
+          path: 'catamaran-cruises/new',
+          element: <CatamaranCruiseEditor />
+        },
+        {
+          path: 'catamaran-cruises/edit/:id',
+          element: <CatamaranCruiseEditor />
         },
         {
           path: 'hotels',

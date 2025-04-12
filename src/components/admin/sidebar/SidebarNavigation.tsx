@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -12,6 +13,7 @@ import {
   BarChart,
   MessageCircle,
   Settings,
+  Ship,
   LucideIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -59,6 +61,15 @@ const navItems: NavItem[] = [
     submenu: [
       { name: 'Tous les véhicules', href: '/admin/vehicles', icon: Car },
       { name: 'Réservations', href: '/admin/vehicles/bookings', icon: Calendar }
+    ]
+  },
+  {
+    name: 'Croisières Catamaran',
+    href: '/admin/catamaran-cruises',
+    icon: Ship,
+    submenu: [
+      { name: 'Toutes les croisières', href: '/admin/catamaran-cruises', icon: Ship },
+      { name: 'Nouvelle croisière', href: '/admin/catamaran-cruises/new', icon: Ship }
     ]
   },
   {
