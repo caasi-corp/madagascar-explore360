@@ -2,8 +2,13 @@
 import { useState, useEffect } from 'react';
 import { bannerAPI } from '@/lib/store';
 import { Banner } from '@/lib/db/schema';
-import { useToast } from '@/hooks/use-toast';
 import { toast } from 'sonner';
+import { BANNER_UPDATED_EVENT } from './useActiveBanner';
+
+// Fonction d'aide pour déclencher l'événement de mise à jour
+const triggerBannerUpdateEvent = () => {
+  window.dispatchEvent(new Event(BANNER_UPDATED_EVENT));
+};
 
 export const useBanners = () => {
   const [banners, setBanners] = useState<Banner[]>([]);
@@ -35,6 +40,8 @@ export const useBanners = () => {
     try {
       await bannerAPI.add(banner);
       await fetchBanners();
+      // Déclencher l'événement de mise à jour
+      triggerBannerUpdateEvent();
       return true;
     } catch (err) {
       console.error('Erreur lors de l\'ajout de la bannière:', err);
@@ -49,6 +56,8 @@ export const useBanners = () => {
     try {
       await bannerAPI.update(id, updates);
       await fetchBanners();
+      // Déclencher l'événement de mise à jour
+      triggerBannerUpdateEvent();
       return true;
     } catch (err) {
       console.error('Erreur lors de la mise à jour de la bannière:', err);
@@ -63,6 +72,8 @@ export const useBanners = () => {
     try {
       await bannerAPI.delete(id);
       await fetchBanners();
+      // Déclencher l'événement de mise à jour
+      triggerBannerUpdateEvent();
       return true;
     } catch (err) {
       console.error('Erreur lors de la suppression de la bannière:', err);
@@ -77,6 +88,8 @@ export const useBanners = () => {
     try {
       await bannerAPI.update(id, { isActive });
       await fetchBanners();
+      // Déclencher l'événement de mise à jour
+      triggerBannerUpdateEvent();
       return true;
     } catch (err) {
       console.error('Erreur lors de la modification du statut de la bannière:', err);
