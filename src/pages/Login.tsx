@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { userAPI } from '@/lib/store';
-import { resetDB } from '@/lib/db/db';
+import { resetDB } from '@/lib/db/sqlite'; // Update this import
 import LoginForm from '@/components/auth/LoginForm';
 import DemoCredentials from '@/components/auth/DemoCredentials';
 

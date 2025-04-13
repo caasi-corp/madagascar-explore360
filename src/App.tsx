@@ -10,6 +10,7 @@ import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { AuthProvider } from './contexts/AuthContext';
 import { seedDatabase } from './lib/db/sqliteSeed';
+import { resetDB } from './lib/db/sqlite'; // Update this import
 
 // Initialize the query client
 const queryClient = new QueryClient({
