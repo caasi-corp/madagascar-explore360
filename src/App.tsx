@@ -33,7 +33,19 @@ function App() {
         setIsInitializing(true);
         
         if (!isElectron) {
-          setInitError("Cette application nécessite Electron pour fonctionner avec SQLite.");
+          setInitError("Cette application nécessite Electron pour fonctionner avec SQLite. Veuillez lancer l'application via Electron.");
+          console.error("Application lancée hors d'Electron: electronAPI n'est pas disponible");
+          return;
+        }
+        
+        // Vérifier la connexion à la base de données
+        try {
+          // Tester l'API Electron en faisant une requête simple
+          await window.electronAPI.userGetAll();
+          console.log("Connexion à la base de données SQLite réussie");
+        } catch (dbError) {
+          console.error("Erreur de connexion à la base de données:", dbError);
+          setInitError("Impossible de se connecter à la base de données SQLite. Vérifiez que l'application a les permissions nécessaires.");
           return;
         }
         

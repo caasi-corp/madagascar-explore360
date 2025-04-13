@@ -9,6 +9,7 @@ let mainWindow;
 let db;
 
 function createWindow() {
+  console.log('Creating Electron window...');
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -23,6 +24,7 @@ function createWindow() {
     ? 'http://localhost:8080' 
     : `file://${path.join(__dirname, '../dist/index.html')}`;
   
+  console.log('Loading URL:', startUrl);
   mainWindow.loadURL(startUrl);
 
   if (isDev) {
@@ -455,6 +457,7 @@ function generateUUID() {
 
 // App lifecycle events
 app.whenReady().then(() => {
+  console.log('Electron app is ready');
   initDatabase();
   setupIpcHandlers();
   createWindow();

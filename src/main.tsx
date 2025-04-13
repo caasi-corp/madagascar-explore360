@@ -7,6 +7,9 @@ import './index.css';
 // Check if running in Electron
 const isElectron = window.electronAPI !== undefined;
 
+// Ajouter un log pour vérifier la détection d'Electron
+console.log("Application démarrée, Electron détecté:", isElectron);
+
 // Initialize the app
 const initApp = async () => {
   // Add Google Analytics script if needed (only in production and not in Electron)
