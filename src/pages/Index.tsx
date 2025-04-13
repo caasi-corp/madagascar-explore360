@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Hero from '@/components/Hero';
 import FeaturedToursSection from '@/components/sections/FeaturedToursSection';
 import ServicesSection from '@/components/sections/ServicesSection';
@@ -10,12 +10,27 @@ import { useServicesData } from '@/hooks/useServicesData';
 import { useVehicles } from '@/hooks/useVehicles';
 import { useAdvantages } from '@/hooks/useAdvantages';
 import { useFeaturedTours } from '@/hooks/useFeaturedTours';
+import { useToast } from '@/components/ui/use-toast';
 
 const Index = () => {
-  const { featuredTours, loading } = useFeaturedTours();
+  const { featuredTours, loading, error } = useFeaturedTours();
   const services = useServicesData();
   const vehicles = useVehicles();
   const advantages = useAdvantages();
+  const { toast } = useToast();
+
+  // Show error toast if there's an error loading tours
+  React.useEffect(() => {
+    if (error) {
+      toast({
+        title: "Erreur de chargement",
+        description: "Impossible de charger les circuits. Veuillez réessayer plus tard.",
+        variant: "destructive",
+      });
+    }
+  }, [error, toast]);
+
+  console.log("Index rendering with tours:", featuredTours, "loading:", loading);
 
   return (
     <>

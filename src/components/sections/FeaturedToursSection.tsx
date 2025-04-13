@@ -25,13 +25,22 @@ const FeaturedToursSection: React.FC<FeaturedToursSectionProps> = ({ tours, load
         {loading ? (
           <div className="flex justify-center items-center py-16">
             <div className="text-center">
-              <Loader2 className="h-10 w-10 animate-spin text-madagascar-green mx-auto" />
-              <p className="mt-4 text-madagascar-blue dark:text-madagascar-yellow">Chargement des circuits...</p>
+              <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-madagascar-green border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+              <p className="mt-4 text-lg font-medium text-madagascar-yellow">Chargement des circuits...</p>
             </div>
           </div>
         ) : tours.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-lg text-muted-foreground">Aucun circuit disponible pour le moment</p>
+            <Button 
+              variant="outline" 
+              className="mt-4"
+              asChild
+            >
+              <Link to="/tours">
+                Voir tous les circuits
+              </Link>
+            </Button>
           </div>
         ) : (
           <>
