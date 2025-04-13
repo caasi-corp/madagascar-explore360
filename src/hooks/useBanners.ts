@@ -28,10 +28,34 @@ export const useBanners = () => {
       const data = await bannerAPI.getAll();
       console.log(`${data.length} bannières récupérées:`, data);
       
+      // Filtrer les doublons par nom et page
+      const uniqueBanners = data.reduce<DBXBanner[]>((acc, current) => {
+        // Vérifier si une bannière avec le même nom et la même page existe déjà
+        const duplicateIndex = acc.findIndex(
+          item => item.name === current.name && item.page === current.page
+        );
+        
+        // Si c'est un doublon, ne garder que la version la plus récente
+        if (duplicateIndex !== -1) {
+          const existing = acc[duplicateIndex];
+          // Comparer les dates pour garder la plus récente
+          if (new Date(current.updatedAt) > new Date(existing.updatedAt)) {
+            // Remplacer l'ancienne par la nouvelle
+            acc[duplicateIndex] = current;
+          }
+        } else {
+          // Si ce n'est pas un doublon, l'ajouter à l'accumulateur
+          acc.push(current);
+        }
+        
+        return acc;
+      }, []);
+      
       // Trier les bannières par date de création (plus récentes en premier)
-      const sortedData = [...data].sort((a, b) => 
+      const sortedData = [...uniqueBanners].sort((a, b) => 
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
+      
       setBanners(sortedData);
       setError(null);
     } catch (err) {

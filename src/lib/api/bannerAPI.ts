@@ -42,10 +42,30 @@ export const bannerAPI = {
   },
 
   /**
+   * Vérifie si une bannière similaire existe déjà (même nom et même page)
+   */
+  checkDuplicate: async (banner: { name: string, page: string }) => {
+    try {
+      const banners = await dbx.banners.getAll();
+      return banners.some(b => b.name === banner.name && b.page === banner.page);
+    } catch (error) {
+      console.error('Erreur lors de la vérification des doublons:', error);
+      return false;
+    }
+  },
+
+  /**
    * Ajoute une nouvelle bannière
    */
   add: async (banner: any) => {
     try {
+      // Vérifier s'il existe déjà une bannière similaire
+      const isDuplicate = await bannerAPI.checkDuplicate(banner);
+      if (isDuplicate) {
+        console.warn('Une bannière similaire existe déjà:', banner);
+        throw new Error('Une bannière avec ce nom existe déjà pour cette page');
+      }
+      
       return dbx.banners.add(banner);
     } catch (error) {
       console.error('Erreur lors de l\'ajout de la bannière:', error);

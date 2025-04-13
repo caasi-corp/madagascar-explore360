@@ -1,7 +1,7 @@
-
 import React, { useState, useRef } from 'react';
 import { useBanners } from '@/hooks/useBanners';
-import { Banner } from '@/lib/db/schema';
+import { bannerAPI } from '@/lib/store';
+import { DBXBanner } from '@/lib/DatabaseX/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { pageTypes } from './BannersList';
 
 interface BannerFormProps {
-  initialData?: Banner;
+  initialData?: DBXBanner;
   mode: 'add' | 'edit';
   onClose?: () => void;
 }
@@ -41,7 +41,6 @@ export const BannerForm: React.FC<BannerFormProps> = ({ initialData, mode, onClo
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Vérification du type de fichier
       if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
         toast.error("Format de fichier non supporté", {
           description: "Formats acceptés: JPG, PNG, WebP"
@@ -49,7 +48,6 @@ export const BannerForm: React.FC<BannerFormProps> = ({ initialData, mode, onClo
         return;
       }
       
-      // Vérifier la taille du fichier (5MB max)
       if (file.size > 5 * 1024 * 1024) {
         toast.error("Fichier trop volumineux", {
           description: "La taille maximum est de 5MB"
@@ -73,14 +71,9 @@ export const BannerForm: React.FC<BannerFormProps> = ({ initialData, mode, onClo
     try {
       let imagePath = formData.imagePath;
       
-      // Si un nouveau fichier a été sélectionné, nous simulons un upload
-      // Dans un environnement réel, on enverrait le fichier à un serveur ou service de stockage
       if (imageFile) {
-        // Simuler le délai d'upload
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Ici, dans un cas réel, on récupérerait l'URL depuis le serveur
-        // Pour la démo, on utilise un Data URL
         const reader = new FileReader();
         const dataUrlPromise = new Promise<string>((resolve) => {
           reader.onload = () => resolve(reader.result as string);
@@ -98,11 +91,28 @@ export const BannerForm: React.FC<BannerFormProps> = ({ initialData, mode, onClo
       let success = false;
       
       if (mode === 'add') {
-        success = await addBanner(bannerData);
-        if (success) {
-          toast.success("Bannière ajoutée", {
-            description: "La bannière a été ajoutée avec succès."
+        try {
+          const isDuplicate = await bannerAPI.checkDuplicate(bannerData);
+          if (isDuplicate) {
+            toast.error("Bannière en doublon", {
+              description: "Une bannière avec ce nom existe déjà pour cette page."
+            });
+            setIsSubmitting(false);
+            return;
+          }
+          
+          success = await addBanner(bannerData);
+          if (success) {
+            toast.success("Bannière ajoutée", {
+              description: "La bannière a été ajoutée avec succès."
+            });
+          }
+        } catch (error) {
+          toast.error("Erreur", {
+            description: error instanceof Error ? error.message : "Impossible d'ajouter la bannière"
           });
+          setIsSubmitting(false);
+          return;
         }
       } else {
         if (initialData) {
@@ -221,7 +231,6 @@ export const BannerForm: React.FC<BannerFormProps> = ({ initialData, mode, onClo
             className="hidden"
           />
           
-          {/* Alternative de saisie d'URL */}
           <div className="mt-2">
             <Label htmlFor="imagePath">Ou entrez une URL d'image</Label>
             <div className="flex gap-2 mt-1">
