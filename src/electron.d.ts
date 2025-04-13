@@ -33,6 +33,9 @@ interface ElectronAPI {
   bookingAdd: (bookingData: any) => Promise<any>;
   bookingUpdate: (id: string, bookingData: any) => Promise<any>;
   bookingDelete: (id: string) => Promise<boolean>;
+  
+  // Database management
+  resetDatabase: () => Promise<boolean>;
 }
 
 interface Window {

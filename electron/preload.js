@@ -37,4 +37,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   bookingAdd: (bookingData) => ipcRenderer.invoke('booking:add', bookingData),
   bookingUpdate: (id, bookingData) => ipcRenderer.invoke('booking:update', { id, ...bookingData }),
   bookingDelete: (id) => ipcRenderer.invoke('booking:delete', id),
+  
+  // Database management
+  resetDatabase: () => ipcRenderer.invoke('db:reset'),
 });

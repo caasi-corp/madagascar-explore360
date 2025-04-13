@@ -1,4 +1,3 @@
-
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const isDev = require('electron-is-dev');
@@ -285,6 +284,33 @@ function seedDatabase() {
   }
 }
 
+// Reset database (drop and recreate)
+function resetDatabase() {
+  console.log('Resetting database...');
+  
+  try {
+    // Close existing connection if open
+    if (db) {
+      db.close();
+    }
+    
+    // Delete the database file
+    if (fs.existsSync(dbPath)) {
+      fs.unlinkSync(dbPath);
+      console.log('Database file deleted');
+    }
+    
+    // Reinitialize the database
+    initDatabase();
+    console.log('Database reset completed successfully');
+    
+    return true;
+  } catch (error) {
+    console.error('Error resetting database:', error);
+    return false;
+  }
+}
+
 // IPC handlers for database operations
 function setupIpcHandlers() {
   // Users API
@@ -412,6 +438,11 @@ function setupIpcHandlers() {
   
   // Add similar handlers for vehicles, bookings, etc.
   // For brevity, I'm not including all of them here
+  
+  // Add handler for database reset
+  ipcMain.handle('db:reset', async () => {
+    return resetDatabase();
+  });
 }
 
 // Helper function to generate UUID
