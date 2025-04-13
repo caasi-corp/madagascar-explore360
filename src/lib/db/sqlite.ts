@@ -7,6 +7,8 @@ import { seedSQLiteDatabase } from './sqliteSeed';
 
 // SQLite database instance
 let db: Database | null = null;
+let lastInitTime = 0;
+const MAX_RETRY_INTERVAL = 15000; // 15 seconds
 
 /**
  * Initialize database
@@ -18,6 +20,14 @@ export const initDB = async (): Promise<Database> => {
     console.log("Utilisation d'une instance SQLite existante");
     return db;
   }
+
+  // Check if we've tried too recently
+  const now = Date.now();
+  if (now - lastInitTime < 2000) { // Prevent rapid consecutive init attempts
+    console.log("Initialization attempted too recently, using throttle");
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+  lastInitTime = now;
 
   try {
     // Try to load existing database from localforage
@@ -33,9 +43,28 @@ export const initDB = async (): Promise<Database> => {
       try {
         db = new SQL.Database(savedDBData);
         console.log("Instance SQLite créée avec succès à partir des données sauvegardées");
+        
+        // Verify the database has the expected structure
+        try {
+          const tables = sqliteHelper.queryAll(db, "SELECT name FROM sqlite_master WHERE type='table'");
+          console.log("Tables found in database:", tables.map(t => t.name).join(", "));
+          
+          if (!tables.some(t => t.name === 'tours')) {
+            console.warn("Database missing expected tables, recreating...");
+            db.close();
+            throw new Error("Missing required tables");
+          }
+        } catch (e) {
+          console.error("Error verifying database structure:", e);
+          throw e;
+        }
       } catch (e) {
         console.error("Erreur lors de la création de l'instance SQLite à partir des données sauvegardées:", e);
         console.log("Création d'une nouvelle base de données SQLite suite à l'erreur");
+        
+        // Remove potentially corrupted data
+        await localforage.removeItem(DB_CONFIG.localStorageKey);
+        
         db = new SQL.Database();
         
         // Create tables
@@ -56,6 +85,25 @@ export const initDB = async (): Promise<Database> => {
     const seedResult = await seedSQLiteDatabase(db);
     console.log("Résultat de l'initialisation des données:", seedResult ? "Succès" : "Échec");
     
+    // Final verification
+    try {
+      const tourCount = sqliteHelper.queryOne(db, "SELECT COUNT(*) as count FROM tours");
+      console.log(`Database contains ${tourCount?.count || 0} tours`);
+      
+      if (!tourCount || tourCount.count === 0) {
+        console.warn("Database initialized but contains no tours");
+        
+        // Attempt to re-seed
+        console.log("Attempting to re-seed the database...");
+        const reseedResult = await seedSQLiteDatabase(db, true);
+        console.log("Re-seed result:", reseedResult ? "Success" : "Failed");
+        
+        await saveDatabase();
+      }
+    } catch (e) {
+      console.error("Error verifying tour count:", e);
+    }
+    
     return db;
   } catch (error) {
     console.error("Erreur lors de l'initialisation de la base de données SQLite:", error);
@@ -72,7 +120,8 @@ export const initDB = async (): Promise<Database> => {
       db = new SQL.Database();
       createTables(db);
       await saveDatabase();
-      await seedSQLiteDatabase(db);
+      await seedSQLiteDatabase(db, true); // Force re-seed
+      await saveDatabase();
       
       return db;
     } catch (e) {
@@ -128,7 +177,14 @@ export const resetDB = async (): Promise<Database> => {
     console.log("Base de données supprimée avec succès");
     
     // Reinitialize
-    return initDB();
+    const newDb = await initDB();
+    
+    // Force re-seed the database
+    await seedSQLiteDatabase(newDb, true);
+    await saveDatabase();
+    
+    console.log("Base de données réinitialisée et réalimentée avec succès");
+    return newDb;
   } catch (error) {
     console.error("Erreur lors de la réinitialisation de la base de données:", error);
     throw error;

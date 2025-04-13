@@ -63,11 +63,35 @@ export const tourAPI = {
       
       if (!tableCheck || tableCheck.length === 0) {
         console.error("Table 'tours' does not exist");
-        return [];
+        throw new Error("La table 'tours' n'existe pas dans la base de données");
+      }
+      
+      // Check if the database has been properly initialized with data
+      const tourCount = sqliteHelper.queryOne(db, "SELECT COUNT(*) as count FROM tours");
+      console.log("Total tour count in database:", tourCount);
+      
+      if (tourCount && tourCount.count === 0) {
+        console.warn("Database has no tours - probably needs seeding");
+        throw new Error("Aucun circuit n'a été trouvé dans la base de données");
       }
       
       const tours = sqliteHelper.queryAll(db, "SELECT * FROM tours WHERE featured = 1");
       console.log(`Found ${tours.length} featured tours`);
+      
+      if (tours.length === 0) {
+        console.warn("No featured tours found, checking if any tours exist");
+        // Check if any tours exist, not just featured ones
+        const allTours = sqliteHelper.queryAll(db, "SELECT * FROM tours LIMIT 5");
+        if (allTours.length > 0) {
+          console.log("Found regular tours but no featured tours");
+          // If there are tours but none featured, return some regular tours instead
+          return allTours.map(tour => ({
+            ...tour,
+            featured: false,
+            active: Boolean(tour.active)
+          })) as Tour[];
+        }
+      }
       
       return tours.map(tour => ({
         ...tour,
@@ -76,7 +100,7 @@ export const tourAPI = {
       })) as Tour[];
     } catch (error) {
       console.error("Error fetching featured tours:", error);
-      return [];
+      throw error;
     }
   },
   

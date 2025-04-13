@@ -1,85 +1,47 @@
 
 import { SQLiteDatabase } from '../types';
 import { sqliteHelper } from '../helpers';
+import { seedTours } from './tourSeed';
+import { seedUsers } from './userSeed';
+import { seedVehicles } from './vehicleSeed';
+import { seedBookings } from './bookingSeed';
+import { seedBanners } from './bannerSeed';
 
 /**
- * Check if database is empty
+ * Seeds the database with initial data
+ * @param db The database to seed
+ * @param force Force seeding even if the database already has data
+ * @returns Whether seeding was successful
  */
-const isDatabaseEmpty = (db: SQLiteDatabase): boolean => {
-  try {
-    const result = sqliteHelper.queryAll(db, "SELECT COUNT(*) as count FROM users");
-    if (result && result.length > 0) {
-      return result[0].count === 0;
-    }
-    return true; // If there's an error, assume it's empty
-  } catch (error) {
-    console.error("Erreur lors de la vérification de la base de données:", error);
-    return true; // Assume empty on error
-  }
-};
-
-/**
- * Seeds the database with initial SQLite data
- * This is a simplified seed function for SQLite
- */
-export const seedSQLiteDatabase = async (db: SQLiteDatabase): Promise<boolean> => {
-  console.log("Vérification si la base de données SQLite a besoin d'être initialisée...");
+export const seedSQLiteDatabase = async (
+  db: SQLiteDatabase,
+  force: boolean = false
+): Promise<boolean> => {
+  console.log("Vérification si la base de données a besoin d'être initialisée...");
   
   try {
-    const empty = isDatabaseEmpty(db);
-    
-    if (empty) {
-      console.log("Base de données SQLite vide, ajout des données initiales...");
-      
-      // Add users
-      try {
-        const usersData = [
-          ['admin1', 'Admin', 'User', 'admin@northgascartours.com', 'Admin123!', 'admin'],
-          ['user1', 'Pierre', 'Martin', 'user@northgascartours.com', 'User123!', 'user'],
-          ['user2', 'Marie', 'Dubois', 'marie@example.com', 'password', 'user']
-        ];
-        
-        for (const userData of usersData) {
-          db.run(`
-            INSERT INTO users (id, firstName, lastName, email, password, role)
-            VALUES (?, ?, ?, ?, ?, ?)
-          `, userData);
-        }
-        
-        console.log("Utilisateurs ajoutés avec succès");
-      } catch (error) {
-        console.error("Erreur lors de l'ajout des utilisateurs:", error);
-        throw error;
+    // Check if we already have data
+    if (!force) {
+      const userCount = sqliteHelper.queryOne(db, "SELECT COUNT(*) as count FROM users");
+      if (userCount && userCount.count > 0) {
+        console.log("Base de données déjà initialisée, pas besoin de l'alimenter");
+        return true;
       }
-      
-      // Add tours
-      try {
-        const toursData = [
-          ['1', 'Allée des Baobabs Tour', "Découvrez l'emblématique Allée des Baobabs", 'Morondava', '2 Jours', 299, 4.9, 'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb', 1, 'Nature', 1],
-          ['2', 'Trek aux Lémuriens à Andasibe', "Parcourez le Parc National d'Andasibe", 'Andasibe', '3 Jours', 349, 4.8, 'https://images.unsplash.com/photo-1472396961693-142e6e269027', 1, 'Faune', 1],
-          ['3', 'Aventure au Parc National d\'Isalo', "Découvrez les paysages étonnants du Parc National d'Isalo", 'Isalo', '4 Jours', 499, 4.7, 'https://images.unsplash.com/photo-1469041797191-50ace28483c3', 1, 'Aventure', 1],
-          ['4', 'Paradis de l\'île Nosy Be', "Relaxez-vous sur les magnifiques plages de Nosy Be", 'Nosy Be', '5 Jours', 599, 4.9, 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57', 0, 'Plage', 1]
-        ];
-        
-        for (const tourData of toursData) {
-          db.run(`
-            INSERT INTO tours (id, title, description, location, duration, price, rating, image, featured, category, active)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `, tourData);
-        }
-        
-        console.log("Tours ajoutés avec succès");
-      } catch (error) {
-        console.error("Erreur lors de l'ajout des tours:", error);
-      }
-      
-      return true;
-    } else {
-      console.log("Base de données SQLite déjà initialisée");
-      return true;
     }
+    
+    console.log("Alimentation de la base de données avec les données initiales...");
+    
+    // Seed all tables
+    await seedUsers(db);
+    await seedTours(db);
+    await seedVehicles(db);
+    await seedBookings(db);
+    await seedBanners(db);
+    
+    console.log("Base de données alimentée avec succès");
+    return true;
   } catch (error) {
-    console.error("Erreur lors de l'initialisation de la base de données SQLite:", error);
+    console.error("Erreur lors de l'alimentation de la base de données:", error);
     return false;
   }
 };

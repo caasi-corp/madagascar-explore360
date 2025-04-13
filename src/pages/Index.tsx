@@ -13,7 +13,7 @@ import { useFeaturedTours } from '@/hooks/useFeaturedTours';
 import { useToast } from '@/components/ui/use-toast';
 
 const Index = () => {
-  const { featuredTours, loading, error, refetch } = useFeaturedTours();
+  const { featuredTours, loading, error, refetch, resetAndRefetch } = useFeaturedTours();
   const services = useServicesData();
   const vehicles = useVehicles();
   const advantages = useAdvantages();
@@ -42,6 +42,8 @@ const Index = () => {
         tours={featuredTours} 
         loading={loading} 
         onRefresh={refetch}
+        onReset={resetAndRefetch}
+        error={error}
       />
       
       {/* Services Section */}
