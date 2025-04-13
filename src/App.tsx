@@ -32,8 +32,10 @@ function App() {
       try {
         setIsInitializing(true);
         
-        // If we're in Electron, the database is already initialized in the main process
-        // If we're in a browser, we would initialize IndexedDB here (but this is an Electron app now)
+        if (!isElectron) {
+          setInitError("Cette application nécessite Electron pour fonctionner avec SQLite.");
+          return;
+        }
         
         // Small delay to simulate initialization time
         await new Promise(resolve => setTimeout(resolve, 500));
