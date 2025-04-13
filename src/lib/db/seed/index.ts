@@ -20,14 +20,20 @@ const isDatabaseEmpty = (db: SQLiteDatabase): boolean => {
 
 /**
  * Seeds the SQLite database with initial data
+ * @param db The database to seed
+ * @param force Force seeding even if the database already has data
+ * @returns Whether seeding was successful
  */
-export const seedSQLiteDatabase = async (db: SQLiteDatabase): Promise<boolean> => {
+export const seedSQLiteDatabase = async (
+  db: SQLiteDatabase,
+  force: boolean = false
+): Promise<boolean> => {
   console.log("Vérification si la base de données SQLite a besoin d'être initialisée...");
   
   try {
     const empty = isDatabaseEmpty(db);
     
-    if (empty) {
+    if (empty || force) {
       console.log("Base de données SQLite vide, ajout des données initiales...");
       
       // Add users
@@ -39,8 +45,8 @@ export const seedSQLiteDatabase = async (db: SQLiteDatabase): Promise<boolean> =
         ];
         
         for (const userData of usersData) {
-          db.run(`
-            INSERT INTO users (id, firstName, lastName, email, password, role)
+          sqliteHelper.execute(db, `
+            INSERT OR REPLACE INTO users (id, firstName, lastName, email, password, role)
             VALUES (?, ?, ?, ?, ?, ?)
           `, userData);
         }
@@ -61,8 +67,8 @@ export const seedSQLiteDatabase = async (db: SQLiteDatabase): Promise<boolean> =
         ];
         
         for (const tourData of toursData) {
-          db.run(`
-            INSERT INTO tours (id, title, description, location, duration, price, rating, image, featured, category, active)
+          sqliteHelper.execute(db, `
+            INSERT OR REPLACE INTO tours (id, title, description, location, duration, price, rating, image, featured, category, active)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
           `, tourData);
         }
