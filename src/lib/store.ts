@@ -9,3 +9,4 @@ export { vehicleAPI } from './api/vehicleAPI';
 export { userAPI } from './api/userAPI';
 export { bookingAPI } from './api/bookingAPI';
 export { bannerAPI } from './api/bannerAPI';
+export { databaseAPI } from './db/databaseAPI';

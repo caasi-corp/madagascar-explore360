@@ -21,6 +21,7 @@ import AdminRoute from '@/components/auth/AdminRoute';
 import CatamaranCruises from '@/pages/admin/CatamaranCruises';
 import CatamaranCruiseEditor from '@/pages/admin/CatamaranCruiseEditor';
 import Banners from '@/pages/admin/Banners';
+import DatabaseAdmin from '@/pages/admin/DatabaseAdmin';
 
 const adminRoutes = {
   path: '/admin',
@@ -96,6 +97,10 @@ const adminRoutes = {
         {
           path: 'banners',
           element: <Banners />
+        },
+        {
+          path: 'database',
+          element: <DatabaseAdmin />
         },
         {
           path: 'hotels',
