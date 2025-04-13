@@ -1,100 +1,74 @@
 
-import { getDB } from '../db/db';
-import { User } from '../db/schema';
+import { supabase } from "@/integrations/supabase/client";
+import { User } from "../db/schema";
 
-/**
- * API for user operations
- */
 export const userAPI = {
-  getAll: async () => {
-    const db = await getDB();
-    return db.getAll('users');
-  },
-  
-  getById: async (id: string) => {
-    const db = await getDB();
-    return db.get('users', id);
-  },
-  
-  getByEmail: async (email: string) => {
-    const db = await getDB();
-    console.log("Recherche d'utilisateur par email:", email);
+  // Récupérer tous les utilisateurs (admin)
+  getAll: async (): Promise<User[]> => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*');
     
-    try {
-      // Récupérer tous les utilisateurs pour la vérification
-      const allUsers = await db.getAll('users');
-      console.log("Tous les utilisateurs dans la base:", JSON.stringify(allUsers));
-      
-      // Recherche directe en mémoire plutôt que par l'index qui semble poser problème
-      const user = allUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
-      
-      if (user) {
-        console.log("Utilisateur trouvé:", user);
-        return user;
-      } else {
-        console.log("Aucun utilisateur trouvé avec cet email");
-        return null;
-      }
-    } catch (error) {
-      console.error("Erreur lors de la récupération de l'utilisateur par email:", error);
-      return null;
-    }
-  },
-  
-  authenticate: async (email: string, password: string) => {
-    try {
-      console.log(`Tentative d'authentification pour: ${email} avec mot de passe: ${password}`);
-      const user = await userAPI.getByEmail(email);
-      
-      if (!user) {
-        console.log("Échec d'authentification: utilisateur non trouvé");
-        return null;
-      }
-      
-      console.log(`Vérification du mot de passe pour ${email}`);
-      console.log(`Mot de passe fourni: ${password}`);
-      console.log(`Mot de passe stocké: ${user.password}`);
-      
-      if (user.password === password) {
-        console.log("Authentification réussie pour:", email);
-        return { id: user.id, email: user.email, role: user.role };
-      }
-      
-      console.log("Échec d'authentification: mot de passe incorrect");
-      return null;
-    } catch (error) {
-      console.error("Erreur lors de l'authentification:", error);
-      return null;
-    }
-  },
-  
-  register: async (userData: Omit<User, 'id' | 'role'>) => {
-    const db = await getDB();
-    // Check if email already exists
-    const existingUser = await userAPI.getByEmail(userData.email);
-    if (existingUser) {
-      throw new Error('Email already in use');
+    if (error) {
+      console.error("Erreur lors de la récupération des utilisateurs:", error);
+      throw error;
     }
     
-    const id = crypto.randomUUID();
-    const newUser = { ...userData, id, role: 'user' as const };
-    await db.put('users', newUser);
-    return { id: newUser.id, email: newUser.email, role: newUser.role };
+    return data || [];
   },
   
-  update: async (id: string, userData: Partial<User>) => {
-    const db = await getDB();
-    const existingUser = await db.get('users', id);
-    if (!existingUser) {
-      throw new Error('User not found');
+  // Récupérer un utilisateur par son ID
+  getById: async (id: string): Promise<User | null> => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      console.error(`Erreur lors de la récupération de l'utilisateur ${id}:`, error);
+      throw error;
     }
-    const updatedUser = { ...existingUser, ...userData };
-    await db.put('users', updatedUser);
-    return { id: updatedUser.id, email: updatedUser.email, role: updatedUser.role };
+    
+    return data;
   },
   
-  delete: async (id: string) => {
-    const db = await getDB();
-    await db.delete('users', id);
+  // Récupérer l'utilisateur actuel
+  getCurrent: async (): Promise<User | null> => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      return null;
+    }
+    
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', session.user.id)
+      .single();
+    
+    if (error) {
+      console.error("Erreur lors de la récupération de l'utilisateur courant:", error);
+      throw error;
+    }
+    
+    return data;
   },
+  
+  // Mettre à jour un utilisateur
+  update: async (id: string, updates: Partial<User>): Promise<User> => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error(`Erreur lors de la mise à jour de l'utilisateur ${id}:`, error);
+      throw error;
+    }
+    
+    return data;
+  }
 };

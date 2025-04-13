@@ -1,53 +1,88 @@
 
-import { getDB } from '../db/db';
-import { Booking } from '../db/schema';
+import { supabase } from "@/integrations/supabase/client";
+import { Booking } from "../db/schema";
 
-/**
- * API for booking operations
- */
 export const bookingAPI = {
-  getAll: async () => {
-    const db = await getDB();
-    return db.getAll('bookings');
-  },
-  
-  getById: async (id: string) => {
-    const db = await getDB();
-    return db.get('bookings', id);
-  },
-  
-  getByUserId: async (userId: string) => {
-    const db = await getDB();
-    return db.getAllFromIndex('bookings', 'by-userId', userId);
-  },
-  
-  getByStatus: async (status: string) => {
-    const db = await getDB();
-    return db.getAllFromIndex('bookings', 'by-status', status);
-  },
-  
-  add: async (booking: Omit<Booking, 'id' | 'createdAt'>) => {
-    const db = await getDB();
-    const id = crypto.randomUUID();
-    const createdAt = new Date().toISOString();
-    const newBooking = { ...booking, id, createdAt };
-    await db.put('bookings', newBooking);
-    return newBooking;
-  },
-  
-  update: async (id: string, booking: Partial<Booking>) => {
-    const db = await getDB();
-    const existingBooking = await db.get('bookings', id);
-    if (!existingBooking) {
-      throw new Error('Booking not found');
+  // Récupérer toutes les réservations (admin)
+  getAll: async (): Promise<Booking[]> => {
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('*');
+    
+    if (error) {
+      console.error("Erreur lors de la récupération des réservations:", error);
+      throw error;
     }
-    const updatedBooking = { ...existingBooking, ...booking };
-    await db.put('bookings', updatedBooking);
-    return updatedBooking;
+    
+    return data || [];
   },
   
-  delete: async (id: string) => {
-    const db = await getDB();
-    await db.delete('bookings', id);
+  // Récupérer les réservations d'un utilisateur
+  getByUserId: async (userId: string): Promise<Booking[]> => {
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('*')
+      .eq('user_id', userId);
+    
+    if (error) {
+      console.error(`Erreur lors de la récupération des réservations de l'utilisateur ${userId}:`, error);
+      throw error;
+    }
+    
+    return data || [];
   },
+  
+  // Récupérer une réservation par son ID
+  getById: async (id: string): Promise<Booking | null> => {
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      console.error(`Erreur lors de la récupération de la réservation ${id}:`, error);
+      throw error;
+    }
+    
+    return data;
+  },
+  
+  // Créer une nouvelle réservation
+  create: async (booking: Omit<Booking, 'id'>): Promise<Booking> => {
+    const { data, error } = await supabase
+      .from('bookings')
+      .insert([booking])
+      .select()
+      .single();
+    
+    if (error) {
+      console.error("Erreur lors de la création de la réservation:", error);
+      throw error;
+    }
+    
+    return data;
+  },
+  
+  // Mettre à jour une réservation
+  update: async (id: string, updates: Partial<Booking>): Promise<Booking> => {
+    const { data, error } = await supabase
+      .from('bookings')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error(`Erreur lors de la mise à jour de la réservation ${id}:`, error);
+      throw error;
+    }
+    
+    return data;
+  },
+  
+  // Annuler une réservation
+  cancel: async (id: string): Promise<Booking> => {
+    return await bookingAPI.update(id, { status: 'Annulé' });
+  }
 };

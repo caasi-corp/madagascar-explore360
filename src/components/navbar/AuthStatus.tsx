@@ -1,81 +1,94 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, User } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Link, useNavigate } from 'react-router-dom';
+import { LogIn, LogOut, User, Settings, BookOpen } from 'lucide-react';
 
-const AuthStatus: React.FC = () => {
-  const { user, logout } = useAuth();
+const AuthStatus = () => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
-  const handleLogout = () => {
-    logout();
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    try {
+      await signOut();
+      navigate('/');
+    } finally {
+      setIsSigningOut(false);
+    }
   };
 
-  // Si l'utilisateur est connecté
-  if (user) {
-    const initials = user.firstName && user.lastName 
-      ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` 
-      : user.email.substring(0, 2).toUpperCase();
-
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  };
+  
+  if (!user) {
     return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-            <Avatar className="h-10 w-10 border-2 border-madagascar-green">
-              <AvatarFallback>{initials}</AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>
-            <div className="font-medium">{user.firstName} {user.lastName}</div>
-            <div className="text-xs text-muted-foreground mt-1">{user.email}</div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link to={user.role === 'admin' ? "/admin" : "/user/dashboard"}>
-              <User className="mr-2 h-4 w-4" /> Tableau de bord
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to={user.role === 'admin' ? "/admin/settings" : "/user/settings"}>
-              <User className="mr-2 h-4 w-4" /> Paramètres
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
-            <LogOut className="mr-2 h-4 w-4" /> Se déconnecter
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Button variant="outline" size="sm" asChild>
+        <Link to="/auth">
+          <LogIn className="h-4 w-4 mr-2" />
+          Connexion
+        </Link>
+      </Button>
     );
   }
 
-  // Si l'utilisateur n'est pas connecté
+  // Si l'utilisateur est connecté
+  const userEmail = user.email || '';
+  const userName = userEmail.split('@')[0] || 'Utilisateur';
+  const initials = userName ? getInitials(userName) : 'U';
+
   return (
-    <div className="flex items-center space-x-2">
-      <Link to="/login">
-        <Button variant="outline" className="rounded-full">
-          <User size={18} className="mr-1" /> Connexion
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="rounded-full">
+          <Avatar className="h-8 w-8">
+            <AvatarFallback className="bg-madagascar-green text-white">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
         </Button>
-      </Link>
-      
-      <Link to="/register">
-        <Button className="rounded-full bg-madagascar-green hover:bg-madagascar-green/80 text-white">
-          S'inscrire
-        </Button>
-      </Link>
-    </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <div className="px-2 py-1.5 text-sm font-medium">
+          <p className="text-muted-foreground truncate max-w-[200px]">
+            {userEmail}
+          </p>
+        </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link to="/user/profile" className="flex items-center">
+            <User className="mr-2 h-4 w-4" />
+            Mon profil
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/user/bookings" className="flex items-center">
+            <BookOpen className="mr-2 h-4 w-4" />
+            Mes réservations
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/user/settings" className="flex items-center">
+            <Settings className="mr-2 h-4 w-4" />
+            Paramètres
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem 
+          onSelect={handleSignOut}
+          disabled={isSigningOut}
+          className="text-red-500 cursor-pointer"
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          Déconnexion
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

@@ -1,8 +1,5 @@
-/**
- * Database schema definitions for the application
- */
 
-// Define the interfaces for our database models
+// Types pour les entités principales
 export interface Tour {
   id: string;
   title: string;
@@ -12,48 +9,50 @@ export interface Tour {
   price: number;
   rating: number;
   image: string;
-  featured?: boolean;
-  category?: string;
-  active?: boolean;
+  category: string | null;
+  featured: boolean | null;
+  active: boolean | null;
+  created_at: string | null;
 }
 
 export interface Vehicle {
   id: string;
   name: string;
-  type: 'car' | '4x4' | 'motorcycle' | 'quad';
-  pricePerDay: number;
+  type: string;
+  description: string | null;
   seats: number;
-  transmission: 'Automatic' | 'Manual';
-  fuelType: string;
+  transmission: string;
+  fueltype: string;
+  priceperday: number;
   image: string;
+  images: string[] | null;
   features: string[];
-  availability: boolean;
-  description?: string;
-  featured?: boolean;
-  images?: string[];
+  featured: boolean | null;
+  availability: boolean | null;
+  created_at: string | null;
 }
 
 export interface User {
   id: string;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
-  password: string;
-  role: 'admin' | 'user';
+  role: string;
+  created_at: string | null;
 }
 
 export interface Booking {
   id: string;
-  userId: string;
-  tourId?: string;
-  vehicleId?: string;
-  hotelId?: string;
-  flightId?: string;
-  startDate: string;
-  endDate: string;
-  status: 'Pending' | 'Confirmed' | 'Cancelled';
-  totalPrice: number;
-  createdAt: string;
+  user_id: string;
+  tour_id: string | null;
+  vehicle_id: string | null;
+  hotel_id: string | null;
+  flight_id: string | null;
+  start_date: string;
+  end_date: string;
+  total_price: number;
+  status: string;
+  created_at: string | null;
 }
 
 export interface Hotel {
@@ -61,72 +60,33 @@ export interface Hotel {
   name: string;
   location: string;
   stars: number;
-  pricePerNight: number;
-  image: string;
+  price_per_night: number;
   features: string[];
-  availability: boolean;
+  image: string;
+  availability: boolean | null;
+  created_at: string | null;
 }
 
 export interface Flight {
   id: string;
+  airline: string;
   departure: string;
   arrival: string;
-  departureDate: string;
-  departureTime: string;
-  arrivalTime: string;
-  airline: string;
+  departure_date: string;
+  departure_time: string;
+  arrival_time: string;
   price: number;
-  availableSeats: number;
+  available_seats: number;
+  created_at: string | null;
 }
 
-// Define the database schema
-import { DBSchema } from 'idb';
-
-export interface NorthGascarDB extends DBSchema {
-  tours: {
-    key: string;
-    value: Tour;
-    indexes: {
-      'by-category': string;
-      'by-location': string;
-    };
-  };
-  vehicles: {
-    key: string;
-    value: Vehicle;
-    indexes: {
-      'by-type': string;
-    };
-  };
-  users: {
-    key: string;
-    value: User;
-    indexes: {
-      'by-email': string;
-    };
-  };
-  bookings: {
-    key: string;
-    value: Booking;
-    indexes: {
-      'by-userId': string;
-      'by-status': string;
-    };
-  };
-  hotels: {
-    key: string;
-    value: Hotel;
-    indexes: {
-      'by-location': string;
-    };
-  };
-  flights: {
-    key: string;
-    value: Flight;
-    indexes: {
-      'by-departure': string;
-      'by-arrival': string;
-      'by-departureDate': string;
-    };
-  };
+export interface Banner {
+  id: string;
+  name: string;
+  image_path: string;
+  page: string;
+  description: string | null;
+  is_active: boolean;
+  created_at: string | null;
+  updated_at: string | null;
 }

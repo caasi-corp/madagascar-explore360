@@ -1,109 +1,118 @@
 
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { userAPI } from '@/lib/store';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Session, User } from '@supabase/supabase-js';
+import { useToast } from '@/components/ui/use-toast';
 
-interface AuthUser {
-  id: string;
-  email: string;
-  role: string;
-  firstName?: string;
-  lastName?: string;
-}
-
-interface AuthContextType {
-  user: AuthUser | null;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<AuthUser | null>;
-  logout: () => void;
-}
+type AuthContextType = {
+  session: Session | null;
+  user: User | null;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  loading: boolean;
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Vérifier l'état de la session au chargement
-    const checkAuthStatus = async () => {
-      try {
-        setIsLoading(true);
-        const userId = localStorage.getItem('userId');
-        const userRole = localStorage.getItem('userRole');
-        
-        if (userId && userRole) {
-          const userData = await userAPI.getById(userId);
-          if (userData) {
-            setUser({
-              id: userData.id,
-              email: userData.email,
-              role: userData.role,
-              firstName: userData.firstName,
-              lastName: userData.lastName
-            });
-          } else {
-            // Si l'utilisateur n'existe pas, nettoyer le localStorage
-            localStorage.removeItem('userId');
-            localStorage.removeItem('userRole');
-          }
-        }
-      } catch (error) {
-        console.error("Erreur lors de la vérification de l'état d'authentification:", error);
-      } finally {
-        setIsLoading(false);
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
       }
-    };
+    );
 
-    checkAuthStatus();
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string) => {
     try {
-      const user = await userAPI.authenticate(email, password);
-      if (user) {
-        localStorage.setItem('userId', user.id);
-        localStorage.setItem('userRole', user.role);
-        
-        // Récupérer les détails supplémentaires de l'utilisateur
-        const userData = await userAPI.getById(user.id);
-        const authUser = {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-          firstName: userData?.firstName,
-          lastName: userData?.lastName
-        };
-        
-        setUser(authUser);
-        return authUser;
-      }
-      return null;
-    } catch (error) {
-      console.error("Erreur lors de la connexion:", error);
-      return null;
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        title: "Erreur de connexion",
+        description: error.message,
+        variant: "destructive",
+      });
+      throw error;
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('userId');
-    localStorage.removeItem('userRole');
-    setUser(null);
+  const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+          },
+        },
+      });
+
+      if (error) throw error;
+      
+      toast({
+        title: "Inscription réussie",
+        description: "Veuillez vérifier votre boîte email pour confirmer votre compte.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erreur d'inscription",
+        description: error.message,
+        variant: "destructive",
+      });
+      throw error;
+    }
   };
 
-  const value = {
-    user,
-    isLoading,
-    login,
-    logout
+  const signOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        title: "Erreur de déconnexion",
+        description: error.message,
+        variant: "destructive",
+      });
+      throw error;
+    }
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+  return (
+    <AuthContext.Provider value={{ session, user, signIn, signUp, signOut, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth doit être utilisé à l\'intérieur d\'un AuthProvider');
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}
+};

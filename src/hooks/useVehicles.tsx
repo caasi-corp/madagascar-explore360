@@ -1,45 +1,34 @@
 
-import { VehicleProps } from '@/components/VehicleCard';
+import { useState, useEffect } from 'react';
+import { Vehicle } from '@/lib/db/schema';
+import { vehicleAPI } from '@/lib/store';
+import { useToast } from '@/components/ui/use-toast';
 
-export function useVehicles(): VehicleProps[] {
-  const vehicles: VehicleProps[] = [
-    {
-      id: 'v1',
-      name: 'Toyota Land Cruiser',
-      type: '4x4',
-      pricePerDay: 89,
-      seats: 7,
-      transmission: 'Automatic',
-      fuelType: 'Diesel',
-      image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf',
-      features: ['Climatisation', 'GPS', 'Porte-bagages', '4x4', 'Bluetooth', 'Ports USB'],
-      availability: true,
-    },
-    {
-      id: 'v2',
-      name: 'Yamaha TW200',
-      type: 'motorcycle',
-      pricePerDay: 45,
-      seats: 2,
-      transmission: 'Manual',
-      fuelType: 'Essence',
-      image: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39',
-      features: ['Casque inclus', 'Sacoches', 'Capacité tout-terrain', 'Économe en carburant'],
-      availability: true,
-    },
-    {
-      id: 'v3',
-      name: 'BRP Can-Am Outlander',
-      type: 'quad',
-      pricePerDay: 65,
-      seats: 1,
-      transmission: 'Automatic',
-      fuelType: 'Essence',
-      image: 'https://images.unsplash.com/photo-1566845735839-6e25c92269a1',
-      features: ['Casque inclus', 'Coffre de rangement', '4x4', 'Garde au sol élevée'],
-      availability: false,
-    },
-  ];
+export const useVehicles = () => {
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchFeaturedVehicles = async () => {
+      try {
+        setLoading(true);
+        const data = await vehicleAPI.getFeatured();
+        setVehicles(data);
+      } catch (error) {
+        console.error('Erreur lors du chargement des véhicules en vedette:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les véhicules en vedette",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedVehicles();
+  }, [toast]);
 
   return vehicles;
-}
+};

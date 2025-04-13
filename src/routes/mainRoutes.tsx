@@ -10,8 +10,7 @@ import TourDetail from '@/pages/TourDetail';
 import CarRental from '@/pages/services/CarRental';
 import CatamaranCruise from '@/pages/services/CatamaranCruise';
 import HotelBooking from '@/pages/services/HotelBooking';
-import Login from '@/pages/Login';
-import Register from '@/pages/Register';
+import Auth from '@/pages/Auth';
 import NotFound from '@/pages/NotFound';
 import PrivacyPolicy from '@/pages/legal/PrivacyPolicy';
 import TermsOfService from '@/pages/legal/TermsOfService';
@@ -54,12 +53,8 @@ const mainRoutes = {
       element: <HotelBooking />
     },
     {
-      path: 'login',
-      element: <Login />
-    },
-    {
-      path: 'register',
-      element: <Register />
+      path: 'auth',
+      element: <Auth />
     },
     {
       path: 'privacy-policy',
