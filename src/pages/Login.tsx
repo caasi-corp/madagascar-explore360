@@ -13,7 +13,7 @@ const Login = () => {
   const [isResetting, setIsResetting] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, login } = useAuth();
 
   useEffect(() => {
     // If user is already logged in, redirect them
@@ -43,8 +43,25 @@ const Login = () => {
     checkUsers();
   }, []);
 
-  const handleDemoLogin = (email: string, password: string) => {
-    setLoginError(null);
+  const handleDemoLogin = async (email: string, password: string) => {
+    try {
+      setLoginError(null);
+      const user = await login(email, password);
+      
+      if (user) {
+        console.log("Utilisateur authentifié:", user);
+        
+        if (user.role === 'admin') {
+          toast.success('Bienvenue, Admin !');
+          navigate('/admin');
+        } else {
+          toast.success('Connexion réussie !');
+          navigate('/user/dashboard');
+        }
+      }
+    } catch (error) {
+      console.error("Erreur lors de la connexion avec les identifiants de démo:", error);
+    }
   };
 
   const handleResetDatabase = async () => {

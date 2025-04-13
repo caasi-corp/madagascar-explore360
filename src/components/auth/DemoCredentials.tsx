@@ -14,12 +14,16 @@ const DemoCredentials: React.FC<DemoCredentialsProps> = ({
   onResetDatabase, 
   isResetting 
 }) => {
+  const handleCredentialClick = (email: string, password: string) => {
+    onDemoLogin(email, password);
+  };
+
   return (
     <div className="mt-6 p-4 bg-muted/50 rounded-md max-w-md w-full">
       <h3 className="font-medium mb-2 text-center">Identifiants de démonstration</h3>
       <div 
         className="text-sm bg-muted p-2 rounded block mb-2 cursor-pointer hover:bg-muted/70 transition-colors"
-        onClick={() => onDemoLogin('admin@northgascartours.com', 'Admin123!')}
+        onClick={() => handleCredentialClick('admin@northgascartours.com', 'Admin123!')}
       >
         <p className="text-sm text-muted-foreground mb-1">Connexion administrateur :</p>
         <code className="text-xs block">
@@ -28,7 +32,7 @@ const DemoCredentials: React.FC<DemoCredentialsProps> = ({
       </div>
       <div 
         className="text-sm bg-muted p-2 rounded block mb-4 cursor-pointer hover:bg-muted/70 transition-colors"
-        onClick={() => onDemoLogin('user@northgascartours.com', 'User123!')}
+        onClick={() => handleCredentialClick('user@northgascartours.com', 'User123!')}
       >
         <p className="text-sm text-muted-foreground mb-1">Connexion utilisateur :</p>
         <code className="text-xs block">

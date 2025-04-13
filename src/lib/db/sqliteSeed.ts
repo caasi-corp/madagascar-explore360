@@ -1,5 +1,4 @@
 
-import { Database } from 'sql.js';
 import { saveDatabase } from './sqlite';
 import { seedSQLiteDatabase as seedSQLiteImplementation } from './seed/index';
 import { SQLiteDatabase } from './types';

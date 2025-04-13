@@ -3,7 +3,7 @@ import initSqlJs, { Database } from 'sql.js';
 import localforage from 'localforage';
 import { DB_CONFIG } from './config';
 import { createTables } from './schema-creator';
-import { seedSQLiteDatabase } from './sqliteSeed';
+import { seedSQLiteDatabase } from './seed/index';
 import { sqliteHelper } from './helpers';
 
 // SQLite database instance

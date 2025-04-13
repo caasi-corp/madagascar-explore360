@@ -1,6 +1,6 @@
 
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { userAPI } from '@/lib/store';
+import { userAPI } from '@/lib/api/userAPI';
 
 interface AuthUser {
   id: string;
@@ -68,7 +68,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
+      console.log("Attempting login with:", email, password);
       const user = await userAPI.authenticate(email, password);
+      
       if (user) {
         localStorage.setItem('userId', user.id);
         localStorage.setItem('userRole', user.role);
