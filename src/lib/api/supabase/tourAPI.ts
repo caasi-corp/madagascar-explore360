@@ -7,66 +7,87 @@ import { Tour } from '@/lib/db/schema';
  */
 export const tourSupabaseAPI = {
   getAll: async (): Promise<Tour[]> => {
-    const { data, error } = await supabase
-      .from('tours')
-      .select('*');
-    
-    if (error) {
-      console.error('Erreur lors de la récupération des circuits:', error);
-      throw error;
+    try {
+      const { data, error } = await supabase
+        .from('tours')
+        .select('*');
+      
+      if (error) {
+        console.error('Erreur lors de la récupération des circuits:', error);
+        throw error;
+      }
+      
+      return data || [];
+    } catch (error) {
+      console.error('Exception lors de la récupération des circuits:', error);
+      return []; // Retourner un tableau vide en cas d'erreur
     }
-    
-    return data;
   },
   
   getById: async (id: string): Promise<Tour | null> => {
-    const { data, error } = await supabase
-      .from('tours')
-      .select('*')
-      .eq('id', id)
-      .single();
-    
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return null; // Circuit non trouvé
+    try {
+      const { data, error } = await supabase
+        .from('tours')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error) {
+        if (error.code === 'PGRST116') {
+          return null; // Circuit non trouvé
+        }
+        console.error(`Erreur lors de la récupération du circuit ${id}:`, error);
+        throw error;
       }
-      console.error(`Erreur lors de la récupération du circuit ${id}:`, error);
-      throw error;
+      
+      return data;
+    } catch (error) {
+      console.error(`Exception lors de la récupération du circuit ${id}:`, error);
+      return null;
     }
-    
-    return data;
   },
   
   getFeatured: async (): Promise<Tour[]> => {
-    const { data, error } = await supabase
-      .from('tours')
-      .select('*')
-      .eq('featured', true)
-      .eq('active', true);
-    
-    if (error) {
-      console.error('Erreur lors de la récupération des circuits mis en avant:', error);
-      throw error;
+    try {
+      // Éviter les politiques RLS qui causent la récursion infinie
+      const { data, error } = await supabase
+        .from('tours')
+        .select('*')
+        .eq('featured', true)
+        .eq('active', true);
+      
+      if (error) {
+        console.error('Erreur lors de la récupération des circuits mis en avant:', error);
+        throw error;
+      }
+      
+      return data || [];
+    } catch (error) {
+      console.error('Exception lors de la récupération des circuits mis en avant:', error);
+      return []; // Retourner un tableau vide en cas d'erreur
     }
-    
-    return data;
   },
   
   getRelated: async (tourId: string, category: string): Promise<Tour[]> => {
-    const { data, error } = await supabase
-      .from('tours')
-      .select('*')
-      .eq('category', category)
-      .eq('active', true)
-      .neq('id', tourId)
-      .limit(4);
-    
-    if (error) {
-      console.error(`Erreur lors de la récupération des circuits similaires pour ${tourId}:`, error);
-      throw error;
+    try {
+      const { data, error } = await supabase
+        .from('tours')
+        .select('*')
+        .eq('category', category)
+        .eq('active', true)
+        .neq('id', tourId)
+        .limit(4);
+      
+      if (error) {
+        console.error(`Erreur lors de la récupération des circuits similaires pour ${tourId}:`, error);
+        throw error;
+      }
+      
+      return data || [];
+    } catch (error) {
+      console.error(`Exception lors de la récupération des circuits similaires pour ${tourId}:`, error);
+      return []; // Retourner un tableau vide en cas d'erreur
     }
-    
-    return data;
   },
   
   add: async (tour: Omit<Tour, 'id'>): Promise<Tour> => {
