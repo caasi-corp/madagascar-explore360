@@ -9,7 +9,301 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      banners: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          image_path: string
+          is_active: boolean
+          name: string
+          page: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_path: string
+          is_active?: boolean
+          name: string
+          page: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_path?: string
+          is_active?: boolean
+          name?: string
+          page?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      bookings: {
+        Row: {
+          created_at: string | null
+          end_date: string
+          flight_id: string | null
+          hotel_id: string | null
+          id: string
+          start_date: string
+          status: string
+          total_price: number
+          tour_id: string | null
+          user_id: string
+          vehicle_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          end_date: string
+          flight_id?: string | null
+          hotel_id?: string | null
+          id?: string
+          start_date: string
+          status: string
+          total_price: number
+          tour_id?: string | null
+          user_id: string
+          vehicle_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string
+          flight_id?: string | null
+          hotel_id?: string | null
+          id?: string
+          start_date?: string
+          status?: string
+          total_price?: number
+          tour_id?: string | null
+          user_id?: string
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_tour_id_fkey"
+            columns: ["tour_id"]
+            isOneToOne: false
+            referencedRelation: "tours"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      flights: {
+        Row: {
+          airline: string
+          arrival: string
+          arrival_time: string
+          available_seats: number
+          created_at: string | null
+          departure: string
+          departure_date: string
+          departure_time: string
+          id: string
+          price: number
+        }
+        Insert: {
+          airline: string
+          arrival: string
+          arrival_time: string
+          available_seats: number
+          created_at?: string | null
+          departure: string
+          departure_date: string
+          departure_time: string
+          id?: string
+          price: number
+        }
+        Update: {
+          airline?: string
+          arrival?: string
+          arrival_time?: string
+          available_seats?: number
+          created_at?: string | null
+          departure?: string
+          departure_date?: string
+          departure_time?: string
+          id?: string
+          price?: number
+        }
+        Relationships: []
+      }
+      hotels: {
+        Row: {
+          availability: boolean | null
+          created_at: string | null
+          features: string[]
+          id: string
+          image: string
+          location: string
+          name: string
+          price_per_night: number
+          stars: number
+        }
+        Insert: {
+          availability?: boolean | null
+          created_at?: string | null
+          features: string[]
+          id?: string
+          image: string
+          location: string
+          name: string
+          price_per_night: number
+          stars: number
+        }
+        Update: {
+          availability?: boolean | null
+          created_at?: string | null
+          features?: string[]
+          id?: string
+          image?: string
+          location?: string
+          name?: string
+          price_per_night?: number
+          stars?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          role: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          role: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          role?: string
+        }
+        Relationships: []
+      }
+      tours: {
+        Row: {
+          active: boolean | null
+          category: string | null
+          created_at: string | null
+          description: string
+          duration: string
+          featured: boolean | null
+          id: string
+          image: string
+          location: string
+          price: number
+          rating: number
+          title: string
+        }
+        Insert: {
+          active?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          description: string
+          duration: string
+          featured?: boolean | null
+          id?: string
+          image: string
+          location: string
+          price: number
+          rating: number
+          title: string
+        }
+        Update: {
+          active?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          description?: string
+          duration?: string
+          featured?: boolean | null
+          id?: string
+          image?: string
+          location?: string
+          price?: number
+          rating?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      vehicles: {
+        Row: {
+          availability: boolean | null
+          created_at: string | null
+          description: string | null
+          featured: boolean | null
+          features: string[]
+          fueltype: string
+          id: string
+          image: string
+          images: string[] | null
+          name: string
+          priceperday: number
+          seats: number
+          transmission: string
+          type: string
+        }
+        Insert: {
+          availability?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          features: string[]
+          fueltype: string
+          id?: string
+          image: string
+          images?: string[] | null
+          name: string
+          priceperday: number
+          seats: number
+          transmission: string
+          type: string
+        }
+        Update: {
+          availability?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          features?: string[]
+          fueltype?: string
+          id?: string
+          image?: string
+          images?: string[] | null
+          name?: string
+          priceperday?: number
+          seats?: number
+          transmission?: string
+          type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

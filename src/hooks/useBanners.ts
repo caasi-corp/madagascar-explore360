@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { bannerAPI } from '@/lib/store';
+import { bannerSupabaseAPI } from '@/lib/api/supabase/bannerAPI';
 import { Banner } from '@/lib/db/schema';
 import { toast } from 'sonner';
 import { BANNER_UPDATED_EVENT } from './useActiveBanner';
@@ -20,14 +20,10 @@ export const useBanners = () => {
     setIsLoading(true);
     try {
       console.log('Récupération de toutes les bannières...');
-      const data = await bannerAPI.getAll();
+      const data = await bannerSupabaseAPI.getAll();
       console.log(`${data.length} bannières récupérées:`, data);
       
-      // Trier les bannières par date de création (plus récentes en premier)
-      const sortedData = [...data].sort((a, b) => 
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-      setBanners(sortedData);
+      setBanners(data);
       setError(null);
     } catch (err) {
       console.error('Erreur lors du chargement des bannières:', err);
@@ -35,17 +31,6 @@ export const useBanners = () => {
       toast.error("Erreur", {
         description: "Impossible de charger les bannières"
       });
-      
-      // Initialiser la base de données si elle n'existe pas encore
-      try {
-        const { initDB } = await import('@/lib/db/db');
-        await initDB();
-        console.log('Tentative de réinitialisation de la base de données réussie');
-        // Réessayer après initialisation
-        setTimeout(fetchBanners, 500);
-      } catch (dbError) {
-        console.error('Échec de la réinitialisation de la base de données:', dbError);
-      }
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +39,7 @@ export const useBanners = () => {
   const addBanner = async (banner: Omit<Banner, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
       console.log('Ajout d\'une nouvelle bannière:', banner);
-      const newBannerId = await bannerAPI.add(banner);
+      const newBannerId = await bannerSupabaseAPI.add(banner);
       console.log(`Bannière ajoutée avec l'ID: ${newBannerId}`);
       await fetchBanners();
       // Déclencher l'événement de mise à jour
@@ -72,7 +57,7 @@ export const useBanners = () => {
   const updateBanner = async (id: string, updates: Partial<Omit<Banner, 'id' | 'createdAt' | 'updatedAt'>>) => {
     try {
       console.log(`Mise à jour de la bannière ${id}:`, updates);
-      const success = await bannerAPI.update(id, updates);
+      const success = await bannerSupabaseAPI.update(id, updates);
       console.log(`Résultat de la mise à jour: ${success ? 'réussi' : 'échoué'}`);
       await fetchBanners();
       // Déclencher l'événement de mise à jour
@@ -90,7 +75,7 @@ export const useBanners = () => {
   const deleteBanner = async (id: string) => {
     try {
       console.log(`Suppression de la bannière ${id}`);
-      const success = await bannerAPI.delete(id);
+      const success = await bannerSupabaseAPI.delete(id);
       console.log(`Résultat de la suppression: ${success ? 'réussi' : 'échoué'}`);
       await fetchBanners();
       // Déclencher l'événement de mise à jour
@@ -108,7 +93,7 @@ export const useBanners = () => {
   const toggleActive = async (id: string, isActive: boolean) => {
     try {
       console.log(`Modification du statut de la bannière ${id} à ${isActive ? 'active' : 'inactive'}`);
-      const success = await bannerAPI.update(id, { isActive });
+      const success = await bannerSupabaseAPI.update(id, { isActive });
       console.log(`Résultat de la modification: ${success ? 'réussi' : 'échoué'}`);
       await fetchBanners();
       // Déclencher l'événement de mise à jour
