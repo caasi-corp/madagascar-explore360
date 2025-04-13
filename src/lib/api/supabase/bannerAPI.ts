@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Banner } from '@/lib/db/schema';
 
@@ -7,83 +6,98 @@ import { Banner } from '@/lib/db/schema';
  */
 export const bannerSupabaseAPI = {
   getAll: async (): Promise<Banner[]> => {
-    const { data, error } = await supabase
-      .from('banners')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (error) {
-      console.error('Erreur lors de la récupération des bannières:', error);
-      throw error;
+    try {
+      const { data, error } = await supabase
+        .from('banners')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Erreur lors de la récupération des bannières:', error);
+        throw error;
+      }
+      
+      return data.map(banner => ({
+        id: banner.id,
+        name: banner.name,
+        imagePath: banner.image_path,
+        page: banner.page,
+        description: banner.description || '',
+        isActive: banner.is_active,
+        createdAt: banner.created_at,
+        updatedAt: banner.updated_at || banner.created_at
+      }));
+    } catch (error) {
+      console.error('Exception lors de la récupération des bannières:', error);
+      return []; // Return empty array on error
     }
-    
-    return data.map(banner => ({
-      id: banner.id,
-      name: banner.name,
-      imagePath: banner.image_path,
-      page: banner.page,
-      description: banner.description || '',
-      isActive: banner.is_active,
-      createdAt: banner.created_at,
-      updatedAt: banner.updated_at || banner.created_at
-    }));
   },
   
   getActiveByPage: async (page: string): Promise<Banner | undefined> => {
-    const { data, error } = await supabase
-      .from('banners')
-      .select('*')
-      .eq('page', page)
-      .eq('is_active', true)
-      .order('created_at', { ascending: false });
-    
-    if (error) {
-      console.error(`Erreur lors de la récupération de la bannière active pour ${page}:`, error);
-      throw error;
-    }
-    
-    if (data.length === 0) {
+    try {
+      const { data, error } = await supabase
+        .from('banners')
+        .select('*')
+        .eq('page', page)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error(`Erreur lors de la récupération de la bannière active pour ${page}:`, error);
+        throw error;
+      }
+      
+      if (data.length === 0) {
+        return undefined;
+      }
+      
+      const banner = data[0];
+      return {
+        id: banner.id,
+        name: banner.name,
+        imagePath: banner.image_path,
+        page: banner.page,
+        description: banner.description || '',
+        isActive: banner.is_active,
+        createdAt: banner.created_at,
+        updatedAt: banner.updated_at || banner.created_at
+      };
+    } catch (error) {
+      console.error(`Exception lors de la récupération de la bannière active pour ${page}:`, error);
       return undefined;
     }
-    
-    const banner = data[0];
-    return {
-      id: banner.id,
-      name: banner.name,
-      imagePath: banner.image_path,
-      page: banner.page,
-      description: banner.description || '',
-      isActive: banner.is_active,
-      createdAt: banner.created_at,
-      updatedAt: banner.updated_at || banner.created_at
-    };
   },
   
   getById: async (id: string): Promise<Banner | undefined> => {
-    const { data, error } = await supabase
-      .from('banners')
-      .select('*')
-      .eq('id', id)
-      .single();
-    
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return undefined; // Bannière non trouvée
+    try {
+      const { data, error } = await supabase
+        .from('banners')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error) {
+        if (error.code === 'PGRST116') {
+          return undefined; // Bannière non trouvée
+        }
+        console.error(`Erreur lors de la récupération de la bannière ${id}:`, error);
+        throw error;
       }
-      console.error(`Erreur lors de la récupération de la bannière ${id}:`, error);
-      throw error;
+      
+      return {
+        id: data.id,
+        name: data.name,
+        imagePath: data.image_path,
+        page: data.page,
+        description: data.description || '',
+        isActive: data.is_active,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at || data.created_at
+      };
+    } catch (error) {
+      console.error(`Exception lors de la récupération de la bannière ${id}:`, error);
+      return undefined;
     }
-    
-    return {
-      id: data.id,
-      name: data.name,
-      imagePath: data.image_path,
-      page: data.page,
-      description: data.description || '',
-      isActive: data.is_active,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at || data.created_at
-    };
   },
   
   add: async (banner: Omit<Banner, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> => {

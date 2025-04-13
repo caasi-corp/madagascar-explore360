@@ -5,6 +5,30 @@ import { Banner } from '@/lib/db/schema';
 import { toast } from 'sonner';
 import { BANNER_UPDATED_EVENT } from './useActiveBanner';
 
+// Sample fallback data for banners
+const fallbackBanners: Banner[] = [
+  {
+    id: '1',
+    name: 'Bannière Accueil',
+    imagePath: 'https://images.unsplash.com/photo-1617360547704-3da8b5ad2e44',
+    page: 'home',
+    description: 'Bannière principale pour la page d\'accueil',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: '2',
+    name: 'Bannière Tours',
+    imagePath: 'https://images.unsplash.com/photo-1523592121529-f6dde35f079e',
+    page: 'tours',
+    description: 'Bannière pour la page des circuits',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
+];
+
 // Fonction d'aide pour déclencher l'événement de mise à jour
 const triggerBannerUpdateEvent = () => {
   console.log('Déclenchement de l\'événement de mise à jour des bannières');
@@ -23,13 +47,22 @@ export const useBanners = () => {
       const data = await bannerSupabaseAPI.getAll();
       console.log(`${data.length} bannières récupérées:`, data);
       
-      setBanners(data);
-      setError(null);
+      if (data && data.length > 0) {
+        setBanners(data);
+        setError(null);
+      } else {
+        console.log('Aucune bannière trouvée, utilisation des données de secours');
+        setBanners(fallbackBanners);
+        toast.info("Information", {
+          description: "Les données de démonstration sont affichées car aucune bannière n'a été trouvée"
+        });
+      }
     } catch (err) {
       console.error('Erreur lors du chargement des bannières:', err);
       setError('Impossible de charger les bannières');
+      setBanners(fallbackBanners);
       toast.error("Erreur", {
-        description: "Impossible de charger les bannières"
+        description: "Impossible de charger les bannières. Données de démonstration affichées."
       });
     } finally {
       setIsLoading(false);
