@@ -2,11 +2,12 @@
 import { Database } from 'sql.js';
 import { saveDatabase } from './sqlite';
 import { seedSQLiteDatabase as seedSQLiteImplementation } from './seed/sqliteIndex';
+import { SQLiteDatabase } from './types';
 
 /**
  * Seeds the SQLite database with initial data
  */
-export const seedSQLiteDatabase = async (db: Database): Promise<boolean> => {
+export const seedSQLiteDatabase = async (db: SQLiteDatabase): Promise<boolean> => {
   console.log("Initialisation de la base de données SQLite...");
   
   try {

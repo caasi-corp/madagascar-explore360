@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Loader2 } from 'lucide-react';
 import TourCard, { TourProps } from '@/components/TourCard';
 
 interface FeaturedToursSectionProps {
@@ -10,6 +10,8 @@ interface FeaturedToursSectionProps {
 }
 
 const FeaturedToursSection: React.FC<FeaturedToursSectionProps> = ({ tours }) => {
+  const isLoading = tours.length === 0;
+
   return (
     <section className="section-padding bg-muted/30">
       <div className="container mx-auto">
@@ -20,19 +22,30 @@ const FeaturedToursSection: React.FC<FeaturedToursSectionProps> = ({ tours }) =>
           </p>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {tours.map((tour) => (
-            <TourCard key={tour.id} tour={tour} />
-          ))}
-        </div>
-        
-        <div className="mt-10 text-center">
-          <Button asChild className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
-            <Link to="/tours">
-              Voir tous les circuits <ArrowRight size={16} className="ml-2" />
-            </Link>
-          </Button>
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-16">
+            <div className="text-center">
+              <Loader2 className="h-10 w-10 animate-spin text-madagascar-green mx-auto" />
+              <p className="mt-4 text-madagascar-blue dark:text-madagascar-yellow">Chargement des circuits...</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {tours.map((tour) => (
+                <TourCard key={tour.id} tour={tour} />
+              ))}
+            </div>
+            
+            <div className="mt-10 text-center">
+              <Button asChild className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
+                <Link to="/tours">
+                  Voir tous les circuits <ArrowRight size={16} className="ml-2" />
+                </Link>
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
