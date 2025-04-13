@@ -4,6 +4,7 @@ import { RouterProvider } from 'react-router-dom';
 import router from './router';
 import { Toaster } from './components/ui/sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { initDB } from './lib/store';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './components/ui/dialog';
 import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -24,38 +25,20 @@ function App() {
   const [initError, setInitError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if we're running in Electron or browser
-    const isElectron = window.electronAPI !== undefined;
-    
-    // Initialize application
+    // Initialiser la base de données au chargement de l'application
     const initialize = async () => {
       try {
         setIsInitializing(true);
+        const db = await initDB();
+        console.log("Base de données initialisée avec succès");
         
-        if (!isElectron) {
-          setInitError("Cette application nécessite Electron pour fonctionner avec SQLite. Veuillez lancer l'application via Electron.");
-          console.error("Application lancée hors d'Electron: electronAPI n'est pas disponible");
-          return;
-        }
+        // Vérifier que les utilisateurs ont bien été créés
+        const users = await db.getAll('users');
+        console.log(`La base contient ${users.length} utilisateurs:`, JSON.stringify(users));
         
-        // Vérifier la connexion à la base de données
-        try {
-          // Tester l'API Electron en faisant une requête simple
-          await window.electronAPI.userGetAll();
-          console.log("Connexion à la base de données SQLite réussie");
-        } catch (dbError) {
-          console.error("Erreur de connexion à la base de données:", dbError);
-          setInitError("Impossible de se connecter à la base de données SQLite. Vérifiez que l'application a les permissions nécessaires.");
-          return;
-        }
-        
-        // Small delay to simulate initialization time
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        console.log("Application initialized successfully");
       } catch (error) {
-        console.error("Erreur lors de l'initialisation de l'application:", error);
-        setInitError((error as Error).message || "Erreur lors de l'initialisation de l'application");
+        console.error("Erreur lors de l'initialisation de la base de données:", error);
+        setInitError((error as Error).message || "Erreur lors de l'initialisation de la base de données");
       } finally {
         setIsInitializing(false);
       }
@@ -80,7 +63,7 @@ function App() {
           <DialogHeader>
             <DialogTitle>Erreur d'initialisation</DialogTitle>
             <DialogDescription>
-              Une erreur est survenue lors de l'initialisation de l'application: {initError}
+              Une erreur est survenue lors de l'initialisation de la base de données: {initError}
             </DialogDescription>
           </DialogHeader>
           <Button onClick={() => window.location.reload()}>

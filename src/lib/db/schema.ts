@@ -1,4 +1,3 @@
-
 /**
  * Database schema definitions for the application
  */
@@ -78,4 +77,56 @@ export interface Flight {
   airline: string;
   price: number;
   availableSeats: number;
+}
+
+// Define the database schema
+import { DBSchema } from 'idb';
+
+export interface NorthGascarDB extends DBSchema {
+  tours: {
+    key: string;
+    value: Tour;
+    indexes: {
+      'by-category': string;
+      'by-location': string;
+    };
+  };
+  vehicles: {
+    key: string;
+    value: Vehicle;
+    indexes: {
+      'by-type': string;
+    };
+  };
+  users: {
+    key: string;
+    value: User;
+    indexes: {
+      'by-email': string;
+    };
+  };
+  bookings: {
+    key: string;
+    value: Booking;
+    indexes: {
+      'by-userId': string;
+      'by-status': string;
+    };
+  };
+  hotels: {
+    key: string;
+    value: Hotel;
+    indexes: {
+      'by-location': string;
+    };
+  };
+  flights: {
+    key: string;
+    value: Flight;
+    indexes: {
+      'by-departure': string;
+      'by-arrival': string;
+      'by-departureDate': string;
+    };
+  };
 }
