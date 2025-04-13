@@ -4,7 +4,6 @@ import { RouterProvider } from 'react-router-dom';
 import router from './router';
 import { Toaster } from './components/ui/sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { initDB } from './lib/store';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './components/ui/dialog';
 import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -25,20 +24,24 @@ function App() {
   const [initError, setInitError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Initialiser la base de données au chargement de l'application
+    // Check if we're running in Electron or browser
+    const isElectron = window.electronAPI !== undefined;
+    
+    // Initialize application
     const initialize = async () => {
       try {
         setIsInitializing(true);
-        const db = await initDB();
-        console.log("Base de données initialisée avec succès");
         
-        // Vérifier que les utilisateurs ont bien été créés
-        const users = await db.getAll('users');
-        console.log(`La base contient ${users.length} utilisateurs:`, JSON.stringify(users));
+        // If we're in Electron, the database is already initialized in the main process
+        // If we're in a browser, we would initialize IndexedDB here (but this is an Electron app now)
         
+        // Small delay to simulate initialization time
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        console.log("Application initialized successfully");
       } catch (error) {
-        console.error("Erreur lors de l'initialisation de la base de données:", error);
-        setInitError((error as Error).message || "Erreur lors de l'initialisation de la base de données");
+        console.error("Erreur lors de l'initialisation de l'application:", error);
+        setInitError((error as Error).message || "Erreur lors de l'initialisation de l'application");
       } finally {
         setIsInitializing(false);
       }
@@ -63,7 +66,7 @@ function App() {
           <DialogHeader>
             <DialogTitle>Erreur d'initialisation</DialogTitle>
             <DialogDescription>
-              Une erreur est survenue lors de l'initialisation de la base de données: {initError}
+              Une erreur est survenue lors de l'initialisation de l'application: {initError}
             </DialogDescription>
           </DialogHeader>
           <Button onClick={() => window.location.reload()}>

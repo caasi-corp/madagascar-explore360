@@ -1,5 +1,4 @@
 
-import { getDB } from '../db/db';
 import { Vehicle } from '../db/schema';
 
 /**
@@ -7,47 +6,31 @@ import { Vehicle } from '../db/schema';
  */
 export const vehicleAPI = {
   getAll: async () => {
-    const db = await getDB();
-    return db.getAll('vehicles');
+    return await window.electronAPI.vehicleGetAll();
   },
   
   getById: async (id: string) => {
-    const db = await getDB();
-    return db.get('vehicles', id);
+    return await window.electronAPI.vehicleGetById(id);
   },
   
   getByType: async (type: string) => {
-    const db = await getDB();
-    return db.getAllFromIndex('vehicles', 'by-type', type);
+    return await window.electronAPI.vehicleGetByType(type);
   },
   
   getAvailable: async () => {
-    const db = await getDB();
-    const allVehicles = await db.getAll('vehicles');
-    return allVehicles.filter(vehicle => vehicle.availability);
+    const allVehicles = await vehicleAPI.getAll();
+    return allVehicles.filter(vehicle => vehicle.availability === 1);
   },
   
   add: async (vehicle: Omit<Vehicle, 'id'>) => {
-    const db = await getDB();
-    const id = crypto.randomUUID();
-    const newVehicle = { ...vehicle, id };
-    await db.put('vehicles', newVehicle);
-    return newVehicle;
+    return await window.electronAPI.vehicleAdd(vehicle);
   },
   
   update: async (id: string, vehicle: Partial<Vehicle>) => {
-    const db = await getDB();
-    const existingVehicle = await db.get('vehicles', id);
-    if (!existingVehicle) {
-      throw new Error('Vehicle not found');
-    }
-    const updatedVehicle = { ...existingVehicle, ...vehicle };
-    await db.put('vehicles', updatedVehicle);
-    return updatedVehicle;
+    return await window.electronAPI.vehicleUpdate(id, vehicle);
   },
   
   delete: async (id: string) => {
-    const db = await getDB();
-    await db.delete('vehicles', id);
+    return await window.electronAPI.vehicleDelete(id);
   },
 };
