@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import { bannerAPI } from '@/lib/store';
+import { bannerAPI } from '@/lib/api/bannerAPI'; // Import direct
 import { Banner } from '@/lib/db/schema';
 import { toast } from 'sonner';
-import { initDB, resetDB } from '@/lib/db/db';
+import { initDB, resetDB } from '@/lib/db/db'; // Import direct
 
 // Événement personnalisé pour signaler les changements de bannières
 export const BANNER_UPDATED_EVENT = 'banner-updated';

@@ -10,7 +10,7 @@ import { useFeaturedTours } from '@/hooks/useFeaturedTours';
 import { useServicesData } from '@/hooks/useServicesData';
 import { useVehicles } from '@/hooks/useVehicles';
 import { useAdvantages } from '@/hooks/useAdvantages';
-import { initDB } from '@/lib/store';
+import { initDB } from '@/lib/db/db'; // Import direct du fichier source
 
 const Index = () => {
   const tours = useFeaturedTours();

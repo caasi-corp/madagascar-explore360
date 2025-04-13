@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router-dom';
 import router from './router';
 import { Toaster } from './components/ui/sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { initDB, resetDB } from './lib/store';
+import { initDB, resetDB } from './lib/db/db'; // Importer directement depuis le fichier source
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './components/ui/dialog';
 import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
