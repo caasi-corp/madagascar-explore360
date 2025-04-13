@@ -16,9 +16,22 @@ export const seedData = async (db: IDBPDatabase<NorthGascarDB>) => {
   try {
     // Vérifier d'abord si des données existent déjà
     const existingUsers = await db.getAll('users');
+    
+    // Si des utilisateurs existent déjà, on vérifie si c'est une première installation 
+    // ou si la base de données est déjà initialisée
     if (existingUsers.length > 0) {
-      console.log("Des utilisateurs existent déjà, le seed ne sera pas exécuté");
-      return;
+      console.log("Des utilisateurs existent déjà, vérification du contenu de la base...");
+      
+      // Vérifier si d'autres collections contiennent des données
+      const tours = await db.getAll('tours');
+      const vehicles = await db.getAll('vehicles');
+      
+      if (tours.length > 0 && vehicles.length > 0) {
+        console.log("La base de données semble déjà complètement initialisée");
+        return;
+      }
+      
+      console.log("Certaines collections sont vides, on continue l'initialisation...");
     }
     
     // Seed users first - CRITICAL

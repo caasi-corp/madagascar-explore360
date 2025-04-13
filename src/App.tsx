@@ -47,6 +47,12 @@ function App() {
     initialize();
   }, []);
 
+  const handleRetry = () => {
+    setInitError(null);
+    setIsInitializing(true);
+    window.location.reload();
+  };
+
   if (isInitializing) {
     return (
       <div className="h-screen w-screen flex flex-col items-center justify-center">
@@ -66,7 +72,7 @@ function App() {
               Une erreur est survenue lors de l'initialisation de la base de données: {initError}
             </DialogDescription>
           </DialogHeader>
-          <Button onClick={() => window.location.reload()}>
+          <Button onClick={handleRetry}>
             Réessayer
           </Button>
         </DialogContent>
@@ -75,14 +81,12 @@ function App() {
   }
 
   return (
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <RouterProvider router={router} />
-          <Toaster />
-        </AuthProvider>
-      </QueryClientProvider>
-    </React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
