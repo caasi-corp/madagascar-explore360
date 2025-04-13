@@ -1,14 +1,8 @@
-
 import initSqlJs, { Database } from 'sql.js';
 import localforage from 'localforage';
 
 // SQLite database instance
 let db: Database | null = null;
-
-// Load the SQL.js wasm file
-const SQL = initSqlJs({
-  locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
-});
 
 // Initialize database
 export const initDB = async (): Promise<Database> => {
