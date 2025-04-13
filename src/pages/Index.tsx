@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Hero from '@/components/Hero';
 import FeaturedToursSection from '@/components/sections/FeaturedToursSection';
 import ServicesSection from '@/components/sections/ServicesSection';
@@ -10,12 +10,27 @@ import { useFeaturedTours } from '@/hooks/useFeaturedTours';
 import { useServicesData } from '@/hooks/useServicesData';
 import { useVehicles } from '@/hooks/useVehicles';
 import { useAdvantages } from '@/hooks/useAdvantages';
+import { initDB } from '@/lib/db/db'; // Import direct du fichier source
 
 const Index = () => {
   const tours = useFeaturedTours();
   const services = useServicesData();
   const vehicles = useVehicles();
   const advantages = useAdvantages();
+
+  // S'assurer que la base de données est initialisée
+  useEffect(() => {
+    const initializeDB = async () => {
+      try {
+        await initDB();
+        console.log('Base de données initialisée avec succès depuis la page d\'accueil');
+      } catch (error) {
+        console.error('Erreur lors de l\'initialisation de la base de données:', error);
+      }
+    };
+
+    initializeDB();
+  }, []);
 
   return (
     <>

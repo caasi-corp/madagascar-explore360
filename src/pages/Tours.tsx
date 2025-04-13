@@ -5,7 +5,7 @@ import ToursFilter from '@/components/tours/ToursFilter';
 import ToursResults from '@/components/tours/ToursResults';
 import { useTourFiltering } from '@/hooks/useTourFiltering';
 import { categories, durations } from '@/data/toursData';
-import { tourSupabaseAPI } from '@/lib/api/supabase/tourAPI';
+import { tourAPI } from '@/lib/store';
 import { Tour } from '@/lib/db/schema';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -18,7 +18,7 @@ const Tours = () => {
     const fetchTours = async () => {
       try {
         setLoading(true);
-        const toursData = await tourSupabaseAPI.getAll();
+        const toursData = await tourAPI.getAll();
         console.log('Tours chargés:', toursData);
         setTours(toursData);
       } catch (error) {

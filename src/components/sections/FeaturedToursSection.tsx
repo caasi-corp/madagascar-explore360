@@ -2,16 +2,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import TourCard, { TourProps } from '@/components/TourCard';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 interface FeaturedToursSectionProps {
   tours: TourProps[];
-  loading?: boolean;
 }
 
-const FeaturedToursSection: React.FC<FeaturedToursSectionProps> = ({ tours, loading = false }) => {
+const FeaturedToursSection: React.FC<FeaturedToursSectionProps> = ({ tours }) => {
   return (
     <section className="section-padding bg-muted/30">
       <div className="container mx-auto">
@@ -22,25 +20,11 @@ const FeaturedToursSection: React.FC<FeaturedToursSectionProps> = ({ tours, load
           </p>
         </div>
         
-        {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-madagascar-green" />
-            <span className="ml-2 text-madagascar-green">Chargement des circuits...</span>
-          </div>
-        ) : tours.length === 0 ? (
-          <Alert className="mb-6">
-            <AlertTitle>Aucun circuit disponible</AlertTitle>
-            <AlertDescription>
-              Aucun circuit mis en avant n'a été trouvé pour le moment.
-            </AlertDescription>
-          </Alert>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {tours.map((tour) => (
-              <TourCard key={tour.id} tour={tour} />
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {tours.map((tour) => (
+            <TourCard key={tour.id} tour={tour} />
+          ))}
+        </div>
         
         <div className="mt-10 text-center">
           <Button asChild className="bg-madagascar-green hover:bg-madagascar-green/80 text-white">
