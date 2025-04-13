@@ -3,15 +3,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Loader2 } from 'lucide-react';
-import TourCard, { TourProps } from '@/components/TourCard';
+import TourCard from '@/components/TourCard';
+import { Tour } from '@/lib/db/schema';
 
 interface FeaturedToursSectionProps {
-  tours: TourProps[];
+  tours: Tour[];
+  loading?: boolean;
 }
 
-const FeaturedToursSection: React.FC<FeaturedToursSectionProps> = ({ tours }) => {
-  const isLoading = tours.length === 0;
-
+const FeaturedToursSection: React.FC<FeaturedToursSectionProps> = ({ tours, loading = false }) => {
   return (
     <section className="section-padding bg-muted/30">
       <div className="container mx-auto">
@@ -22,12 +22,16 @@ const FeaturedToursSection: React.FC<FeaturedToursSectionProps> = ({ tours }) =>
           </p>
         </div>
         
-        {isLoading ? (
+        {loading ? (
           <div className="flex justify-center items-center py-16">
             <div className="text-center">
               <Loader2 className="h-10 w-10 animate-spin text-madagascar-green mx-auto" />
               <p className="mt-4 text-madagascar-blue dark:text-madagascar-yellow">Chargement des circuits...</p>
             </div>
+          </div>
+        ) : tours.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-lg text-muted-foreground">Aucun circuit disponible pour le moment</p>
           </div>
         ) : (
           <>

@@ -1,7 +1,7 @@
 
 import { Database } from 'sql.js';
 import { saveDatabase } from './sqlite';
-import { seedSQLiteDatabase as seedSQLiteImplementation } from './seed/sqliteIndex';
+import { seedSQLiteDatabase as seedSQLiteImplementation } from './seed/index';
 import { SQLiteDatabase } from './types';
 
 /**
@@ -11,7 +11,7 @@ export const seedSQLiteDatabase = async (db: SQLiteDatabase): Promise<boolean> =
   console.log("Initialisation de la base de données SQLite...");
   
   try {
-    // Use our implementation from sqliteIndex
+    // Use our implementation from index
     const success = await seedSQLiteImplementation(db);
     
     // Save database after all changes
