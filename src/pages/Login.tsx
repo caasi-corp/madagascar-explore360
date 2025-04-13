@@ -1,20 +1,30 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { userAPI, resetDB } from '@/lib/store';
+import { userAPI } from '@/lib/api/userAPI'; 
+import { resetDB } from '@/lib/db/sqlite';
 import LoginForm from '@/components/auth/LoginForm';
 import DemoCredentials from '@/components/auth/DemoCredentials';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Login = () => {
   const [isResetting, setIsResetting] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    remember: false,
-  });
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    // If user is already logged in, redirect them
+    if (user) {
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/user/dashboard');
+      }
+    }
+  }, [user, navigate]);
   
   useEffect(() => {
     const checkUsers = async () => {
@@ -26,6 +36,7 @@ const Login = () => {
         }
       } catch (error) {
         console.error("Erreur lors de la vérification des utilisateurs:", error);
+        setLoginError("Erreur de connexion à la base de données. Veuillez réinitialiser la base de données.");
       }
     };
     
@@ -33,11 +44,6 @@ const Login = () => {
   }, []);
 
   const handleDemoLogin = (email: string, password: string) => {
-    setFormData({
-      email,
-      password,
-      remember: false
-    });
     setLoginError(null);
   };
 

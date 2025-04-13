@@ -24,7 +24,7 @@ export function useFeaturedTours() {
       if (tours && Array.isArray(tours)) {
         setFeaturedTours(tours);
         
-        // Si les tours sont vides et qu'il s'agit probablement d'un problème de base de données
+        // If tours are empty and it might be a database issue
         if (tours.length === 0) {
           console.log('No featured tours found, this might be a database issue');
         }
