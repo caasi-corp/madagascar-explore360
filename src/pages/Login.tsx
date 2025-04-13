@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { userAPI } from '@/lib/api/userAPI'; 
-import { resetDB } from '@/lib/db/sqlite';
+import { resetDB } from '@/lib/store';
 import LoginForm from '@/components/auth/LoginForm';
 import DemoCredentials from '@/components/auth/DemoCredentials';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const Login = () => {
   const [isResetting, setIsResetting] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [isCheckingUsers, setIsCheckingUsers] = useState(true);
   const navigate = useNavigate();
   const { user, login } = useAuth();
 
@@ -29,14 +30,19 @@ const Login = () => {
   useEffect(() => {
     const checkUsers = async () => {
       try {
+        setIsCheckingUsers(true);
         const users = await userAPI.getAll();
         console.log(`Page de connexion: ${users.length} utilisateurs trouvés dans la base`);
         if (users.length === 0) {
           setLoginError("Aucun utilisateur trouvé dans la base de données. Veuillez réinitialiser la base de données.");
+        } else {
+          setLoginError(null);
         }
       } catch (error) {
         console.error("Erreur lors de la vérification des utilisateurs:", error);
         setLoginError("Erreur de connexion à la base de données. Veuillez réinitialiser la base de données.");
+      } finally {
+        setIsCheckingUsers(false);
       }
     };
     
@@ -58,9 +64,13 @@ const Login = () => {
           toast.success('Connexion réussie !');
           navigate('/user/dashboard');
         }
+      } else {
+        toast.error("Échec de l'authentification. Vérifiez vos informations.");
+        setLoginError("Identifiants invalides ou problème de base de données");
       }
     } catch (error) {
-      console.error("Erreur lors de la connexion avec les identifiants de démo:", error);
+      console.error("Erreur lors de la connexion:", error);
+      setLoginError("Erreur de connexion. Essayez de réinitialiser la base de données.");
     }
   };
 
@@ -68,6 +78,8 @@ const Login = () => {
     try {
       setIsResetting(true);
       setLoginError(null);
+      toast.info("Réinitialisation de la base de données en cours...");
+      
       await resetDB();
       toast.success("Base de données réinitialisée avec succès. Veuillez vous reconnecter.");
       
@@ -92,10 +104,16 @@ const Login = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <LoginForm 
-            onDemoLogin={handleDemoLogin} 
-            loginError={loginError}
-          />
+          {isCheckingUsers ? (
+            <div className="flex justify-center py-4">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-solid border-madagascar-green border-r-transparent"></div>
+            </div>
+          ) : (
+            <LoginForm 
+              onDemoLogin={handleDemoLogin} 
+              loginError={loginError}
+            />
+          )}
         </CardContent>
         <CardFooter className="flex flex-col">
           <p className="text-sm text-center text-muted-foreground">

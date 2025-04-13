@@ -34,7 +34,7 @@ export const seedSQLiteDatabase = async (
     const empty = isDatabaseEmpty(db);
     
     if (empty || force) {
-      console.log("Base de données SQLite vide, ajout des données initiales...");
+      console.log("Base de données SQLite vide ou forçage de l'initialisation, ajout des données initiales...");
       
       // Add users
       try {
@@ -43,6 +43,16 @@ export const seedSQLiteDatabase = async (
           ['user1', 'Pierre', 'Martin', 'user@northgascartours.com', 'User123!', 'user'],
           ['user2', 'Marie', 'Dubois', 'marie@example.com', 'password', 'user']
         ];
+        
+        // First clear any existing users if we're forcing a reset
+        if (force) {
+          try {
+            sqliteHelper.execute(db, "DELETE FROM users");
+            console.log("Table des utilisateurs vidée pour réinitialisation");
+          } catch (e) {
+            console.log("Aucune table utilisateurs à vider");
+          }
+        }
         
         for (const userData of usersData) {
           sqliteHelper.execute(db, `
@@ -59,6 +69,16 @@ export const seedSQLiteDatabase = async (
       
       // Add tours
       try {
+        // First clear any existing tours if we're forcing a reset
+        if (force) {
+          try {
+            sqliteHelper.execute(db, "DELETE FROM tours");
+            console.log("Table des tours vidée pour réinitialisation");
+          } catch (e) {
+            console.log("Aucune table tours à vider");
+          }
+        }
+        
         const toursData = [
           ['1', 'Allée des Baobabs Tour', "Découvrez l'emblématique Allée des Baobabs", 'Morondava', '2 Jours', 299, 4.9, 'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb', 1, 'Nature', 1],
           ['2', 'Trek aux Lémuriens à Andasibe', "Parcourez le Parc National d'Andasibe", 'Andasibe', '3 Jours', 349, 4.8, 'https://images.unsplash.com/photo-1472396961693-142e6e269027', 1, 'Faune', 1],

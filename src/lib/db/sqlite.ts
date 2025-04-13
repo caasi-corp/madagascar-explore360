@@ -34,9 +34,9 @@ export const initDB = async (): Promise<Database> => {
     // Try to load existing database from localforage
     const savedDBData = await localforage.getItem<Uint8Array>(DB_CONFIG.localStorageKey);
     
-    // Initialize SQL.js with explicit wasmBinary URL
+    // Initialize SQL.js with correct configuration
     const SQL = await initSqlJs({
-      locateFile: file => `${DB_CONFIG.sqlJsCdnPath}${file}`
+      locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
     });
     
     if (savedDBData) {
@@ -50,7 +50,7 @@ export const initDB = async (): Promise<Database> => {
           const tables = sqliteHelper.queryAll(db, "SELECT name FROM sqlite_master WHERE type='table'");
           console.log("Tables found in database:", tables.map(t => t.name).join(", "));
           
-          if (!tables.some(t => t.name === 'tours')) {
+          if (tables.length === 0 || !tables.some(t => t.name === 'users')) {
             console.warn("Database missing expected tables, recreating...");
             db.close();
             throw new Error("Missing required tables");
@@ -83,16 +83,16 @@ export const initDB = async (): Promise<Database> => {
     await saveDatabase();
     
     // Seed the database if needed
-    const seedResult = await seedSQLiteDatabase(db);
+    const seedResult = await seedSQLiteDatabase(db, true); // Force seed on initial creation
     console.log("Résultat de l'initialisation des données:", seedResult ? "Succès" : "Échec");
     
     // Final verification
     try {
-      const tourCount = sqliteHelper.queryOne(db, "SELECT COUNT(*) as count FROM tours");
-      console.log(`Database contains ${tourCount?.count || 0} tours`);
+      const userCount = sqliteHelper.queryOne(db, "SELECT COUNT(*) as count FROM users");
+      console.log(`Database contains ${userCount?.count || 0} users`);
       
-      if (!tourCount || tourCount.count === 0) {
-        console.warn("Database initialized but contains no tours");
+      if (!userCount || userCount.count === 0) {
+        console.warn("Database initialized but contains no users");
         
         // Attempt to re-seed
         console.log("Attempting to re-seed the database...");
@@ -102,7 +102,7 @@ export const initDB = async (): Promise<Database> => {
         await saveDatabase();
       }
     } catch (e) {
-      console.error("Error verifying tour count:", e);
+      console.error("Error verifying user count:", e);
     }
     
     return db;
@@ -115,7 +115,7 @@ export const initDB = async (): Promise<Database> => {
       await localforage.removeItem(DB_CONFIG.localStorageKey);
       
       const SQL = await initSqlJs({
-        locateFile: file => `${DB_CONFIG.sqlJsCdnPath}${file}`
+        locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
       });
       
       db = new SQL.Database();
