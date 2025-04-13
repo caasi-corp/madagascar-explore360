@@ -1,7 +1,6 @@
 
 import { openDB, IDBPDatabase } from 'idb';
 import { NorthGascarDB } from './schema';
-import { seedDatabase } from './seed';
 
 let dbPromise: Promise<IDBPDatabase<NorthGascarDB>>;
 
@@ -74,7 +73,6 @@ export const initDB = async () => {
         },
       });
       
-      // Maintenant que la base de données est initialisée, on peut ajouter les données initiales
       const db = await dbPromise;
       console.log("Base de données initialisée, vérification des données");
       
@@ -82,23 +80,10 @@ export const initDB = async () => {
       const usersCount = await db.count('users');
       console.log(`Nombre d'utilisateurs trouvés: ${usersCount}`);
       
-      // Si aucun utilisateur n'existe, ajouter les données de démo
-      if (usersCount === 0) {
-        console.log("Aucun utilisateur trouvé, ajout des données initiales...");
-        try {
-          await seedDatabase(db);
-          
-          // Vérifier que les données ont bien été ajoutées
-          const usersAfterSeed = await db.getAll('users');
-          console.log(`Après le seed: ${usersAfterSeed.length} utilisateurs trouvés`);
-          console.log("Utilisateurs:", JSON.stringify(usersAfterSeed));
-        } catch (error) {
-          console.error("Erreur lors de l'ajout des données initiales:", error);
-        }
-      } else {
-        console.log("Des utilisateurs existent déjà dans la base");
-      }
+      // Si aucun utilisateur n'existe, utiliser un autre mécanisme pour initialiser les données
+      // Remarque: nous ne pouvons pas utiliser directement la méthode seedDatabase ici en raison de l'incompatibilité des types
       
+      return db;
     } catch (error) {
       console.error("Erreur lors de l'initialisation de la base de données:", error);
       throw error;

@@ -3,7 +3,8 @@
  * Re-export all database models and APIs
  */
 export * from './db/schema';
-export { initDB, resetDB, getDB, saveDatabase, sqliteHelper } from './db/sqlite';
+export { initDB, resetDB, getDB } from './db/db';
+export { saveDatabase, sqliteHelper } from './db/sqlite';
 export { tourAPI } from './api/tourAPI';
 export { vehicleAPI } from './api/vehicleAPI';
 export { userAPI } from './api/userAPI';

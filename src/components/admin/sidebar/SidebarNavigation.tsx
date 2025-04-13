@@ -1,8 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import SidebarNavGroup from './SidebarNavGroup';
-import SidebarNavItem from './SidebarNavItem';
+import { Link } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
   MapPin,
@@ -16,150 +16,239 @@ import {
   Settings,
   FileText,
   Image,
-  Database
+  Database,
+  ChevronRight,
+  LucideIcon
 } from 'lucide-react';
+
+// Use interface for menu items
+interface MenuItem {
+  label: string;
+  path: string;
+  icon: LucideIcon;
+  children?: MenuItem[];
+}
 
 const SidebarNavigation: React.FC = () => {
   const location = useLocation();
-  const path = location.pathname;
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  
+  // Toggle submenu visibility
+  const toggleItem = (itemLabel: string) => {
+    setExpandedItems(prev => 
+      prev.includes(itemLabel) 
+        ? prev.filter(item => item !== itemLabel) 
+        : [...prev, itemLabel]
+    );
+  };
+  
+  // Check if an item or any of its children is active
+  const isActive = (item: MenuItem): boolean => {
+    if (location.pathname === item.path) return true;
+    if (item.children) {
+      return item.children.some(child => location.pathname === child.path);
+    }
+    return false;
+  };
+  
+  // Define the menu items with proper typing
+  const menuItems: MenuItem[] = [
+    {
+      label: "Tableau de bord",
+      path: "/admin/dashboard",
+      icon: LayoutDashboard
+    },
+    {
+      label: "Circuits & Excursions",
+      path: "#",
+      icon: MapPin,
+      children: [
+        {
+          label: "Tous les circuits",
+          path: "/admin/tours",
+          icon: MapPin
+        },
+        {
+          label: "Catégories",
+          path: "/admin/tours/categories",
+          icon: MapPin
+        },
+        {
+          label: "Calendrier des excursions",
+          path: "/admin/excursions-calendar",
+          icon: CalendarDays
+        }
+      ]
+    },
+    {
+      label: "Réservations",
+      path: "/admin/bookings",
+      icon: CalendarDays
+    },
+    {
+      label: "Clients",
+      path: "/admin/customers",
+      icon: Users
+    },
+    {
+      label: "Transports",
+      path: "#",
+      icon: Car,
+      children: [
+        {
+          label: "Véhicules",
+          path: "/admin/vehicles",
+          icon: Car
+        },
+        {
+          label: "Réservations",
+          path: "/admin/vehicles/bookings",
+          icon: CalendarDays
+        }
+      ]
+    },
+    {
+      label: "Croisières",
+      path: "#",
+      icon: Ship,
+      children: [
+        {
+          label: "Croisières",
+          path: "/admin/catamaran-cruises",
+          icon: Ship
+        }
+      ]
+    },
+    {
+      label: "Hôtels",
+      path: "/admin/hotels", 
+      icon: Hotel
+    },
+    {
+      label: "Rapports",
+      path: "/admin/reports",
+      icon: BarChart3
+    },
+    {
+      label: "Messages",
+      path: "/admin/messages",
+      icon: MessageSquare
+    },
+    {
+      label: "Bannières",
+      path: "/admin/banners",
+      icon: Image
+    },
+    {
+      label: "Base de données",
+      path: "/admin/database",
+      icon: Database
+    },
+    {
+      label: "Paramètres",
+      path: "#",
+      icon: Settings,
+      children: [
+        {
+          label: "Général",
+          path: "/admin/settings",
+          icon: Settings
+        },
+        {
+          label: "SEO",
+          path: "/admin/settings/seo", 
+          icon: Settings
+        },
+        {
+          label: "Utilisateurs",
+          path: "/admin/settings/users",
+          icon: Users
+        }
+      ]
+    },
+    {
+      label: "Documentation",
+      path: "/admin-documentation",
+      icon: FileText
+    }
+  ];
+
+  // Render menu item with proper component usage
+  const renderMenuItem = (item: MenuItem) => {
+    const active = isActive(item);
+    const hasChildren = item.children && item.children.length > 0;
+    const isExpanded = expandedItems.includes(item.label);
+    const Icon = item.icon;
+    
+    return (
+      <div key={item.label} className="mb-1">
+        {hasChildren ? (
+          <>
+            <button
+              onClick={() => toggleItem(item.label)}
+              className={cn(
+                "w-full flex items-center justify-between p-2 rounded-md text-sm",
+                active ? "bg-accent text-accent-foreground" : "hover:bg-muted"
+              )}
+            >
+              <div className="flex items-center">
+                <Icon className="mr-2 h-4 w-4" />
+                <span>{item.label}</span>
+              </div>
+              <ChevronRight 
+                className={cn(
+                  "h-4 w-4 transition-transform",
+                  isExpanded && "transform rotate-90"
+                )} 
+              />
+            </button>
+            
+            {isExpanded && item.children && (
+              <div className="ml-4 pl-2 border-l border-border space-y-1 mt-1">
+                {item.children.map(child => {
+                  const childActive = location.pathname === child.path;
+                  const ChildIcon = child.icon;
+                  
+                  return (
+                    <Link
+                      key={child.path}
+                      to={child.path}
+                      className={cn(
+                        "flex items-center px-2 py-1.5 text-sm rounded-md",
+                        childActive
+                          ? "bg-accent text-accent-foreground"
+                          : "hover:bg-muted"
+                      )}
+                    >
+                      <ChildIcon className="mr-2 h-4 w-4" />
+                      <span>{child.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        ) : (
+          <Link
+            to={item.path}
+            className={cn(
+              "flex items-center p-2 rounded-md text-sm",
+              active
+                ? "bg-accent text-accent-foreground"
+                : "hover:bg-muted"
+            )}
+          >
+            <Icon className="mr-2 h-4 w-4" />
+            <span>{item.label}</span>
+          </Link>
+        )}
+      </div>
+    );
+  };
 
   return (
     <nav className="space-y-2 mt-4">
-      <SidebarNavItem 
-        to="/admin/dashboard" 
-        icon={<LayoutDashboard size={18} />} 
-        label="Tableau de bord"
-        active={path === '/admin' || path === '/admin/dashboard'}
-      />
-      
-      <SidebarNavGroup 
-        title="Circuits & Excursions"
-        icon={<MapPin size={18} />}
-        active={path.includes('/admin/tours') || path.includes('/admin/excursions')}
-      >
-        <SidebarNavItem 
-          to="/admin/tours" 
-          label="Tous les circuits" 
-          active={path === '/admin/tours'}
-        />
-        <SidebarNavItem 
-          to="/admin/tours/categories" 
-          label="Catégories" 
-          active={path === '/admin/tours/categories'}
-        />
-        <SidebarNavItem 
-          to="/admin/excursions-calendar" 
-          label="Calendrier des excursions" 
-          active={path === '/admin/excursions-calendar'}
-        />
-      </SidebarNavGroup>
-      
-      <SidebarNavItem 
-        to="/admin/bookings" 
-        icon={<CalendarDays size={18} />} 
-        label="Réservations"
-        active={path === '/admin/bookings'}
-      />
-      
-      <SidebarNavItem 
-        to="/admin/customers" 
-        icon={<Users size={18} />} 
-        label="Clients"
-        active={path === '/admin/customers'}
-      />
-      
-      <SidebarNavGroup 
-        title="Transports"
-        icon={<Car size={18} />}
-        active={path.includes('/admin/vehicles')}
-      >
-        <SidebarNavItem 
-          to="/admin/vehicles" 
-          label="Véhicules" 
-          active={path === '/admin/vehicles'}
-        />
-        <SidebarNavItem 
-          to="/admin/vehicles/bookings" 
-          label="Réservations" 
-          active={path === '/admin/vehicles/bookings'}
-        />
-      </SidebarNavGroup>
-      
-      <SidebarNavGroup 
-        title="Croisières"
-        icon={<Ship size={18} />}
-        active={path.includes('/admin/catamaran')}
-      >
-        <SidebarNavItem 
-          to="/admin/catamaran-cruises" 
-          label="Croisières" 
-          active={path === '/admin/catamaran-cruises'}
-        />
-      </SidebarNavGroup>
-      
-      <SidebarNavItem 
-        to="/admin/hotels" 
-        icon={<Hotel size={18} />} 
-        label="Hôtels"
-        active={path === '/admin/hotels'}
-      />
-      
-      <SidebarNavItem 
-        to="/admin/reports" 
-        icon={<BarChart3 size={18} />} 
-        label="Rapports"
-        active={path === '/admin/reports'}
-      />
-      
-      <SidebarNavItem 
-        to="/admin/messages" 
-        icon={<MessageSquare size={18} />} 
-        label="Messages"
-        active={path === '/admin/messages'}
-      />
-      
-      <SidebarNavItem 
-        to="/admin/banners" 
-        icon={<Image size={18} />} 
-        label="Bannières"
-        active={path === '/admin/banners'}
-      />
-      
-      <SidebarNavItem 
-        to="/admin/database" 
-        icon={<Database size={18} />} 
-        label="Base de données"
-        active={path === '/admin/database'}
-      />
-      
-      <SidebarNavGroup 
-        title="Paramètres"
-        icon={<Settings size={18} />}
-        active={path.includes('/admin/settings')}
-      >
-        <SidebarNavItem 
-          to="/admin/settings" 
-          label="Général" 
-          active={path === '/admin/settings'}
-        />
-        <SidebarNavItem 
-          to="/admin/settings/seo" 
-          label="SEO" 
-          active={path === '/admin/settings/seo'}
-        />
-        <SidebarNavItem 
-          to="/admin/settings/users" 
-          label="Utilisateurs" 
-          active={path === '/admin/settings/users'}
-        />
-      </SidebarNavGroup>
-      
-      <SidebarNavItem 
-        to="/admin-documentation" 
-        icon={<FileText size={18} />} 
-        label="Documentation"
-        active={path === '/admin-documentation'}
-      />
+      {menuItems.map(renderMenuItem)}
     </nav>
   );
 };
