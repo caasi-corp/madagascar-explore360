@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { AuthProvider } from './contexts/AuthContext';
+import { getDB as getIDBDatabase } from './lib/db/db'; // Import the IndexedDB getDB function
 import { seedIDBDatabase } from './lib/db/idbSeed';
 
 // Initialize the query client
@@ -31,11 +32,15 @@ function App() {
     const initialize = async () => {
       try {
         setIsInitializing(true);
-        const db = await initDB();
-        console.log("Base de données initialisée avec succès");
         
+        // First initialize SQLite
+        await initDB();
+        console.log("Base de données SQLite initialisée avec succès");
+        
+        // Then initialize IndexedDB separately for IDB operations
+        const idbDatabase = await getIDBDatabase();
         // Initialiser avec des données de test pour IndexedDB
-        await seedIDBDatabase(db);
+        await seedIDBDatabase(idbDatabase);
         
         setIsDbReady(true);
       } catch (error) {

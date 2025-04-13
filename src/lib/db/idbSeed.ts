@@ -12,7 +12,7 @@ import { seedBanners } from './seed/bannerSeed';
  * @param db The IDBPDatabase connection
  */
 export const seedIDBDatabase = async (db: IDBPDatabase<NorthGascarDB>): Promise<boolean> => {
-  console.log("Vérification si la base de données a besoin d'être initialisée...");
+  console.log("Vérification si la base de données IndexedDB a besoin d'être initialisée...");
   
   try {
     // Check if users exist
@@ -20,7 +20,7 @@ export const seedIDBDatabase = async (db: IDBPDatabase<NorthGascarDB>): Promise<
     const empty = usersCount === 0;
     
     if (empty) {
-      console.log("Base de données vide, ajout des données initiales...");
+      console.log("Base de données IndexedDB vide, ajout des données initiales...");
       
       // Seed users first (must succeed)
       try {
@@ -38,11 +38,11 @@ export const seedIDBDatabase = async (db: IDBPDatabase<NorthGascarDB>): Promise<
       
       return true;
     } else {
-      console.log("Base de données déjà initialisée, pas besoin de l'alimenter");
+      console.log("Base de données IndexedDB déjà initialisée, pas besoin de l'alimenter");
       return true;
     }
   } catch (error) {
-    console.error("Erreur lors de l'initialisation de la base de données:", error);
+    console.error("Erreur lors de l'initialisation de la base de données IndexedDB:", error);
     return false;
   }
 };
