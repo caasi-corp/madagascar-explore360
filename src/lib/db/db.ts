@@ -1,3 +1,4 @@
+
 import { openDB, IDBPDatabase } from 'idb';
 import { NorthGascarDB } from './schema';
 import { seedData } from './seed';
