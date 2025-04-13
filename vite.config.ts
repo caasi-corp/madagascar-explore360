@@ -48,5 +48,15 @@ export default defineConfig(({ mode }) => ({
         assetFileNames: 'assets/[name].[hash].[ext]'
       },
     },
+    // Adding terser options to ensure it works properly
+    terserOptions: {
+      compress: {
+        drop_console: mode === 'production', // Remove console logs in production
+        drop_debugger: mode === 'production', // Remove debugger statements in production
+      },
+      format: {
+        comments: false, // Remove comments from the minified code
+      },
+    },
   },
 }));

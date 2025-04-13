@@ -13,8 +13,14 @@ console.log('🚀 Starting deployment preparation...');
 // Run the build command
 console.log('📦 Building the application...');
 try {
-  // We use child_process.execSync to run the build command
-  childProcess.execSync('npm run build', { stdio: 'inherit' });
+  // First, prepare the build environment
+  const prepareBuildScript = path.resolve(__dirname, './prepare-build.js');
+  if (fs.existsSync(prepareBuildScript)) {
+    childProcess.execSync(`node ${prepareBuildScript}`, { stdio: 'inherit' });
+  }
+  
+  // Then run the build command
+  childProcess.execSync('npx vite build', { stdio: 'inherit' });
   console.log('✅ Build completed successfully');
 } catch (error) {
   console.error('❌ Build failed:', error);
