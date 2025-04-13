@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { AuthProvider } from './contexts/AuthContext';
+import { logVisitorDataToSheet, logVisitorDataViaForm } from './lib/api/googleSheetsAPI';
 
 // Initialize the query client with better caching strategy
 const queryClient = new QueryClient({
@@ -22,7 +23,7 @@ const queryClient = new QueryClient({
 });
 
 // Tracking function to log visits to Google Sheets
-const logVisitToGoogleSheet = () => {
+const logVisitToGoogleSheet = async () => {
   try {
     // Create current timestamp in user's timezone
     const now = new Date();
@@ -36,54 +37,25 @@ const logVisitToGoogleSheet = () => {
     // Get page path
     const path = window.location.pathname;
     
-    // Build the form data
-    const formData = new FormData();
-    formData.append('entry.1621853391', formattedDate); // Date field
-    formData.append('entry.1379611861', formattedTime); // Time field
-    formData.append('entry.1283592347', path); // Page Path
-    formData.append('entry.853046991', browserInfo); // Browser Info
-    
-    // Google Form submission URL - linked to your spreadsheet
-    const googleFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSe4Ox5fDDUxh69VWQ22kBxhTp6WKQb_1m1X5aH3uU08b5IWtA/formResponse';
-    
-    // Create a hidden iframe for the form submission to avoid CORS issues
-    const iframe = document.createElement('iframe');
-    iframe.name = 'hidden-iframe';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-    
-    // Create the form
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = googleFormUrl;
-    form.target = 'hidden-iframe';
-    
-    // Append form data to the form
-    for (const [key, value] of formData.entries()) {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = value as string;
-      form.appendChild(input);
-    }
-    
-    // Append form to body, submit it, and clean up
-    document.body.appendChild(form);
-    form.submit();
-    
-    // Detailed console logging for debugging
-    console.log('Visit tracking details:', {
+    // Prepare data for logging
+    const visitData = {
       date: formattedDate,
       time: formattedTime,
       path: path,
-      browserInfo: browserInfo
-    });
+      info: browserInfo
+    };
     
-    // Clean up after submission (wait a bit to ensure submission completes)
-    setTimeout(() => {
-      document.body.removeChild(form);
-      document.body.removeChild(iframe);
-    }, 1000);
+    // Log detailed info to console for debugging
+    console.log('Visit tracking details:', visitData);
+    
+    // Try API method first
+    const apiSuccess = await logVisitorDataToSheet(visitData);
+    
+    // If API fails, use form submission as fallback
+    if (!apiSuccess) {
+      console.log('API logging failed, using form submission fallback...');
+      logVisitorDataViaForm(visitData);
+    }
     
     console.log('Visit logged successfully to Google Sheets');
   } catch (error) {
