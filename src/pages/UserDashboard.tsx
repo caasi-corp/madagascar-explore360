@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
@@ -22,7 +23,8 @@ import {
   CalendarDays,
   ArrowRight,
 } from 'lucide-react';
-import { bookingAPI, Tour, tourAPI, Booking } from '@/lib/store';
+import { bookingAPI, tourAPI } from '@/lib/store';
+import { Tour, Booking } from '@/lib/db/schema';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 
