@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { bannerAPI } from '@/lib/store';
 import { Banner } from '@/lib/db/schema';
-import { useToast } from '@/hooks/use-toast';
 import { toast } from 'sonner';
 
 export const useBanners = () => {

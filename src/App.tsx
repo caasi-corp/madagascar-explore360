@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { AuthProvider } from './contexts/AuthContext';
+import { seedDatabase } from './lib/db/sqliteSeed';
 
 // Initialize the query client
 const queryClient = new QueryClient({
@@ -33,9 +34,8 @@ function App() {
         const db = await initDB();
         console.log("Base de données initialisée avec succès");
         
-        // Vérifier que les utilisateurs ont bien été créés
-        const users = await db.getAll('users');
-        console.log(`La base contient ${users.length} utilisateurs:`, JSON.stringify(users));
+        // Initialiser avec des données de test
+        await seedDatabase(db);
         
         setIsDbReady(true);
       } catch (error) {

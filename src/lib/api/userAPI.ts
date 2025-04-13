@@ -1,5 +1,5 @@
 
-import { getDB } from '../db/db';
+import { getDB, saveDatabase, sqliteHelper } from '../db/sqlite';
 import { User } from '../db/schema';
 
 /**
@@ -8,12 +8,14 @@ import { User } from '../db/schema';
 export const userAPI = {
   getAll: async () => {
     const db = await getDB();
-    return db.getAll('users');
+    const users = sqliteHelper.queryAll(db, "SELECT * FROM users");
+    return users as User[];
   },
   
   getById: async (id: string) => {
     const db = await getDB();
-    return db.get('users', id);
+    const user = sqliteHelper.queryOne(db, "SELECT * FROM users WHERE id = $id", { $id: id });
+    return user as User | null;
   },
   
   getByEmail: async (email: string) => {
@@ -21,16 +23,15 @@ export const userAPI = {
     console.log("Recherche d'utilisateur par email:", email);
     
     try {
-      // Récupérer tous les utilisateurs pour la vérification
-      const allUsers = await db.getAll('users');
-      console.log("Tous les utilisateurs dans la base:", JSON.stringify(allUsers));
-      
-      // Recherche directe en mémoire plutôt que par l'index qui semble poser problème
-      const user = allUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+      const user = sqliteHelper.queryOne(
+        db, 
+        "SELECT * FROM users WHERE LOWER(email) = LOWER($email)", 
+        { $email: email }
+      );
       
       if (user) {
         console.log("Utilisateur trouvé:", user);
-        return user;
+        return user as User;
       } else {
         console.log("Aucun utilisateur trouvé avec cet email");
         return null;
@@ -77,24 +78,63 @@ export const userAPI = {
     }
     
     const id = crypto.randomUUID();
-    const newUser = { ...userData, id, role: 'user' as const };
-    await db.put('users', newUser);
-    return { id: newUser.id, email: newUser.email, role: newUser.role };
+    
+    sqliteHelper.execute(
+      db,
+      `INSERT INTO users (id, firstName, lastName, email, password, role)
+       VALUES ($id, $firstName, $lastName, $email, $password, $role)`,
+      {
+        $id: id,
+        $firstName: userData.firstName,
+        $lastName: userData.lastName,
+        $email: userData.email,
+        $password: userData.password,
+        $role: 'user'
+      }
+    );
+    
+    await saveDatabase();
+    
+    return { id, email: userData.email, role: 'user' as const };
   },
   
   update: async (id: string, userData: Partial<User>) => {
     const db = await getDB();
-    const existingUser = await db.get('users', id);
+    const existingUser = await userAPI.getById(id);
+    
     if (!existingUser) {
       throw new Error('User not found');
     }
+    
     const updatedUser = { ...existingUser, ...userData };
-    await db.put('users', updatedUser);
+    
+    sqliteHelper.execute(
+      db,
+      `UPDATE users SET 
+        firstName = $firstName, 
+        lastName = $lastName, 
+        email = $email, 
+        password = $password, 
+        role = $role
+       WHERE id = $id`,
+      {
+        $id: id,
+        $firstName: updatedUser.firstName,
+        $lastName: updatedUser.lastName,
+        $email: updatedUser.email,
+        $password: updatedUser.password,
+        $role: updatedUser.role
+      }
+    );
+    
+    await saveDatabase();
+    
     return { id: updatedUser.id, email: updatedUser.email, role: updatedUser.role };
   },
   
   delete: async (id: string) => {
     const db = await getDB();
-    await db.delete('users', id);
+    sqliteHelper.execute(db, "DELETE FROM users WHERE id = $id", { $id: id });
+    await saveDatabase();
   },
 };
