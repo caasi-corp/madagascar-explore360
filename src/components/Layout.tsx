@@ -1,11 +1,11 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from './navbar';
 import Footer from './Footer';
 import WhatsAppChat from './WhatsAppChat';
 import { Outlet, useLocation } from 'react-router-dom';
 import { usePageTracking } from '@/hooks/usePageTracking';
-import { logVisitorDataToSheet, logVisitorDataViaForm } from '@/lib/api/googleSheetsAPI';
+import { logVisitorDataToSheet, logVisitorDataViaForm, writeTestDataToSheet } from '@/lib/api/googleSheetsAPI';
 
 // Tracking function to log visits to Google Sheet
 const logPageVisit = async () => {
@@ -52,6 +52,18 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Use the tracking hook to log page visits on route changes
   usePageTracking(logPageVisit);
+  
+  // Write test data to the sheet immediately on component mount
+  useEffect(() => {
+    // Write a test entry to the sheet
+    const writeTestEntry = async () => {
+      console.log('Writing test entry to Google Sheet...');
+      await writeTestDataToSheet();
+      console.log('Test entry sent successfully');
+    };
+    
+    writeTestEntry();
+  }, []);
   
   return (
     <div className="flex flex-col min-h-screen">
