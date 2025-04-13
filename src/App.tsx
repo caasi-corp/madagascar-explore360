@@ -1,16 +1,14 @@
-
 import React, { useEffect, useState } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import router from './router';
 import { Toaster } from './components/ui/sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { initDB } from './lib/store';
+import { initDB, resetDB } from './lib/store';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './components/ui/dialog';
 import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { AuthProvider } from './contexts/AuthContext';
 import { seedDatabase } from './lib/db/sqliteSeed';
-import { resetDB } from './lib/db/sqlite'; // Update this import
 
 // Initialize the query client
 const queryClient = new QueryClient({

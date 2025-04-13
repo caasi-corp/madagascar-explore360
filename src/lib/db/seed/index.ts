@@ -1,31 +1,50 @@
 
-import { IDBPDatabase } from 'idb';
-import { NorthGascarDB } from '../schema';
+import { Database } from 'sql.js';
+import { seedUsers } from './userSeed';
 import { seedTours } from './tourSeed';
 import { seedVehicles } from './vehicleSeed';
-import { seedUsers } from './userSeed';
 import { seedBookings } from './bookingSeed';
 import { seedBanners } from './bannerSeed';
+import { sqliteHelper } from '../helpers';
+
+/**
+ * Check if database is empty
+ */
+const isDatabaseEmpty = (db: Database): boolean => {
+  const usersCount = sqliteHelper.queryAll(db, "SELECT COUNT(*) as count FROM users")[0].count;
+  return usersCount === 0;
+};
 
 /**
  * Seeds the database with initial data
- * @param db The database connection
- * @returns Whether the seeding was successful
  */
-export const seedDatabase = async (db: IDBPDatabase<NorthGascarDB>): Promise<boolean> => {
+export const seedDatabase = async (db: Database): Promise<boolean> => {
+  console.log("Vérification si la base de données a besoin d'être initialisée...");
+  
   try {
-    // Seed the database with users (this is critical, so we throw if it fails)
-    await seedUsers(db);
+    const empty = isDatabaseEmpty(db);
     
-    // Seed the rest of the data (these are not critical, so we catch errors internally)
-    await seedTours(db);
-    await seedVehicles(db);
-    await seedBookings(db);
-    await seedBanners(db);
-    
-    return true;
-  } catch (e) {
-    console.error("Erreur critique lors de l'initialisation de la base de données:", e);
+    if (empty) {
+      console.log("Base de données vide, ajout des données initiales...");
+      
+      // Seed users (must succeed)
+      if (!await seedUsers(db)) {
+        throw new Error("Échec de l'ajout des utilisateurs");
+      }
+      
+      // Seed other data (can fail without halting)
+      await seedTours(db);
+      await seedVehicles(db);
+      await seedBookings(db);
+      await seedBanners(db);
+      
+      return true;
+    } else {
+      console.log("Base de données déjà initialisée, pas besoin de l'alimenter");
+      return true;
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'initialisation de la base de données:", error);
     return false;
   }
 };
