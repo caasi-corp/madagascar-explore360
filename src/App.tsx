@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import router from './router';
@@ -72,15 +71,23 @@ const logVisitToGoogleSheet = () => {
     document.body.appendChild(form);
     form.submit();
     
+    // Detailed console logging for debugging
+    console.log('Visit tracking details:', {
+      date: formattedDate,
+      time: formattedTime,
+      path: path,
+      browserInfo: browserInfo
+    });
+    
     // Clean up after submission (wait a bit to ensure submission completes)
     setTimeout(() => {
       document.body.removeChild(form);
       document.body.removeChild(iframe);
     }, 1000);
     
-    console.log('Visit logged successfully');
+    console.log('Visit logged successfully to Google Sheets');
   } catch (error) {
-    console.error('Error logging visit:', error);
+    console.error('Error logging visit to Google Sheets:', error);
   }
 };
 

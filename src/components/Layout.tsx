@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from './navbar';
 import Footer from './Footer';
@@ -17,6 +16,14 @@ const logPageVisit = () => {
     // Get page path and other details
     const path = window.location.pathname;
     const referrer = document.referrer || 'Direct';
+    
+    // Detailed console logging for debugging
+    console.log('Page visit tracking details:', {
+      date: formattedDate,
+      time: formattedTime,
+      path: path,
+      referrer: referrer
+    });
     
     // Build form data
     const formData = new FormData();
@@ -58,7 +65,7 @@ const logPageVisit = () => {
       document.body.removeChild(iframe);
     }, 1000);
     
-    console.log('Page visit logged:', path);
+    console.log('Page visit logged successfully');
   } catch (error) {
     console.error('Error logging page visit:', error);
   }
