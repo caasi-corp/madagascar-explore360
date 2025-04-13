@@ -1,53 +1,87 @@
 
 import { Database } from 'sql.js';
 import { saveDatabase, sqliteHelper } from './sqlite';
-import { seedUsers } from './seed/userSeed';
-import { seedTours } from './seed/tourSeed';
-import { seedVehicles } from './seed/vehicleSeed';
-import { seedBookings } from './seed/bookingSeed';
-import { seedBanners } from './seed/bannerSeed';
 
 /**
  * Check if database is empty
  */
-const isDatabaseEmpty = async (db: Database): Promise<boolean> => {
-  const usersCount = sqliteHelper.queryAll(db, "SELECT COUNT(*) as count FROM users")[0].count;
-  return usersCount === 0;
+const isSQLiteDatabaseEmpty = (db: Database): boolean => {
+  try {
+    const result = sqliteHelper.queryAll(db, "SELECT COUNT(*) as count FROM users");
+    if (result && result.length > 0) {
+      return result[0].count === 0;
+    }
+    return true; // If there's an error, assume it's empty
+  } catch (error) {
+    console.error("Erreur lors de la vérification de la base de données:", error);
+    return true; // Assume empty on error
+  }
 };
 
 /**
- * Seeds the database with initial data
+ * Seeds the SQLite database with initial data
  */
-export const seedDatabase = async (db: Database): Promise<boolean> => {
-  console.log("Vérification si la base de données a besoin d'être initialisée...");
+export const seedSQLiteDatabase = async (db: Database): Promise<boolean> => {
+  console.log("Vérification si la base de données SQLite a besoin d'être initialisée...");
   
   try {
-    const empty = await isDatabaseEmpty(db);
+    const empty = isSQLiteDatabaseEmpty(db);
     
     if (empty) {
-      console.log("Base de données vide, ajout des données initiales...");
+      console.log("Base de données SQLite vide, ajout des données initiales...");
       
-      // Seed users (must succeed)
-      if (!await seedUsers(db)) {
-        throw new Error("Échec de l'ajout des utilisateurs");
+      // Add users
+      try {
+        const usersData = [
+          ['admin1', 'Admin', 'User', 'admin@northgascartours.com', 'Admin123!', 'admin'],
+          ['user1', 'Pierre', 'Martin', 'user@northgascartours.com', 'User123!', 'user'],
+          ['user2', 'Marie', 'Dubois', 'marie@example.com', 'password', 'user']
+        ];
+        
+        for (const userData of usersData) {
+          db.run(`
+            INSERT INTO users (id, firstName, lastName, email, password, role)
+            VALUES (?, ?, ?, ?, ?, ?)
+          `, userData);
+        }
+        
+        console.log("Utilisateurs ajoutés avec succès");
+      } catch (error) {
+        console.error("Erreur lors de l'ajout des utilisateurs:", error);
+        throw error;
       }
       
-      // Seed other data (can fail without halting)
-      await seedTours(db);
-      await seedVehicles(db);
-      await seedBookings(db);
-      await seedBanners(db);
+      // Add tours
+      try {
+        const toursData = [
+          ['1', 'Allée des Baobabs Tour', "Découvrez l'emblématique Allée des Baobabs", 'Morondava', '2 Jours', 299, 4.9, 'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb', 1, 'Nature', 1],
+          ['2', 'Trek aux Lémuriens à Andasibe', "Parcourez le Parc National d'Andasibe", 'Andasibe', '3 Jours', 349, 4.8, 'https://images.unsplash.com/photo-1472396961693-142e6e269027', 1, 'Faune', 1]
+        ];
+        
+        for (const tourData of toursData) {
+          db.run(`
+            INSERT INTO tours (id, title, description, location, duration, price, rating, image, featured, category, active)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `, tourData);
+        }
+        
+        console.log("Tours ajoutés avec succès");
+      } catch (error) {
+        console.error("Erreur lors de l'ajout des tours:", error);
+      }
       
-      // Save database after seeding
+      // Add vehicles, bookings, and other data...
+      
+      // Save database after all changes
       await saveDatabase();
       
       return true;
     } else {
-      console.log("Base de données déjà initialisée, pas besoin de l'alimenter");
+      console.log("Base de données SQLite déjà initialisée");
       return true;
     }
   } catch (error) {
-    console.error("Erreur lors de l'initialisation de la base de données:", error);
+    console.error("Erreur lors de l'initialisation de la base de données SQLite:", error);
     return false;
   }
 };

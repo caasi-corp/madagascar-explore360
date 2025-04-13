@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -47,11 +48,8 @@ const Login = () => {
       await resetDB();
       toast.success("Base de données réinitialisée avec succès. Veuillez vous reconnecter.");
       
-      const users = await userAPI.getAll();
-      console.log(`Après réinitialisation: ${users.length} utilisateurs dans la base`);
-      if (users.length > 0) {
-        toast.success(`${users.length} utilisateurs ajoutés avec succès`);
-      }
+      // Reload page to reinitialize database
+      window.location.reload();
     } catch (error) {
       console.error("Erreur lors de la réinitialisation de la base de données:", error);
       setLoginError("Erreur lors de la réinitialisation. Veuillez recharger la page.");

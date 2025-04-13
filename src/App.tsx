@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import router from './router';
@@ -8,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { AuthProvider } from './contexts/AuthContext';
-import { seedDatabase } from './lib/db/sqliteSeed';
+import { seedIDBDatabase } from './lib/db/idbSeed';
 
 // Initialize the query client
 const queryClient = new QueryClient({
@@ -33,8 +34,8 @@ function App() {
         const db = await initDB();
         console.log("Base de données initialisée avec succès");
         
-        // Initialiser avec des données de test
-        await seedDatabase(db);
+        // Initialiser avec des données de test pour IndexedDB
+        await seedIDBDatabase(db);
         
         setIsDbReady(true);
       } catch (error) {

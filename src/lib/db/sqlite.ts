@@ -3,7 +3,7 @@ import initSqlJs, { Database } from 'sql.js';
 import localforage from 'localforage';
 import { DB_CONFIG } from './config';
 import { createTables } from './schema-creator';
-import { seedDatabase } from './seed';
+import { seedSQLiteDatabase } from './sqliteSeed';
 
 // SQLite database instance
 let db: Database | null = null;
@@ -42,7 +42,7 @@ export const initDB = async (): Promise<Database> => {
     }
     
     // Seed the database if needed
-    await seedDatabase(db);
+    await seedSQLiteDatabase(db);
     
     return db;
   } catch (error) {

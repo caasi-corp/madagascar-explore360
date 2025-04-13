@@ -75,13 +75,7 @@ export const initDB = async () => {
       
       const db = await dbPromise;
       console.log("Base de données initialisée, vérification des données");
-      
-      // Vérifier si des utilisateurs existent déjà
-      const usersCount = await db.count('users');
-      console.log(`Nombre d'utilisateurs trouvés: ${usersCount}`);
-      
-      // Si aucun utilisateur n'existe, utiliser un autre mécanisme pour initialiser les données
-      // Remarque: nous ne pouvons pas utiliser directement la méthode seedDatabase ici en raison de l'incompatibilité des types
+      console.log(`Nombre d'utilisateurs trouvés: ${await db.count('users')}`);
       
       return db;
     } catch (error) {
