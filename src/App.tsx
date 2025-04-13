@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router-dom';
 import router from './router';
 import { Toaster } from './components/ui/sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { initDB } from './lib/DatabaseX/db'; // Nouvelle importation
+import { initDB } from './lib/store';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './components/ui/dialog';
 import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -30,10 +30,12 @@ function App() {
     const initialize = async () => {
       try {
         setIsInitializing(true);
+        const db = await initDB();
+        console.log("Base de données initialisée avec succès");
         
-        // Initialiser notre nouvelle base de données
-        await initDB();
-        console.log("Base de données DatabaseX initialisée avec succès");
+        // Vérifier que les utilisateurs ont bien été créés
+        const users = await db.getAll('users');
+        console.log(`La base contient ${users.length} utilisateurs:`, JSON.stringify(users));
         
         setIsDbReady(true);
       } catch (error) {
@@ -85,12 +87,14 @@ function App() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-      </AuthProvider>
-    </QueryClientProvider>
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <RouterProvider router={router} />
+          <Toaster />
+        </AuthProvider>
+      </QueryClientProvider>
+    </React.StrictMode>
   );
 }
 

@@ -1,70 +1,53 @@
 
-/**
- * API pour les opérations sur les réservations
- */
-import { dbx } from '../DatabaseX/db';
+import { getDB } from '../db/db';
+import { Booking } from '../db/schema';
 
+/**
+ * API for booking operations
+ */
 export const bookingAPI = {
   getAll: async () => {
-    try {
-      return dbx.bookings.getAll();
-    } catch (error) {
-      console.error("Erreur lors de la récupération des réservations:", error);
-      return [];
-    }
+    const db = await getDB();
+    return db.getAll('bookings');
   },
   
   getById: async (id: string) => {
-    try {
-      return dbx.bookings.getById(id);
-    } catch (error) {
-      console.error(`Erreur lors de la récupération de la réservation ${id}:`, error);
-      return null;
-    }
+    const db = await getDB();
+    return db.get('bookings', id);
   },
   
   getByUserId: async (userId: string) => {
-    try {
-      return dbx.bookings.getByUserId(userId);
-    } catch (error) {
-      console.error(`Erreur lors de la récupération des réservations de l'utilisateur ${userId}:`, error);
-      return [];
-    }
+    const db = await getDB();
+    return db.getAllFromIndex('bookings', 'by-userId', userId);
   },
   
   getByStatus: async (status: string) => {
-    try {
-      return dbx.bookings.getByStatus(status);
-    } catch (error) {
-      console.error(`Erreur lors de la récupération des réservations avec le statut ${status}:`, error);
-      return [];
-    }
+    const db = await getDB();
+    return db.getAllFromIndex('bookings', 'by-status', status);
   },
   
-  add: async (booking: any) => {
-    try {
-      return dbx.bookings.add(booking);
-    } catch (error) {
-      console.error("Erreur lors de l'ajout de la réservation:", error);
-      throw error;
-    }
+  add: async (booking: Omit<Booking, 'id' | 'createdAt'>) => {
+    const db = await getDB();
+    const id = crypto.randomUUID();
+    const createdAt = new Date().toISOString();
+    const newBooking = { ...booking, id, createdAt };
+    await db.put('bookings', newBooking);
+    return newBooking;
   },
   
-  update: async (id: string, booking: any) => {
-    try {
-      return dbx.bookings.update(id, booking);
-    } catch (error) {
-      console.error(`Erreur lors de la mise à jour de la réservation ${id}:`, error);
-      throw error;
+  update: async (id: string, booking: Partial<Booking>) => {
+    const db = await getDB();
+    const existingBooking = await db.get('bookings', id);
+    if (!existingBooking) {
+      throw new Error('Booking not found');
     }
+    const updatedBooking = { ...existingBooking, ...booking };
+    await db.put('bookings', updatedBooking);
+    return updatedBooking;
   },
   
   delete: async (id: string) => {
-    try {
-      return dbx.bookings.delete(id);
-    } catch (error) {
-      console.error(`Erreur lors de la suppression de la réservation ${id}:`, error);
-      throw error;
-    }
+    const db = await getDB();
+    await db.delete('bookings', id);
   },
 };

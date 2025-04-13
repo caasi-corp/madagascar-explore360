@@ -1,99 +1,119 @@
 
-/**
- * API pour les opérations sur les bannières
- */
-import { dbx } from '../DatabaseX/db';
+import { openDB } from 'idb';
+import { NorthGascarDB, Banner } from '../db/schema';
 
 export const bannerAPI = {
   /**
    * Récupère toutes les bannières
    */
-  getAll: async () => {
-    try {
-      return dbx.banners.getAll();
-    } catch (error) {
-      console.error('Erreur lors de la récupération des bannières:', error);
-      return [];
-    }
+  getAll: async (): Promise<Banner[]> => {
+    const db = await openDB<NorthGascarDB>('northgascar-db', 1);
+    return db.getAll('banners');
   },
 
   /**
    * Récupère les bannières actives pour une page spécifique
    */
-  getActiveByPage: async (page: string) => {
-    try {
-      return dbx.banners.getActiveByPage(page);
-    } catch (error) {
-      console.error(`Erreur lors de la récupération de la bannière active pour ${page}:`, error);
-      return undefined;
-    }
+  getActiveByPage: async (page: string): Promise<Banner | undefined> => {
+    const db = await openDB<NorthGascarDB>('northgascar-db', 1);
+    const banners = await db.getAllFromIndex(
+      'banners',
+      'by-page',
+      page
+    );
+    return banners.find(banner => banner.isActive);
   },
 
   /**
    * Récupère une bannière par son ID
    */
-  getById: async (id: string) => {
-    try {
-      return dbx.banners.getById(id);
-    } catch (error) {
-      console.error(`Erreur lors de la récupération de la bannière ${id}:`, error);
-      return undefined;
-    }
-  },
-
-  /**
-   * Vérifie si une bannière similaire existe déjà (même nom et même page)
-   */
-  checkDuplicate: async (banner: { name: string, page: string }) => {
-    try {
-      const banners = await dbx.banners.getAll();
-      return banners.some(b => b.name === banner.name && b.page === banner.page);
-    } catch (error) {
-      console.error('Erreur lors de la vérification des doublons:', error);
-      return false;
-    }
+  getById: async (id: string): Promise<Banner | undefined> => {
+    const db = await openDB<NorthGascarDB>('northgascar-db', 1);
+    return db.get('banners', id);
   },
 
   /**
    * Ajoute une nouvelle bannière
    */
-  add: async (banner: any) => {
-    try {
-      // Vérifier s'il existe déjà une bannière similaire
-      const isDuplicate = await bannerAPI.checkDuplicate(banner);
-      if (isDuplicate) {
-        console.warn('Une bannière similaire existe déjà:', banner);
-        throw new Error('Une bannière avec ce nom existe déjà pour cette page');
+  add: async (banner: Omit<Banner, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> => {
+    const db = await openDB<NorthGascarDB>('northgascar-db', 1);
+    const now = new Date().toISOString();
+    
+    // Si cette bannière est active et pour la même page, désactiver les autres
+    if (banner.isActive) {
+      const existingBanners = await db.getAllFromIndex('banners', 'by-page', banner.page);
+      const tx = db.transaction('banners', 'readwrite');
+      
+      for (const existingBanner of existingBanners) {
+        if (existingBanner.isActive) {
+          existingBanner.isActive = false;
+          existingBanner.updatedAt = now;
+          await tx.store.put(existingBanner);
+        }
       }
       
-      return dbx.banners.add(banner);
-    } catch (error) {
-      console.error('Erreur lors de l\'ajout de la bannière:', error);
-      throw error;
+      await tx.done;
     }
+    
+    // Ajouter la nouvelle bannière
+    const id = `banner-${Date.now()}`;
+    const newBanner: Banner = {
+      ...banner,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    await db.add('banners', newBanner);
+    return id;
   },
 
   /**
    * Met à jour une bannière existante
    */
-  update: async (id: string, updates: any) => {
-    try {
-      return dbx.banners.update(id, updates);
-    } catch (error) {
-      console.error(`Erreur lors de la mise à jour de la bannière ${id}:`, error);
+  update: async (id: string, updates: Partial<Omit<Banner, 'id' | 'createdAt' | 'updatedAt'>>): Promise<boolean> => {
+    const db = await openDB<NorthGascarDB>('northgascar-db', 1);
+    const banner = await db.get('banners', id);
+    
+    if (!banner) {
       return false;
     }
+
+    const now = new Date().toISOString();
+    
+    // Si on active cette bannière, désactiver les autres de la même page
+    if (updates.isActive && !banner.isActive) {
+      const existingBanners = await db.getAllFromIndex('banners', 'by-page', updates.page || banner.page);
+      const tx = db.transaction('banners', 'readwrite');
+      
+      for (const existingBanner of existingBanners) {
+        if (existingBanner.id !== id && existingBanner.isActive) {
+          existingBanner.isActive = false;
+          existingBanner.updatedAt = now;
+          await tx.store.put(existingBanner);
+        }
+      }
+      
+      await tx.done;
+    }
+    
+    // Mettre à jour la bannière
+    const updatedBanner: Banner = {
+      ...banner,
+      ...updates,
+      updatedAt: now
+    };
+    
+    await db.put('banners', updatedBanner);
+    return true;
   },
 
   /**
    * Supprime une bannière
    */
-  delete: async (id: string) => {
-    try {
-      return dbx.banners.delete(id);
-    } catch (error) {
-      console.error(`Erreur lors de la suppression de la bannière ${id}:`, error);
-      return false;
-    }
+  delete: async (id: string): Promise<boolean> => {
+    const db = await openDB<NorthGascarDB>('northgascar-db', 1);
+    await db.delete('banners', id);
+    return true;
   }
 };

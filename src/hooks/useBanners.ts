@@ -1,61 +1,23 @@
 
 import { useState, useEffect } from 'react';
-import { bannerAPI } from '@/lib/api/bannerAPI';
+import { bannerAPI } from '@/lib/store';
+import { Banner } from '@/lib/db/schema';
+import { useToast } from '@/hooks/use-toast';
 import { toast } from 'sonner';
-import { BANNER_UPDATED_EVENT } from './useActiveBanner';
-import { initDB } from '@/lib/DatabaseX/db';
-import { DBXBanner } from '@/lib/DatabaseX/types';
-
-// Fonction d'aide pour déclencher l'événement de mise à jour
-const triggerBannerUpdateEvent = () => {
-  console.log('Déclenchement de l\'événement de mise à jour des bannières');
-  window.dispatchEvent(new Event(BANNER_UPDATED_EVENT));
-};
 
 export const useBanners = () => {
-  const [banners, setBanners] = useState<DBXBanner[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchBanners = async () => {
     setIsLoading(true);
     try {
-      console.log('Récupération de toutes les bannières...');
-      
-      // Initialiser la base de données
-      await initDB();
-      
       const data = await bannerAPI.getAll();
-      console.log(`${data.length} bannières récupérées:`, data);
-      
-      // Filtrer les doublons par nom et page
-      const uniqueBanners = data.reduce<DBXBanner[]>((acc, current) => {
-        // Vérifier si une bannière avec le même nom et la même page existe déjà
-        const duplicateIndex = acc.findIndex(
-          item => item.name === current.name && item.page === current.page
-        );
-        
-        // Si c'est un doublon, ne garder que la version la plus récente
-        if (duplicateIndex !== -1) {
-          const existing = acc[duplicateIndex];
-          // Comparer les dates pour garder la plus récente
-          if (new Date(current.updatedAt) > new Date(existing.updatedAt)) {
-            // Remplacer l'ancienne par la nouvelle
-            acc[duplicateIndex] = current;
-          }
-        } else {
-          // Si ce n'est pas un doublon, l'ajouter à l'accumulateur
-          acc.push(current);
-        }
-        
-        return acc;
-      }, []);
-      
       // Trier les bannières par date de création (plus récentes en premier)
-      const sortedData = [...uniqueBanners].sort((a, b) => 
+      const sortedData = [...data].sort((a, b) => 
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
-      
       setBanners(sortedData);
       setError(null);
     } catch (err) {
@@ -69,14 +31,10 @@ export const useBanners = () => {
     }
   };
 
-  const addBanner = async (banner: Omit<DBXBanner, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const addBanner = async (banner: Omit<Banner, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
-      console.log('Ajout d\'une nouvelle bannière:', banner);
-      const newBannerId = await bannerAPI.add(banner);
-      console.log(`Bannière ajoutée avec l'ID: ${newBannerId}`);
+      await bannerAPI.add(banner);
       await fetchBanners();
-      // Déclencher l'événement de mise à jour
-      triggerBannerUpdateEvent();
       return true;
     } catch (err) {
       console.error('Erreur lors de l\'ajout de la bannière:', err);
@@ -87,15 +45,11 @@ export const useBanners = () => {
     }
   };
 
-  const updateBanner = async (id: string, updates: Partial<Omit<DBXBanner, 'id' | 'createdAt' | 'updatedAt'>>) => {
+  const updateBanner = async (id: string, updates: Partial<Omit<Banner, 'id' | 'createdAt' | 'updatedAt'>>) => {
     try {
-      console.log(`Mise à jour de la bannière ${id}:`, updates);
-      const success = await bannerAPI.update(id, updates);
-      console.log(`Résultat de la mise à jour: ${success ? 'réussi' : 'échoué'}`);
+      await bannerAPI.update(id, updates);
       await fetchBanners();
-      // Déclencher l'événement de mise à jour
-      triggerBannerUpdateEvent();
-      return success;
+      return true;
     } catch (err) {
       console.error('Erreur lors de la mise à jour de la bannière:', err);
       toast.error("Erreur", {
@@ -107,13 +61,9 @@ export const useBanners = () => {
 
   const deleteBanner = async (id: string) => {
     try {
-      console.log(`Suppression de la bannière ${id}`);
-      const success = await bannerAPI.delete(id);
-      console.log(`Résultat de la suppression: ${success ? 'réussi' : 'échoué'}`);
+      await bannerAPI.delete(id);
       await fetchBanners();
-      // Déclencher l'événement de mise à jour
-      triggerBannerUpdateEvent();
-      return success;
+      return true;
     } catch (err) {
       console.error('Erreur lors de la suppression de la bannière:', err);
       toast.error("Erreur", {
@@ -125,13 +75,9 @@ export const useBanners = () => {
 
   const toggleActive = async (id: string, isActive: boolean) => {
     try {
-      console.log(`Modification du statut de la bannière ${id} à ${isActive ? 'active' : 'inactive'}`);
-      const success = await bannerAPI.update(id, { isActive });
-      console.log(`Résultat de la modification: ${success ? 'réussi' : 'échoué'}`);
+      await bannerAPI.update(id, { isActive });
       await fetchBanners();
-      // Déclencher l'événement de mise à jour
-      triggerBannerUpdateEvent();
-      return success;
+      return true;
     } catch (err) {
       console.error('Erreur lors de la modification du statut de la bannière:', err);
       toast.error("Erreur", {
