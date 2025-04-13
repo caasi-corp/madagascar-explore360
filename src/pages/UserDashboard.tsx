@@ -33,7 +33,6 @@ const UserDashboard = () => {
   const [recentlyViewed, setRecentlyViewed] = useState<Tour[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Vérifier si l'utilisateur est connecté et charger les données
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -44,15 +43,12 @@ const UserDashboard = () => {
         
         setIsLoading(true);
         
-        // Charger les réservations de l'utilisateur
         const userBookings = await bookingAPI.getByUserId(user.id);
-        // Filtrer pour n'obtenir que les réservations à venir
         const upcoming = userBookings.filter(booking => 
           new Date(booking.startDate) >= new Date()
         );
         setUpcomingBookings(upcoming);
         
-        // Charger les circuits récemment consultés (simulé)
         const allTours = await tourAPI.getAll();
         setRecentlyViewed(allTours.slice(0, 3));
       } catch (error) {
@@ -86,7 +82,6 @@ const UserDashboard = () => {
   return (
     <div className="container mx-auto px-4 py-8 mt-16">
       <div className="flex flex-col md:flex-row gap-6">
-        {/* Sidebar */}
         <div className="w-full md:w-64">
           <Card>
             <CardHeader className="text-center">
@@ -143,7 +138,6 @@ const UserDashboard = () => {
           </Card>
         </div>
         
-        {/* Main Content */}
         <div className="flex-1">
           <h1 className="text-2xl font-bold mb-6">Bienvenue, {user ? user.firstName : 'Voyageur'} !</h1>
           
@@ -154,7 +148,6 @@ const UserDashboard = () => {
               <TabsTrigger value="recommendations">Pour vous</TabsTrigger>
             </TabsList>
             
-            {/* Upcoming Trips */}
             <TabsContent value="upcoming">
               {upcomingBookings.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -232,7 +225,6 @@ const UserDashboard = () => {
               </div>
             </TabsContent>
             
-            {/* Trip History */}
             <TabsContent value="history">
               <Card>
                 <CardHeader>
@@ -247,7 +239,6 @@ const UserDashboard = () => {
               </Card>
             </TabsContent>
             
-            {/* Recommendations */}
             <TabsContent value="recommendations">
               <Card>
                 <CardHeader>
