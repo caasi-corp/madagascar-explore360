@@ -1,53 +1,70 @@
 
-import { getDB } from '../db/db';
-import { Vehicle } from '../db/schema';
-
 /**
- * API for vehicle operations
+ * API pour les opérations sur les véhicules
  */
+import { dbx } from '../DatabaseX/db';
+
 export const vehicleAPI = {
   getAll: async () => {
-    const db = await getDB();
-    return db.getAll('vehicles');
+    try {
+      return dbx.vehicles.getAll();
+    } catch (error) {
+      console.error("Erreur lors de la récupération des véhicules:", error);
+      return [];
+    }
   },
   
   getById: async (id: string) => {
-    const db = await getDB();
-    return db.get('vehicles', id);
+    try {
+      return dbx.vehicles.getById(id);
+    } catch (error) {
+      console.error(`Erreur lors de la récupération du véhicule ${id}:`, error);
+      return null;
+    }
   },
   
   getByType: async (type: string) => {
-    const db = await getDB();
-    return db.getAllFromIndex('vehicles', 'by-type', type);
+    try {
+      return dbx.vehicles.getByType(type);
+    } catch (error) {
+      console.error(`Erreur lors de la récupération des véhicules de type ${type}:`, error);
+      return [];
+    }
   },
   
   getAvailable: async () => {
-    const db = await getDB();
-    const allVehicles = await db.getAll('vehicles');
-    return allVehicles.filter(vehicle => vehicle.availability);
-  },
-  
-  add: async (vehicle: Omit<Vehicle, 'id'>) => {
-    const db = await getDB();
-    const id = crypto.randomUUID();
-    const newVehicle = { ...vehicle, id };
-    await db.put('vehicles', newVehicle);
-    return newVehicle;
-  },
-  
-  update: async (id: string, vehicle: Partial<Vehicle>) => {
-    const db = await getDB();
-    const existingVehicle = await db.get('vehicles', id);
-    if (!existingVehicle) {
-      throw new Error('Vehicle not found');
+    try {
+      return dbx.vehicles.getAvailable();
+    } catch (error) {
+      console.error("Erreur lors de la récupération des véhicules disponibles:", error);
+      return [];
     }
-    const updatedVehicle = { ...existingVehicle, ...vehicle };
-    await db.put('vehicles', updatedVehicle);
-    return updatedVehicle;
+  },
+  
+  add: async (vehicle: any) => {
+    try {
+      return dbx.vehicles.add(vehicle);
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du véhicule:", error);
+      throw error;
+    }
+  },
+  
+  update: async (id: string, vehicle: any) => {
+    try {
+      return dbx.vehicles.update(id, vehicle);
+    } catch (error) {
+      console.error(`Erreur lors de la mise à jour du véhicule ${id}:`, error);
+      throw error;
+    }
   },
   
   delete: async (id: string) => {
-    const db = await getDB();
-    await db.delete('vehicles', id);
+    try {
+      return dbx.vehicles.delete(id);
+    } catch (error) {
+      console.error(`Erreur lors de la suppression du véhicule ${id}:`, error);
+      throw error;
+    }
   },
 };

@@ -1,9 +1,10 @@
 
 import { useState, useEffect } from 'react';
-import { bannerAPI } from '@/lib/store';
-import { Banner } from '@/lib/db/schema';
+import { bannerAPI } from '@/lib/api/bannerAPI';
 import { toast } from 'sonner';
 import { BANNER_UPDATED_EVENT } from './useActiveBanner';
+import { initDB } from '@/lib/DatabaseX/db';
+import { DBXBanner } from '@/lib/DatabaseX/types';
 
 // Fonction d'aide pour déclencher l'événement de mise à jour
 const triggerBannerUpdateEvent = () => {
@@ -12,7 +13,7 @@ const triggerBannerUpdateEvent = () => {
 };
 
 export const useBanners = () => {
-  const [banners, setBanners] = useState<Banner[]>([]);
+  const [banners, setBanners] = useState<DBXBanner[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,6 +21,10 @@ export const useBanners = () => {
     setIsLoading(true);
     try {
       console.log('Récupération de toutes les bannières...');
+      
+      // Initialiser la base de données
+      await initDB();
+      
       const data = await bannerAPI.getAll();
       console.log(`${data.length} bannières récupérées:`, data);
       
@@ -35,23 +40,12 @@ export const useBanners = () => {
       toast.error("Erreur", {
         description: "Impossible de charger les bannières"
       });
-      
-      // Initialiser la base de données si elle n'existe pas encore
-      try {
-        const { initDB } = await import('@/lib/db/db');
-        await initDB();
-        console.log('Tentative de réinitialisation de la base de données réussie');
-        // Réessayer après initialisation
-        setTimeout(fetchBanners, 500);
-      } catch (dbError) {
-        console.error('Échec de la réinitialisation de la base de données:', dbError);
-      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const addBanner = async (banner: Omit<Banner, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const addBanner = async (banner: Omit<DBXBanner, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
       console.log('Ajout d\'une nouvelle bannière:', banner);
       const newBannerId = await bannerAPI.add(banner);
@@ -69,7 +63,7 @@ export const useBanners = () => {
     }
   };
 
-  const updateBanner = async (id: string, updates: Partial<Omit<Banner, 'id' | 'createdAt' | 'updatedAt'>>) => {
+  const updateBanner = async (id: string, updates: Partial<Omit<DBXBanner, 'id' | 'createdAt' | 'updatedAt'>>) => {
     try {
       console.log(`Mise à jour de la bannière ${id}:`, updates);
       const success = await bannerAPI.update(id, updates);
