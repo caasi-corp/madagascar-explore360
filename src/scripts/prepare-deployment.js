@@ -13,13 +13,19 @@ console.log('🚀 Starting deployment preparation...');
 // Run the build command
 console.log('📦 Building the application...');
 try {
-  // First, prepare the build environment
-  const prepareBuildScript = path.resolve(__dirname, './prepare-build.js');
-  if (fs.existsSync(prepareBuildScript)) {
-    childProcess.execSync(`node ${prepareBuildScript}`, { stdio: 'inherit' });
+  // Update browserslist database first
+  console.log('📊 Updating browserslist database...');
+  try {
+    childProcess.execSync('npx update-browserslist-db@latest', { stdio: 'inherit' });
+    console.log('✅ Browserslist database updated successfully');
+  } catch (browserslistError) {
+    console.warn('⚠️ Warning: Could not update browserslist database');
+    console.warn(browserslistError.message);
+    // Continue with the build even if this fails
   }
   
   // Then run the build command
+  console.log('🏗️ Running vite build...');
   childProcess.execSync('npx vite build', { stdio: 'inherit' });
   console.log('✅ Build completed successfully');
 } catch (error) {
