@@ -323,6 +323,34 @@ function setupIpcHandlers() {
     }
   });
   
+  // Ajout des nouveaux gestionnaires pour user:update et user:delete
+  ipcMain.handle('user:update', (event, { id, ...userData }) => {
+    const keys = Object.keys(userData);
+    const values = Object.values(userData);
+    
+    if (keys.length === 0) return null;
+    
+    const setClause = keys.map(key => `${key} = ?`).join(', ');
+    
+    try {
+      db.prepare(`UPDATE users SET ${setClause} WHERE id = ?`).run(...values, id);
+      return { id, ...userData };
+    } catch (error) {
+      console.error('Error updating user:', error);
+      return null;
+    }
+  });
+  
+  ipcMain.handle('user:delete', (event, id) => {
+    try {
+      db.prepare('DELETE FROM users WHERE id = ?').run(id);
+      return true;
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      return false;
+    }
+  });
+  
   // Tours API
   ipcMain.handle('tour:getAll', () => {
     return db.prepare('SELECT * FROM tours').all();

@@ -6,6 +6,8 @@ interface ElectronAPI {
   userGetByEmail: (email: string) => Promise<any>;
   userAuthenticate: (email: string, password: string) => Promise<any>;
   userRegister: (userData: any) => Promise<any>;
+  userUpdate: (id: string, userData: any) => Promise<any>;
+  userDelete: (id: string) => Promise<boolean>;
   
   // Tour API
   tourGetAll: () => Promise<any[]>;

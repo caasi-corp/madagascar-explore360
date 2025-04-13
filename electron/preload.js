@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   userGetByEmail: (email) => ipcRenderer.invoke('user:getByEmail', email),
   userAuthenticate: (email, password) => ipcRenderer.invoke('user:authenticate', { email, password }),
   userRegister: (userData) => ipcRenderer.invoke('user:register', userData),
+  userUpdate: (id, userData) => ipcRenderer.invoke('user:update', { id, ...userData }),
+  userDelete: (id) => ipcRenderer.invoke('user:delete', id),
   
   // Tour API
   tourGetAll: () => ipcRenderer.invoke('tour:getAll'),
