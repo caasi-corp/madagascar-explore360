@@ -6,8 +6,8 @@ import './index.css';
 
 // Add Google Analytics script if needed
 const addAnalytics = () => {
-  const gaId = 'G-XXXXXXXXXX'; // Replace with your actual GA ID
-  if (gaId && typeof window !== 'undefined') {
+  const gaId = 'G-XXXXXXXXXX'; // Replace with your actual GA ID when needed
+  if (gaId && gaId !== 'G-XXXXXXXXXX' && typeof window !== 'undefined') {
     // Add Google Analytics script
     const script1 = document.createElement('script');
     script1.async = true;

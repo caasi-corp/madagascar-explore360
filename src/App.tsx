@@ -10,12 +10,14 @@ import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { AuthProvider } from './contexts/AuthContext';
 
-// Initialize the query client
+// Initialize the query client with better caching strategy
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
       refetchOnWindowFocus: false,
+      retry: 1,
     },
   },
 });
@@ -25,20 +27,22 @@ function App() {
   const [initError, setInitError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Initialiser la base de données au chargement de l'application
+    // Initialize the database when the application loads
     const initialize = async () => {
       try {
         setIsInitializing(true);
-        const db = await initDB();
-        console.log("Base de données initialisée avec succès");
+        console.log("Starting database initialization...");
         
-        // Vérifier que les utilisateurs ont bien été créés
+        const db = await initDB();
+        console.log("Database successfully initialized");
+        
+        // Verify that users were created correctly
         const users = await db.getAll('users');
-        console.log(`La base contient ${users.length} utilisateurs:`, JSON.stringify(users));
+        console.log(`Database contains ${users.length} users:`, JSON.stringify(users));
         
       } catch (error) {
-        console.error("Erreur lors de l'initialisation de la base de données:", error);
-        setInitError((error as Error).message || "Erreur lors de l'initialisation de la base de données");
+        console.error("Error initializing database:", error);
+        setInitError((error as Error).message || "Error initializing database");
       } finally {
         setIsInitializing(false);
       }
@@ -55,9 +59,9 @@ function App() {
 
   if (isInitializing) {
     return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center">
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-madagascar-green" />
-        <p className="mt-4">Initialisation de l'application...</p>
+        <p className="mt-4 text-foreground">Initializing application...</p>
       </div>
     );
   }
@@ -67,14 +71,19 @@ function App() {
       <Dialog open={!!initError}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Erreur d'initialisation</DialogTitle>
+            <DialogTitle>Initialization Error</DialogTitle>
             <DialogDescription>
-              Une erreur est survenue lors de l'initialisation de la base de données: {initError}
+              An error occurred during database initialization: {initError}
             </DialogDescription>
           </DialogHeader>
-          <Button onClick={handleRetry}>
-            Réessayer
-          </Button>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="secondary" onClick={() => console.log("Error details:", initError)}>
+              Show Details
+            </Button>
+            <Button onClick={handleRetry}>
+              Retry
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     );

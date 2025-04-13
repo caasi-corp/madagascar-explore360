@@ -21,27 +21,32 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // Assurez-vous que tous les assets sont inclus dans le build
-    assetsInlineLimit: 4096, // Fichiers plus petits que 4KB seront en base64
-    outDir: 'dist', // Répertoire de sortie
+    // Ensure all assets are included in the build
+    assetsInlineLimit: 4096, // Files smaller than 4KB will be inlined as base64
+    outDir: 'dist', // Output directory
+    emptyOutDir: true, // Empty output directory before building
+    minify: 'terser', // Use terser for better minification
+    sourcemap: true, // Generate source maps for debugging
     rollupOptions: {
       output: {
         manualChunks: {
-          // Regrouper les dépendances React
+          // Group React dependencies
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          // Regrouper les dépendances UI
+          // Group UI dependencies
           'vendor-ui': [
             '@radix-ui/react-accordion',
             '@radix-ui/react-alert-dialog',
             '@radix-ui/react-avatar',
             // ... autres dépendances UI
           ],
-          // Regrouper les utilitaires
+          // Group utilities
           'vendor-utils': ['idb', 'date-fns', 'zod', 'clsx', 'tailwind-merge'],
         },
+        // Add hashes to filenames for better caching
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]'
       },
     },
-    // Générer des sources maps pour faciliter le débogage
-    sourcemap: true,
   },
 }));
