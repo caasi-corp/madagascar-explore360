@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Tour } from '@/lib/db/schema';
 
 /**
- * API pour les opérations sur les circuits touristiques via Supabase
+ * API pour les opérations sur les circuits via Supabase
  */
 export const tourSupabaseAPI = {
   getAll: async (): Promise<Tour[]> => {
@@ -16,19 +16,7 @@ export const tourSupabaseAPI = {
       throw error;
     }
     
-    return data.map(tour => ({
-      id: tour.id,
-      title: tour.title,
-      description: tour.description,
-      location: tour.location,
-      duration: tour.duration,
-      price: tour.price,
-      rating: tour.rating,
-      image: tour.image,
-      featured: tour.featured || false,
-      category: tour.category || '',
-      active: tour.active !== false
-    }));
+    return data;
   },
   
   getById: async (id: string): Promise<Tour | null> => {
@@ -46,19 +34,7 @@ export const tourSupabaseAPI = {
       throw error;
     }
     
-    return {
-      id: data.id,
-      title: data.title,
-      description: data.description,
-      location: data.location,
-      duration: data.duration,
-      price: data.price,
-      rating: data.rating,
-      image: data.image,
-      featured: data.featured || false,
-      category: data.category || '',
-      active: data.active !== false
-    };
+    return data;
   },
   
   getFeatured: async (): Promise<Tour[]> => {
@@ -73,19 +49,24 @@ export const tourSupabaseAPI = {
       throw error;
     }
     
-    return data.map(tour => ({
-      id: tour.id,
-      title: tour.title,
-      description: tour.description,
-      location: tour.location,
-      duration: tour.duration,
-      price: tour.price,
-      rating: tour.rating,
-      image: tour.image,
-      featured: tour.featured || false,
-      category: tour.category || '',
-      active: tour.active !== false
-    }));
+    return data;
+  },
+  
+  getRelated: async (tourId: string, category: string): Promise<Tour[]> => {
+    const { data, error } = await supabase
+      .from('tours')
+      .select('*')
+      .eq('category', category)
+      .eq('active', true)
+      .neq('id', tourId)
+      .limit(4);
+    
+    if (error) {
+      console.error(`Erreur lors de la récupération des circuits similaires pour ${tourId}:`, error);
+      throw error;
+    }
+    
+    return data;
   },
   
   add: async (tour: Omit<Tour, 'id'>): Promise<Tour> => {
@@ -100,19 +81,7 @@ export const tourSupabaseAPI = {
       throw error;
     }
     
-    return {
-      id: data.id,
-      title: data.title,
-      description: data.description,
-      location: data.location,
-      duration: data.duration,
-      price: data.price,
-      rating: data.rating,
-      image: data.image,
-      featured: data.featured || false,
-      category: data.category || '',
-      active: data.active !== false
-    };
+    return data;
   },
   
   update: async (id: string, updates: Partial<Tour>): Promise<Tour> => {
@@ -128,19 +97,7 @@ export const tourSupabaseAPI = {
       throw error;
     }
     
-    return {
-      id: data.id,
-      title: data.title,
-      description: data.description,
-      location: data.location,
-      duration: data.duration,
-      price: data.price,
-      rating: data.rating,
-      image: data.image,
-      featured: data.featured || false,
-      category: data.category || '',
-      active: data.active !== false
-    };
+    return data;
   },
   
   delete: async (id: string): Promise<void> => {

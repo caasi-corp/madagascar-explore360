@@ -19,11 +19,11 @@ export const vehicleSupabaseAPI = {
     return data.map(vehicle => ({
       id: vehicle.id,
       name: vehicle.name,
-      type: vehicle.type,
-      pricePerDay: vehicle.pricePerDay,
+      type: vehicle.type as "car" | "4x4" | "motorcycle" | "quad",
+      pricePerDay: vehicle.priceperday,
       seats: vehicle.seats,
-      transmission: vehicle.transmission,
-      fuelType: vehicle.fuelType,
+      transmission: vehicle.transmission as "Automatic" | "Manual",
+      fuelType: vehicle.fueltype,
       image: vehicle.image,
       features: vehicle.features,
       availability: vehicle.availability !== false,
@@ -51,11 +51,11 @@ export const vehicleSupabaseAPI = {
     return {
       id: data.id,
       name: data.name,
-      type: data.type,
-      pricePerDay: data.pricePerDay,
+      type: data.type as "car" | "4x4" | "motorcycle" | "quad",
+      pricePerDay: data.priceperday,
       seats: data.seats,
-      transmission: data.transmission,
-      fuelType: data.fuelType,
+      transmission: data.transmission as "Automatic" | "Manual",
+      fuelType: data.fueltype,
       image: data.image,
       features: data.features,
       availability: data.availability !== false,
@@ -66,9 +66,25 @@ export const vehicleSupabaseAPI = {
   },
   
   add: async (vehicle: Omit<Vehicle, 'id'>): Promise<Vehicle> => {
+    // Transformer l'objet Vehicle pour correspondre au schéma de la table Supabase
+    const vehicleData = {
+      name: vehicle.name,
+      type: vehicle.type,
+      priceperday: vehicle.pricePerDay,
+      seats: vehicle.seats,
+      transmission: vehicle.transmission,
+      fueltype: vehicle.fuelType,
+      image: vehicle.image,
+      features: vehicle.features,
+      availability: vehicle.availability,
+      description: vehicle.description,
+      featured: vehicle.featured,
+      images: vehicle.images
+    };
+    
     const { data, error } = await supabase
       .from('vehicles')
-      .insert([vehicle])
+      .insert([vehicleData])
       .select()
       .single();
     
@@ -80,11 +96,11 @@ export const vehicleSupabaseAPI = {
     return {
       id: data.id,
       name: data.name,
-      type: data.type,
-      pricePerDay: data.pricePerDay,
+      type: data.type as "car" | "4x4" | "motorcycle" | "quad",
+      pricePerDay: data.priceperday,
       seats: data.seats,
-      transmission: data.transmission,
-      fuelType: data.fuelType,
+      transmission: data.transmission as "Automatic" | "Manual",
+      fuelType: data.fueltype,
       image: data.image,
       features: data.features,
       availability: data.availability !== false,
@@ -95,9 +111,25 @@ export const vehicleSupabaseAPI = {
   },
   
   update: async (id: string, updates: Partial<Vehicle>): Promise<Vehicle> => {
+    // Transformer les mises à jour pour correspondre au schéma de la table Supabase
+    const vehicleUpdates: any = {};
+    
+    if (updates.name) vehicleUpdates.name = updates.name;
+    if (updates.type) vehicleUpdates.type = updates.type;
+    if (updates.pricePerDay !== undefined) vehicleUpdates.priceperday = updates.pricePerDay;
+    if (updates.seats !== undefined) vehicleUpdates.seats = updates.seats;
+    if (updates.transmission) vehicleUpdates.transmission = updates.transmission;
+    if (updates.fuelType) vehicleUpdates.fueltype = updates.fuelType;
+    if (updates.image) vehicleUpdates.image = updates.image;
+    if (updates.features) vehicleUpdates.features = updates.features;
+    if (updates.availability !== undefined) vehicleUpdates.availability = updates.availability;
+    if (updates.description !== undefined) vehicleUpdates.description = updates.description;
+    if (updates.featured !== undefined) vehicleUpdates.featured = updates.featured;
+    if (updates.images) vehicleUpdates.images = updates.images;
+    
     const { data, error } = await supabase
       .from('vehicles')
-      .update(updates)
+      .update(vehicleUpdates)
       .eq('id', id)
       .select()
       .single();
@@ -110,11 +142,11 @@ export const vehicleSupabaseAPI = {
     return {
       id: data.id,
       name: data.name,
-      type: data.type,
-      pricePerDay: data.pricePerDay,
+      type: data.type as "car" | "4x4" | "motorcycle" | "quad",
+      pricePerDay: data.priceperday,
       seats: data.seats,
-      transmission: data.transmission,
-      fuelType: data.fuelType,
+      transmission: data.transmission as "Automatic" | "Manual",
+      fuelType: data.fueltype,
       image: data.image,
       features: data.features,
       availability: data.availability !== false,
