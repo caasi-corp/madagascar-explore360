@@ -9,7 +9,6 @@ import { sqliteHelper } from './helpers';
 // SQLite database instance
 let db: Database | null = null;
 let lastInitTime = 0;
-const MAX_RETRY_INTERVAL = 15000; // 15 seconds
 
 /**
  * Initialize database
@@ -36,7 +35,8 @@ export const initDB = async (): Promise<Database> => {
     
     // Initialize SQL.js with correct configuration
     const SQL = await initSqlJs({
-      locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+      // Use the exact CDN path - this was likely one of the issues
+      locateFile: () => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.wasm'
     });
     
     if (savedDBData) {
@@ -83,7 +83,7 @@ export const initDB = async (): Promise<Database> => {
     await saveDatabase();
     
     // Seed the database if needed
-    const seedResult = await seedSQLiteDatabase(db, true); // Force seed on initial creation
+    const seedResult = await seedSQLiteDatabase(db, false); // Don't force seed on first creation
     console.log("Résultat de l'initialisation des données:", seedResult ? "Succès" : "Échec");
     
     // Final verification
@@ -92,7 +92,7 @@ export const initDB = async (): Promise<Database> => {
       console.log(`Database contains ${userCount?.count || 0} users`);
       
       if (!userCount || userCount.count === 0) {
-        console.warn("Database initialized but contains no users");
+        console.warn("Database initialized but contains no users, forcing seed");
         
         // Attempt to re-seed
         console.log("Attempting to re-seed the database...");
@@ -115,7 +115,7 @@ export const initDB = async (): Promise<Database> => {
       await localforage.removeItem(DB_CONFIG.localStorageKey);
       
       const SQL = await initSqlJs({
-        locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+        locateFile: () => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.wasm'
       });
       
       db = new SQL.Database();
