@@ -2,16 +2,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight, RefreshCw } from 'lucide-react';
 import TourCard from '@/components/TourCard';
 import { Tour } from '@/lib/db/schema';
 
 interface FeaturedToursSectionProps {
   tours: Tour[];
   loading?: boolean;
+  onRefresh?: () => void;
 }
 
-const FeaturedToursSection: React.FC<FeaturedToursSectionProps> = ({ tours, loading = false }) => {
+const FeaturedToursSection: React.FC<FeaturedToursSectionProps> = ({ 
+  tours, 
+  loading = false,
+  onRefresh 
+}) => {
   return (
     <section className="section-padding bg-muted/30">
       <div className="container mx-auto">
@@ -31,16 +36,28 @@ const FeaturedToursSection: React.FC<FeaturedToursSectionProps> = ({ tours, load
           </div>
         ) : tours.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-lg text-muted-foreground">Aucun circuit disponible pour le moment</p>
-            <Button 
-              variant="outline" 
-              className="mt-4"
-              asChild
-            >
-              <Link to="/tours">
-                Voir tous les circuits
-              </Link>
-            </Button>
+            <p className="text-lg text-muted-foreground mb-4">Aucun circuit disponible pour le moment</p>
+            <div className="flex justify-center gap-4">
+              {onRefresh && (
+                <Button 
+                  variant="outline" 
+                  className="flex items-center gap-2"
+                  onClick={onRefresh}
+                >
+                  <RefreshCw size={16} />
+                  Actualiser les données
+                </Button>
+              )}
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-2"
+                asChild
+              >
+                <Link to="/tours">
+                  Voir tous les circuits
+                </Link>
+              </Button>
+            </div>
           </div>
         ) : (
           <>

@@ -1,4 +1,3 @@
-
 import { getDB, saveDatabase, sqliteHelper } from '../db/sqlite';
 import { Tour } from '../db/schema';
 
@@ -52,14 +51,33 @@ export const tourAPI = {
   },
   
   getFeatured: async () => {
-    const db = await getDB();
-    const tours = sqliteHelper.queryAll(db, "SELECT * FROM tours WHERE featured = 1");
-    
-    return tours.map(tour => ({
-      ...tour,
-      featured: Boolean(tour.featured),
-      active: Boolean(tour.active)
-    })) as Tour[];
+    try {
+      const db = await getDB();
+      console.log("Executing SQL query: SELECT * FROM tours WHERE featured = 1");
+      
+      // Vérifier si la table tours existe
+      const tableCheck = sqliteHelper.queryAll(
+        db, 
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='tours'"
+      );
+      
+      if (!tableCheck || tableCheck.length === 0) {
+        console.error("Table 'tours' does not exist");
+        return [];
+      }
+      
+      const tours = sqliteHelper.queryAll(db, "SELECT * FROM tours WHERE featured = 1");
+      console.log(`Found ${tours.length} featured tours`);
+      
+      return tours.map(tour => ({
+        ...tour,
+        featured: Boolean(tour.featured),
+        active: Boolean(tour.active)
+      })) as Tour[];
+    } catch (error) {
+      console.error("Error fetching featured tours:", error);
+      return [];
+    }
   },
   
   getRelated: async (id: string, category: string) => {

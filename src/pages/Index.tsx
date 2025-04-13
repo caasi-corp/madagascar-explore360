@@ -13,7 +13,7 @@ import { useFeaturedTours } from '@/hooks/useFeaturedTours';
 import { useToast } from '@/components/ui/use-toast';
 
 const Index = () => {
-  const { featuredTours, loading, error } = useFeaturedTours();
+  const { featuredTours, loading, error, refetch } = useFeaturedTours();
   const services = useServicesData();
   const vehicles = useVehicles();
   const advantages = useAdvantages();
@@ -38,7 +38,11 @@ const Index = () => {
       <Hero />
       
       {/* Featured Tours Section */}
-      <FeaturedToursSection tours={featuredTours} loading={loading} />
+      <FeaturedToursSection 
+        tours={featuredTours} 
+        loading={loading} 
+        onRefresh={refetch}
+      />
       
       {/* Services Section */}
       <ServicesSection services={services} />

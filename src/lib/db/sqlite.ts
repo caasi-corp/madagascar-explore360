@@ -15,6 +15,7 @@ export const initDB = async (): Promise<Database> => {
   console.log("Initialisation de la base de données SQLite...");
   
   if (db) {
+    console.log("Utilisation d'une instance SQLite existante");
     return db;
   }
 
@@ -22,32 +23,62 @@ export const initDB = async (): Promise<Database> => {
     // Try to load existing database from localforage
     const savedDBData = await localforage.getItem<Uint8Array>(DB_CONFIG.localStorageKey);
     
-    // Initialize SQL.js
+    // Initialize SQL.js with explicit wasmBinary URL
     const SQL = await initSqlJs({
       locateFile: file => `${DB_CONFIG.sqlJsCdnPath}${file}`
     });
     
     if (savedDBData) {
       console.log("Base de données existante chargée depuis le stockage local");
-      db = new SQL.Database(savedDBData);
+      try {
+        db = new SQL.Database(savedDBData);
+        console.log("Instance SQLite créée avec succès à partir des données sauvegardées");
+      } catch (e) {
+        console.error("Erreur lors de la création de l'instance SQLite à partir des données sauvegardées:", e);
+        console.log("Création d'une nouvelle base de données SQLite suite à l'erreur");
+        db = new SQL.Database();
+        
+        // Create tables
+        createTables(db);
+      }
     } else {
       console.log("Création d'une nouvelle base de données SQLite");
       db = new SQL.Database();
       
       // Create tables
       createTables(db);
-      
-      // Save the database to localforage
-      await saveDatabase();
     }
     
+    // Save the database to localforage
+    await saveDatabase();
+    
     // Seed the database if needed
-    await seedSQLiteDatabase(db);
+    const seedResult = await seedSQLiteDatabase(db);
+    console.log("Résultat de l'initialisation des données:", seedResult ? "Succès" : "Échec");
     
     return db;
   } catch (error) {
     console.error("Erreur lors de l'initialisation de la base de données SQLite:", error);
-    throw error;
+    
+    // Si l'erreur persiste, essayons de réinitialiser complètement la base
+    try {
+      console.log("Tentative de réinitialisation complète de la base de données");
+      await localforage.removeItem(DB_CONFIG.localStorageKey);
+      
+      const SQL = await initSqlJs({
+        locateFile: file => `${DB_CONFIG.sqlJsCdnPath}${file}`
+      });
+      
+      db = new SQL.Database();
+      createTables(db);
+      await saveDatabase();
+      await seedSQLiteDatabase(db);
+      
+      return db;
+    } catch (e) {
+      console.error("Échec de la réinitialisation de la base de données:", e);
+      throw new Error("Impossible d'initialiser la base de données SQLite après plusieurs tentatives");
+    }
   }
 };
 
