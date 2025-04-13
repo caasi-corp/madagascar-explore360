@@ -31,10 +31,4 @@ export interface HeroProps {
    * @default "h-screen"
    */
   height?: string;
-  
-  /**
-   * Page identifier for banner selection
-   * @default "home"
-   */
-  page?: string;
 }

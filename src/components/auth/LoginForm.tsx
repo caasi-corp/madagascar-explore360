@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -6,20 +5,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { LogIn, User, Lock, Eye, EyeOff, AlertTriangle, RefreshCw } from 'lucide-react';
+import { LogIn, User, Lock, Eye, EyeOff, AlertTriangle } from 'lucide-react';
 import { LoginFormData } from "@/types/auth";
 import { useAuth } from '@/contexts/AuthContext';
-import { resetDB } from '@/lib/db/sqlite';
 
 interface LoginFormProps {
   onDemoLogin: (email: string, password: string) => void;
   loginError: string | null;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ 
-  onDemoLogin, 
-  loginError 
-}) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, loginError }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -77,15 +72,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleDemoFill = (email: string, password: string) => {
-    setFormData({
-      ...formData,
-      email,
-      password
-    });
-    onDemoLogin(email, password);
   };
 
   return (

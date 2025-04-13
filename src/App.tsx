@@ -4,17 +4,11 @@ import { RouterProvider } from 'react-router-dom';
 import router from './router';
 import { Toaster } from './components/ui/sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { initDB } from './lib/store';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './components/ui/dialog';
 import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { AuthProvider } from './contexts/AuthContext';
-import { toast } from 'sonner';
-
-// Import SQLite functions
-import { initDB as initSQLiteDB, resetDB as resetSQLiteDB } from './lib/db/sqlite';
-// Import IndexedDB functions
-import { initDB as initIndexedDB, getDB as getIDBDatabase } from './lib/db/db';
-import { seedIDBDatabase } from './lib/db/idbSeed';
 
 // Initialize the query client
 const queryClient = new QueryClient({
@@ -29,43 +23,22 @@ const queryClient = new QueryClient({
 function App() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [initError, setInitError] = useState<string | null>(null);
-  const [isDbReady, setIsDbReady] = useState(false);
 
   useEffect(() => {
-    // Initialize databases when the application loads
+    // Initialiser la base de données au chargement de l'application
     const initialize = async () => {
       try {
         setIsInitializing(true);
-        console.log("Démarrage de l'initialisation des bases de données...");
+        const db = await initDB();
+        console.log("Base de données initialisée avec succès");
         
-        // 1. First initialize SQLite
-        await initSQLiteDB();
-        console.log("Base de données SQLite initialisée avec succès");
+        // Vérifier que les utilisateurs ont bien été créés
+        const users = await db.getAll('users');
+        console.log(`La base contient ${users.length} utilisateurs:`, JSON.stringify(users));
         
-        // 2. Then initialize IndexedDB separately
-        try {
-          await initIndexedDB();
-          console.log("Base de données IndexedDB initialisée avec succès");
-          
-          // 3. Seed IndexedDB with test data
-          try {
-            const idbDatabase = await getIDBDatabase();
-            const seedResult = await seedIDBDatabase(idbDatabase);
-            console.log("Initialisation des données IndexedDB terminée:", seedResult ? "Succès" : "Échec");
-          } catch (seedError) {
-            console.error("Erreur lors du seeding de IndexedDB:", seedError);
-            // We can still continue even if seeding failed
-          }
-          
-          setIsDbReady(true);
-        } catch (idbError) {
-          console.error("Erreur lors de l'initialisation de IndexedDB:", idbError);
-          // We can still continue with SQLite only
-          setIsDbReady(true);
-        }
       } catch (error) {
-        console.error("Erreur lors de l'initialisation des bases de données:", error);
-        setInitError((error as Error).message || "Erreur lors de l'initialisation des bases de données");
+        console.error("Erreur lors de l'initialisation de la base de données:", error);
+        setInitError((error as Error).message || "Erreur lors de l'initialisation de la base de données");
       } finally {
         setIsInitializing(false);
       }
@@ -73,32 +46,6 @@ function App() {
     
     initialize();
   }, []);
-
-  const handleResetDatabase = async () => {
-    try {
-      setIsInitializing(true);
-      toast.info("Réinitialisation des bases de données...");
-      
-      // Reset SQLite database
-      await resetSQLiteDB();
-      
-      // Reset IndexedDB if needed
-      try {
-        const idbDatabase = await getIDBDatabase();
-        await seedIDBDatabase(idbDatabase);
-      } catch (e) {
-        console.error("Erreur lors de la réinitialisation de IndexedDB:", e);
-      }
-      
-      toast.success("Bases de données réinitialisées avec succès");
-      window.location.reload(); // Reload the page to reinitialize everything
-    } catch (error) {
-      console.error("Erreur lors de la réinitialisation:", error);
-      setInitError((error as Error).message || "Erreur lors de la réinitialisation des bases de données");
-    } finally {
-      setIsInitializing(false);
-    }
-  };
 
   if (isInitializing) {
     return (
@@ -119,29 +66,11 @@ function App() {
               Une erreur est survenue lors de l'initialisation de la base de données: {initError}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-4 mt-4">
-            <Button onClick={() => window.location.reload()}>
-              Réessayer
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={handleResetDatabase}
-            >
-              Réinitialiser la base de données
-            </Button>
-          </div>
+          <Button onClick={() => window.location.reload()}>
+            Réessayer
+          </Button>
         </DialogContent>
       </Dialog>
-    );
-  }
-
-  // Ne rendre l'application que lorsque la base de données est prête
-  if (!isDbReady) {
-    return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-madagascar-green" />
-        <p className="mt-4">Préparation de l'application...</p>
-      </div>
     );
   }
 

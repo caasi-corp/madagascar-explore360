@@ -6,31 +6,16 @@ import ServicesSection from '@/components/sections/ServicesSection';
 import VehicleSection from '@/components/sections/VehicleSection';
 import AdvantagesSection from '@/components/sections/AdvantagesSection';
 import CallToAction from '@/components/sections/CallToAction';
+import { useFeaturedTours } from '@/hooks/useFeaturedTours';
 import { useServicesData } from '@/hooks/useServicesData';
 import { useVehicles } from '@/hooks/useVehicles';
 import { useAdvantages } from '@/hooks/useAdvantages';
-import { useFeaturedTours } from '@/hooks/useFeaturedTours';
-import { useToast } from '@/components/ui/use-toast';
 
 const Index = () => {
-  const { featuredTours, loading, error, refetch, resetAndRefetch } = useFeaturedTours();
+  const tours = useFeaturedTours();
   const services = useServicesData();
   const vehicles = useVehicles();
   const advantages = useAdvantages();
-  const { toast } = useToast();
-
-  // Show error toast if there's an error loading tours
-  React.useEffect(() => {
-    if (error) {
-      toast({
-        title: "Erreur de chargement",
-        description: "Impossible de charger les circuits. Veuillez réessayer plus tard.",
-        variant: "destructive",
-      });
-    }
-  }, [error, toast]);
-
-  console.log("Index rendering with tours:", featuredTours, "loading:", loading);
 
   return (
     <>
@@ -38,13 +23,7 @@ const Index = () => {
       <Hero />
       
       {/* Featured Tours Section */}
-      <FeaturedToursSection 
-        tours={featuredTours} 
-        loading={loading} 
-        onRefresh={refetch}
-        onReset={resetAndRefetch}
-        error={error}
-      />
+      <FeaturedToursSection tours={tours} />
       
       {/* Services Section */}
       <ServicesSection services={services} />

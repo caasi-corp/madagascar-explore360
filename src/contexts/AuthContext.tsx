@@ -1,6 +1,6 @@
 
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { userAPI } from '@/lib/api/userAPI';
+import { userAPI } from '@/lib/store';
 
 interface AuthUser {
   id: string;
@@ -17,13 +17,7 @@ interface AuthContextType {
   logout: () => void;
 }
 
-// Créer le contexte avec une valeur par défaut
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  isLoading: true,
-  login: async () => null,
-  logout: () => {}
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -55,9 +49,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (error) {
         console.error("Erreur lors de la vérification de l'état d'authentification:", error);
-        // En cas d'erreur, nettoyer le localStorage par sécurité
-        localStorage.removeItem('userId');
-        localStorage.removeItem('userRole');
       } finally {
         setIsLoading(false);
       }
@@ -68,9 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      console.log("Attempting login with:", email, password);
       const user = await userAPI.authenticate(email, password);
-      
       if (user) {
         localStorage.setItem('userId', user.id);
         localStorage.setItem('userRole', user.role);

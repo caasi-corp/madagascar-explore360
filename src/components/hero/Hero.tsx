@@ -3,18 +3,14 @@ import React from 'react';
 import HeroCarousel from './HeroCarousel';
 import HeroSearch from './HeroSearch';
 import { HeroProps } from './HeroProps';
-import { useActiveBanner } from '@/hooks/useActiveBanner';
 
 const Hero: React.FC<HeroProps> = ({
   title = "Excursions personnalisées dans le nord de Madagascar",
   subtitle = "Vivez l'expérience d'une biodiversité unique et de paysages à couper le souffle avec nos guides locaux experts",
   showSearch = true,
   backgroundImage,
-  height = "h-screen",
-  page = "home"
+  height = "h-screen"
 }) => {
-  const { banner, isLoading } = useActiveBanner(page);
-  
   const natureImages = [
     "https://images.unsplash.com/photo-1500375592092-40eb2168fd21", // plage, vagues
     "https://images.unsplash.com/photo-1518877593221-1f28583780b4", // baleine
@@ -22,17 +18,12 @@ const Hero: React.FC<HeroProps> = ({
     "https://images.unsplash.com/photo-1500673922987-e212871fec22", // forêt et lac
     "https://images.unsplash.com/photo-1482881497185-d4a9ddbe4151", // dunes de sable
   ];
-  
-  // Utiliser l'image de la bannière si disponible
-  const bannerImage = banner?.imagePath;
-  const bannerImages = bannerImage ? [bannerImage] : natureImages;
-  const finalBackgroundImage = backgroundImage || bannerImage;
 
   return (
     <div 
       className={`relative ${height} flex items-center overflow-hidden`}
     >
-      <HeroCarousel images={bannerImages} backgroundImage={finalBackgroundImage} />
+      <HeroCarousel images={natureImages} backgroundImage={backgroundImage} />
       
       <div className="container mx-auto px-4 z-10 text-center md:text-left">
         <h1 

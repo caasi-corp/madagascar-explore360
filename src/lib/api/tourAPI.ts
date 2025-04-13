@@ -1,4 +1,5 @@
-import { getDB, saveDatabase, sqliteHelper } from '../db/sqlite';
+
+import { getDB } from '../db/db';
 import { Tour } from '../db/schema';
 
 /**
@@ -7,116 +8,34 @@ import { Tour } from '../db/schema';
 export const tourAPI = {
   getAll: async () => {
     const db = await getDB();
-    const tours = sqliteHelper.queryAll(db, "SELECT * FROM tours");
-    return tours.map(tour => ({
-      ...tour,
-      featured: Boolean(tour.featured),
-      active: Boolean(tour.active)
-    })) as Tour[];
+    return db.getAll('tours');
   },
   
   getById: async (id: string) => {
     const db = await getDB();
-    const tour = sqliteHelper.queryOne(db, "SELECT * FROM tours WHERE id = $id", { $id: id });
-    
-    if (!tour) return null;
-    
-    return {
-      ...tour,
-      featured: Boolean(tour.featured),
-      active: Boolean(tour.active)
-    } as Tour;
+    return db.get('tours', id);
   },
   
   getByCategory: async (category: string) => {
     const db = await getDB();
-    const tours = sqliteHelper.queryAll(db, "SELECT * FROM tours WHERE category = $category", { $category: category });
-    
-    return tours.map(tour => ({
-      ...tour,
-      featured: Boolean(tour.featured),
-      active: Boolean(tour.active)
-    })) as Tour[];
+    return db.getAllFromIndex('tours', 'by-category', category);
   },
   
   getByLocation: async (location: string) => {
     const db = await getDB();
-    const tours = sqliteHelper.queryAll(db, "SELECT * FROM tours WHERE location = $location", { $location: location });
-    
-    return tours.map(tour => ({
-      ...tour,
-      featured: Boolean(tour.featured),
-      active: Boolean(tour.active)
-    })) as Tour[];
+    return db.getAllFromIndex('tours', 'by-location', location);
   },
   
   getFeatured: async () => {
-    try {
-      const db = await getDB();
-      console.log("Executing SQL query: SELECT * FROM tours WHERE featured = 1");
-      
-      // Vérifier si la table tours existe
-      const tableCheck = sqliteHelper.queryAll(
-        db, 
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='tours'"
-      );
-      
-      if (!tableCheck || tableCheck.length === 0) {
-        console.error("Table 'tours' does not exist");
-        throw new Error("La table 'tours' n'existe pas dans la base de données");
-      }
-      
-      // Check if the database has been properly initialized with data
-      const tourCount = sqliteHelper.queryOne(db, "SELECT COUNT(*) as count FROM tours");
-      console.log("Total tour count in database:", tourCount);
-      
-      if (tourCount && tourCount.count === 0) {
-        console.warn("Database has no tours - probably needs seeding");
-        throw new Error("Aucun circuit n'a été trouvé dans la base de données");
-      }
-      
-      const tours = sqliteHelper.queryAll(db, "SELECT * FROM tours WHERE featured = 1");
-      console.log(`Found ${tours.length} featured tours`);
-      
-      if (tours.length === 0) {
-        console.warn("No featured tours found, checking if any tours exist");
-        // Check if any tours exist, not just featured ones
-        const allTours = sqliteHelper.queryAll(db, "SELECT * FROM tours LIMIT 5");
-        if (allTours.length > 0) {
-          console.log("Found regular tours but no featured tours");
-          // If there are tours but none featured, return some regular tours instead
-          return allTours.map(tour => ({
-            ...tour,
-            featured: false,
-            active: Boolean(tour.active)
-          })) as Tour[];
-        }
-      }
-      
-      return tours.map(tour => ({
-        ...tour,
-        featured: Boolean(tour.featured),
-        active: Boolean(tour.active)
-      })) as Tour[];
-    } catch (error) {
-      console.error("Error fetching featured tours:", error);
-      throw error;
-    }
+    const db = await getDB();
+    const allTours = await db.getAll('tours');
+    return allTours.filter(tour => tour.featured);
   },
   
   getRelated: async (id: string, category: string) => {
     const db = await getDB();
-    const tours = sqliteHelper.queryAll(
-      db, 
-      "SELECT * FROM tours WHERE category = $category AND id != $id LIMIT 4", 
-      { $category: category, $id: id }
-    );
-    
-    return tours.map(tour => ({
-      ...tour,
-      featured: Boolean(tour.featured),
-      active: Boolean(tour.active)
-    })) as Tour[];
+    const allTours = await db.getAllFromIndex('tours', 'by-category', category);
+    return allTours.filter(tour => tour.id !== id).slice(0, 4);
   },
   
   search: async (searchParams: {
@@ -129,163 +48,77 @@ export const tourAPI = {
     active?: boolean;
   }) => {
     const db = await getDB();
-    let query = "SELECT * FROM tours WHERE 1=1";
-    const params: any = {};
+    let tours = await db.getAll('tours');
     
-    if (searchParams.category) {
-      query += " AND category = $category";
-      params.$category = searchParams.category;
-    }
-    
-    if (searchParams.location) {
-      query += " AND location = $location";
-      params.$location = searchParams.location;
-    }
-    
-    if (searchParams.minPrice !== undefined) {
-      query += " AND price >= $minPrice";
-      params.$minPrice = searchParams.minPrice;
-    }
-    
-    if (searchParams.maxPrice !== undefined) {
-      query += " AND price <= $maxPrice";
-      params.$maxPrice = searchParams.maxPrice;
-    }
-    
-    if (searchParams.featured !== undefined) {
-      query += " AND featured = $featured";
-      params.$featured = searchParams.featured ? 1 : 0;
-    }
-    
-    if (searchParams.active !== undefined) {
-      query += " AND active = $active";
-      params.$active = searchParams.active ? 1 : 0;
-    }
-    
-    const tours = sqliteHelper.queryAll(db, query, params);
-    
-    // If there's a search term, we need to filter in JavaScript since SQLite doesn't have full-text search by default
-    let filteredTours = tours;
     if (searchParams.term) {
       const term = searchParams.term.toLowerCase();
-      filteredTours = tours.filter(tour => 
+      tours = tours.filter(tour => 
         tour.title.toLowerCase().includes(term) || 
         tour.description.toLowerCase().includes(term) || 
         tour.location.toLowerCase().includes(term)
       );
     }
     
-    return filteredTours.map(tour => ({
-      ...tour,
-      featured: Boolean(tour.featured),
-      active: Boolean(tour.active)
-    })) as Tour[];
+    if (searchParams.category) {
+      tours = tours.filter(tour => tour.category === searchParams.category);
+    }
+    
+    if (searchParams.location) {
+      tours = tours.filter(tour => tour.location === searchParams.location);
+    }
+    
+    if (searchParams.minPrice !== undefined) {
+      tours = tours.filter(tour => tour.price >= searchParams.minPrice!);
+    }
+    
+    if (searchParams.maxPrice !== undefined) {
+      tours = tours.filter(tour => tour.price <= searchParams.maxPrice!);
+    }
+    
+    if (searchParams.featured !== undefined) {
+      tours = tours.filter(tour => tour.featured === searchParams.featured);
+    }
+    
+    if (searchParams.active !== undefined) {
+      tours = tours.filter(tour => tour.active === searchParams.active);
+    }
+    
+    return tours;
   },
   
   add: async (tour: Omit<Tour, 'id'>) => {
     const db = await getDB();
     const id = crypto.randomUUID();
-    const featured = tour.featured ? 1 : 0;
-    const active = tour.active ? 1 : 0;
-    
-    sqliteHelper.execute(
-      db,
-      `INSERT INTO tours (id, title, description, location, duration, price, rating, image, featured, category, active)
-       VALUES ($id, $title, $description, $location, $duration, $price, $rating, $image, $featured, $category, $active)`,
-      {
-        $id: id,
-        $title: tour.title,
-        $description: tour.description,
-        $location: tour.location,
-        $duration: tour.duration,
-        $price: tour.price,
-        $rating: tour.rating,
-        $image: tour.image,
-        $featured: featured,
-        $category: tour.category || null,
-        $active: active
-      }
-    );
-    
-    await saveDatabase();
-    
-    return {
-      ...tour,
-      id
-    } as Tour;
+    const newTour = { ...tour, id };
+    await db.put('tours', newTour);
+    return newTour;
   },
   
   update: async (id: string, tour: Partial<Tour>) => {
     const db = await getDB();
-    const existingTour = await tourAPI.getById(id);
-    
+    const existingTour = await db.get('tours', id);
     if (!existingTour) {
       throw new Error('Tour not found');
     }
-    
     const updatedTour = { ...existingTour, ...tour };
-    const featured = updatedTour.featured ? 1 : 0;
-    const active = updatedTour.active ? 1 : 0;
-    
-    sqliteHelper.execute(
-      db,
-      `UPDATE tours SET 
-       title = $title, 
-       description = $description, 
-       location = $location, 
-       duration = $duration, 
-       price = $price, 
-       rating = $rating, 
-       image = $image, 
-       featured = $featured, 
-       category = $category,
-       active = $active
-       WHERE id = $id`,
-      {
-        $id: id,
-        $title: updatedTour.title,
-        $description: updatedTour.description,
-        $location: updatedTour.location,
-        $duration: updatedTour.duration,
-        $price: updatedTour.price,
-        $rating: updatedTour.rating,
-        $image: updatedTour.image,
-        $featured: featured,
-        $category: updatedTour.category || null,
-        $active: active
-      }
-    );
-    
-    await saveDatabase();
-    
+    await db.put('tours', updatedTour);
     return updatedTour;
   },
   
   delete: async (id: string) => {
     const db = await getDB();
-    sqliteHelper.execute(db, "DELETE FROM tours WHERE id = $id", { $id: id });
-    await saveDatabase();
+    await db.delete('tours', id);
   },
   
   searchByPrice: async (minPrice: number, maxPrice: number) => {
     const db = await getDB();
-    const tours = sqliteHelper.queryAll(
-      db, 
-      "SELECT * FROM tours WHERE price >= $minPrice AND price <= $maxPrice",
-      { $minPrice: minPrice, $maxPrice: maxPrice }
-    );
-    
-    return tours.map(tour => ({
-      ...tour,
-      featured: Boolean(tour.featured),
-      active: Boolean(tour.active)
-    })) as Tour[];
+    const allTours = await db.getAll('tours');
+    return allTours.filter(tour => tour.price >= minPrice && tour.price <= maxPrice);
   },
   
   searchByDuration: async (minDays: number, maxDays: number) => {
     const db = await getDB();
-    const allTours = await tourAPI.getAll();
-    
+    const allTours = await db.getAll('tours');
     return allTours.filter(tour => {
       const days = parseInt(tour.duration.split(' ')[0]);
       return days >= minDays && days <= maxDays;
@@ -294,13 +127,13 @@ export const tourAPI = {
   
   getAllCategories: async () => {
     const db = await getDB();
-    const categories = sqliteHelper.queryAll(db, "SELECT DISTINCT category FROM tours WHERE category IS NOT NULL");
-    return categories.map(row => row.category);
+    const allTours = await db.getAll('tours');
+    return [...new Set(allTours.map(tour => tour.category))].filter(Boolean);
   },
   
   getAllLocations: async () => {
     const db = await getDB();
-    const locations = sqliteHelper.queryAll(db, "SELECT DISTINCT location FROM tours WHERE location IS NOT NULL");
-    return locations.map(row => row.location);
+    const allTours = await db.getAll('tours');
+    return [...new Set(allTours.map(tour => tour.location))].filter(Boolean);
   }
 };

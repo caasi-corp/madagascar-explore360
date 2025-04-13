@@ -1,96 +1,62 @@
 
-import { useState, useEffect, useCallback } from 'react';
-import { Tour } from '@/lib/db/schema';
-import { tourAPI } from '@/lib/api/tourAPI';
-import { useToast } from '@/components/ui/use-toast';
-import { resetDB } from '@/lib/db/sqlite';
+import { TourProps } from '@/components/TourCard';
 
-export function useFeaturedTours() {
-  const [featuredTours, setFeaturedTours] = useState<Tour[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [retries, setRetries] = useState(0);
-  const { toast } = useToast();
+export function useFeaturedTours(): TourProps[] {
+  // Sample tour data
+  const featuredTours: TourProps[] = [
+    {
+      id: '1',
+      title: 'Circuit Allée des Baobabs',
+      description: 'Découvrez l\'emblématique Allée des Baobabs, l\'un des sites les plus célèbres de Madagascar.',
+      location: 'Morondava',
+      duration: '2 Jours',
+      price: 299,
+      rating: 4.9,
+      image: 'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb',
+      featured: true,
+      category: 'Nature',
+      active: true,
+    },
+    {
+      id: '2',
+      title: 'Randonnée Lémuriens à Andasibe',
+      description: 'Randonnez à travers le Parc National d\'Andasibe et rencontrez différentes espèces de lémuriens dans leur habitat naturel.',
+      location: 'Andasibe',
+      duration: '3 Jours',
+      price: 349,
+      rating: 4.8,
+      image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027',
+      featured: true,
+      category: 'Faune',
+      active: true,
+    },
+    {
+      id: '3',
+      title: 'Aventure au Parc National de l\'Isalo',
+      description: 'Découvrez les paysages époustouflants du Parc National de l\'Isalo avec ses canyons, cascades et piscines naturelles.',
+      location: 'Isalo',
+      duration: '4 Jours',
+      price: 499,
+      rating: 4.7,
+      image: 'https://images.unsplash.com/photo-1469041797191-50ace28483c3',
+      featured: true,
+      category: 'Aventure',
+      active: true,
+    },
+    {
+      id: '4',
+      title: 'Paradis de l\'île de Nosy Be',
+      description: 'Détendez-vous sur les magnifiques plages de Nosy Be, la principale destination balnéaire de Madagascar.',
+      location: 'Nosy Be',
+      duration: '5 Jours',
+      price: 599,
+      rating: 4.9,
+      image: 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57',
+      featured: false,
+      category: 'Plage',
+      active: true,
+    },
+  ];
 
-  const fetchFeaturedTours = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      console.log('Fetching featured tours... (attempt:', retries + 1, ')');
-      const tours = await tourAPI.getFeatured();
-      console.log('Featured tours loaded:', tours);
-      
-      if (tours && Array.isArray(tours)) {
-        setFeaturedTours(tours);
-        
-        // If tours are empty and it might be a database issue
-        if (tours.length === 0) {
-          console.log('No featured tours found, this might be a database issue');
-        }
-      } else {
-        console.error('Invalid tours data format:', tours);
-        setFeaturedTours([]);
-        toast({
-          title: "Erreur de données",
-          description: "Format de données des circuits invalide",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error('Error loading featured tours:', error);
-      setError(error instanceof Error ? error : new Error('Unknown error'));
-      setFeaturedTours([]);
-      
-      // Only show toast on first error
-      if (retries === 0) {
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les circuits mis en avant",
-          variant: "destructive",
-        });
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [toast, retries]);
-
-  // Function to manually reset the database and reload tours
-  const resetAndRefetch = useCallback(async () => {
-    try {
-      setLoading(true);
-      console.log("Resetting database...");
-      await resetDB();
-      setRetries(prev => prev + 1);
-      toast({
-        title: "Base de données réinitialisée",
-        description: "Les données ont été réinitialisées, chargement des circuits...",
-      });
-    } catch (err) {
-      console.error("Error resetting database:", err);
-      toast({
-        title: "Erreur",
-        description: "Impossible de réinitialiser la base de données",
-        variant: "destructive",
-      });
-      setLoading(false);
-    }
-  }, [toast]);
-
-  // Function to manually refetch without resetting
-  const refetch = useCallback(() => {
-    setRetries(prev => prev + 1);
-  }, []);
-
-  useEffect(() => {
-    fetchFeaturedTours();
-  }, [fetchFeaturedTours, retries]);
-
-  return { 
-    featuredTours, 
-    loading, 
-    error, 
-    refetch,
-    resetAndRefetch
-  };
+  return featuredTours;
 }

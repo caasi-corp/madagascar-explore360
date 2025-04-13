@@ -1,6 +1,6 @@
-
 import { openDB, IDBPDatabase } from 'idb';
 import { NorthGascarDB } from './schema';
+import { seedData } from './seed';
 
 let dbPromise: Promise<IDBPDatabase<NorthGascarDB>>;
 
@@ -13,7 +13,7 @@ export const initDB = async () => {
   
   if (!dbPromise) {
     try {
-      dbPromise = openDB<NorthGascarDB>('northgascar-db', 1, {
+      dbPromise = openDB<NorthGascarDB>('north-gascar-db', 1, {
         upgrade(db, oldVersion, newVersion, transaction) {
           console.log(`Mise à jour de la base de données de la version ${oldVersion} vers ${newVersion}`);
           
@@ -62,22 +62,34 @@ export const initDB = async () => {
             flightsStore.createIndex('by-arrival', 'arrival');
             flightsStore.createIndex('by-departureDate', 'departureDate');
           }
-          
-          // Create banners store
-          if (!db.objectStoreNames.contains('banners')) {
-            console.log("Création du store 'banners'");
-            const bannersStore = db.createObjectStore('banners', { keyPath: 'id' });
-            bannersStore.createIndex('by-page', 'page');
-            bannersStore.createIndex('by-isActive', 'isActive');
-          }
         },
       });
       
+      // Maintenant que la base de données est initialisée, on peut ajouter les données initiales
       const db = await dbPromise;
       console.log("Base de données initialisée, vérification des données");
-      console.log(`Nombre d'utilisateurs trouvés: ${await db.count('users')}`);
       
-      return db;
+      // Vérifier si des utilisateurs existent déjà
+      const usersCount = await db.count('users');
+      console.log(`Nombre d'utilisateurs trouvés: ${usersCount}`);
+      
+      // Si aucun utilisateur n'existe, ajouter les données de démo
+      if (usersCount === 0) {
+        console.log("Aucun utilisateur trouvé, ajout des données initiales...");
+        try {
+          await seedData(db);
+          
+          // Vérifier que les données ont bien été ajoutées
+          const usersAfterSeed = await db.getAll('users');
+          console.log(`Après le seed: ${usersAfterSeed.length} utilisateurs trouvés`);
+          console.log("Utilisateurs:", JSON.stringify(usersAfterSeed));
+        } catch (error) {
+          console.error("Erreur lors de l'ajout des données initiales:", error);
+        }
+      } else {
+        console.log("Des utilisateurs existent déjà dans la base");
+      }
+      
     } catch (error) {
       console.error("Erreur lors de l'initialisation de la base de données:", error);
       throw error;
@@ -113,7 +125,7 @@ export const resetDB = async () => {
     }
     
     // Delete the database
-    await indexedDB.deleteDatabase('northgascar-db');
+    await indexedDB.deleteDatabase('north-gascar-db');
     console.log("Base de données supprimée avec succès");
     
     // Reinitialize
