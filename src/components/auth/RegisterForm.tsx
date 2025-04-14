@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { UserPlus } from 'lucide-react';
-import { userAPI } from '@/lib/store';
 import { RegisterFormData } from '@/types/auth';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
@@ -20,6 +21,7 @@ const RegisterForm: React.FC = () => {
     password: '',
     confirmPassword: '',
   });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -27,12 +29,15 @@ const RegisterForm: React.FC = () => {
       ...prevState,
       [name]: value,
     }));
+    // Effacer le message d'erreur quand l'utilisateur modifie le formulaire
+    setErrorMessage(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
+      setErrorMessage("Les mots de passe ne correspondent pas");
       toast.error("Les mots de passe ne correspondent pas");
       return;
     }
@@ -40,22 +45,34 @@ const RegisterForm: React.FC = () => {
     setIsLoading(true);
     
     try {
-      const newUser = await userAPI.register({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        password: formData.password
-      });
+      const { user } = await register(
+        formData.email,
+        formData.password,
+        formData.firstName,
+        formData.lastName
+      );
       
-      if (newUser) {
-        localStorage.setItem('userId', newUser.id);
-        localStorage.setItem('userRole', newUser.role);
+      if (user) {
         toast.success('Compte créé avec succès !');
         navigate('/user/dashboard');
+      } else {
+        setErrorMessage("Échec de l'inscription. Veuillez réessayer.");
+        toast.error("Échec de l'inscription. Veuillez réessayer.");
       }
-    } catch (error) {
-      console.error("Erreur d'inscription:", error);
-      toast.error("Une erreur s'est produite lors de l'inscription");
+    } catch (error: any) {
+      console.error("Erreur d'inscription détaillée:", error);
+      
+      // Afficher un message d'erreur plus spécifique en fonction du code d'erreur
+      if (error.code === 'auth/email-already-in-use' || error.message?.includes('already exists')) {
+        setErrorMessage("Cette adresse email est déjà utilisée. Veuillez vous connecter ou utiliser une autre adresse.");
+        toast.error("Cette adresse email est déjà utilisée");
+      } else if (error.message?.includes('password')) {
+        setErrorMessage("Le mot de passe ne répond pas aux exigences de sécurité (minimum 6 caractères)");
+        toast.error("Le mot de passe ne répond pas aux exigences de sécurité");
+      } else {
+        setErrorMessage(error.message || "Une erreur s'est produite lors de l'inscription");
+        toast.error("Une erreur s'est produite lors de l'inscription");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -112,6 +129,7 @@ const RegisterForm: React.FC = () => {
             value={formData.password}
             onChange={handleChange}
             required
+            minLength={6}
           />
         </div>
         <div className="space-y-2">
@@ -123,8 +141,16 @@ const RegisterForm: React.FC = () => {
             value={formData.confirmPassword}
             onChange={handleChange}
             required
+            minLength={6}
           />
         </div>
+        
+        {errorMessage && (
+          <div className="text-sm text-red-600 bg-red-50 p-2 rounded border border-red-200">
+            {errorMessage}
+          </div>
+        )}
+        
         <p className="text-xs text-muted-foreground">
           En créant un compte, vous acceptez nos{' '}
           <Link to="/terms-of-service" className="text-madagascar-green hover:underline">

@@ -105,6 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Inscription avec email et mot de passe
   const register = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
+      // Inscription avec Supabase Auth
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -117,12 +118,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (error) {
+        console.error("Erreur d'inscription:", error);
         throw error;
       }
       
+      if (!data.user) {
+        throw new Error("Échec de l'inscription: aucun utilisateur retourné");
+      }
+      
+      // La création du profil est gérée par le trigger dans Supabase
+      // Mais nous pouvons vérifier que le profil a bien été créé
+      console.log("Utilisateur créé avec succès:", data.user.id);
+      
       return data;
     } catch (error: any) {
-      console.error("Erreur d'inscription:", error.message);
+      console.error("Erreur détaillée d'inscription:", error.message, error);
       throw error;
     }
   };
