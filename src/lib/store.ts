@@ -7,7 +7,7 @@
 export * from './db/schema';
 
 // Exporter les API IndexedDB (ancienne implémentation)
-export { initDB } from './db/db';
+export { initDB, getDB, resetDB } from './db/db';
 export { tourAPI } from './api/tourAPI';
 export { vehicleAPI } from './api/vehicleAPI';
 export { userAPI } from './api/userAPI';
@@ -26,6 +26,7 @@ export const initializeDatabase = async (mode: 'auto' | 'indexeddb' | 'dbx' = 'a
     
     if (mode === 'indexeddb') {
       // Initialiser uniquement IndexedDB
+      const { initDB } = await import('./db/db');
       await initDB();
       console.log('IndexedDB initialisé avec succès');
       return true;
@@ -33,6 +34,7 @@ export const initializeDatabase = async (mode: 'auto' | 'indexeddb' | 'dbx' = 'a
     
     if (mode === 'dbx') {
       // Initialiser uniquement DBX
+      const { initDBX } = await import('./dbx');
       const success = await initDBX();
       console.log('DBX initialisé avec succès:', success);
       return success;
@@ -40,6 +42,7 @@ export const initializeDatabase = async (mode: 'auto' | 'indexeddb' | 'dbx' = 'a
     
     // Mode auto: Tenter d'initialiser DBX d'abord, puis IndexedDB si nécessaire
     console.log('Mode auto: tentative d\'initialisation de DBX...');
+    const { initDBX } = await import('./dbx');
     const dbxSuccess = await initDBX();
     
     if (dbxSuccess) {
@@ -48,6 +51,7 @@ export const initializeDatabase = async (mode: 'auto' | 'indexeddb' | 'dbx' = 'a
     }
     
     console.log('DBX n\'a pas pu être initialisé, tentative avec IndexedDB...');
+    const { initDB } = await import('./db/db');
     await initDB();
     console.log('IndexedDB initialisé avec succès en mode auto');
     return true;
