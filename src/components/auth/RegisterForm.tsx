@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { UserPlus } from 'lucide-react';
+import { UserPlus, AlertCircle } from 'lucide-react';
 import { RegisterFormData } from '@/types/auth';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ const RegisterForm: React.FC = () => {
     }
     
     setIsLoading(true);
+    setErrorMessage(null);
     
     try {
       const { user } = await register(
@@ -63,14 +65,19 @@ const RegisterForm: React.FC = () => {
       console.error("Erreur d'inscription détaillée:", error);
       
       // Afficher un message d'erreur plus spécifique en fonction du code d'erreur
-      if (error.code === 'auth/email-already-in-use' || error.message?.includes('already exists')) {
+      if (error?.code === 'auth/email-already-in-use' || 
+          error?.message?.includes('already exists') || 
+          error?.message?.includes('already registered')) {
         setErrorMessage("Cette adresse email est déjà utilisée. Veuillez vous connecter ou utiliser une autre adresse.");
         toast.error("Cette adresse email est déjà utilisée");
-      } else if (error.message?.includes('password')) {
+      } else if (error?.message?.includes('password')) {
         setErrorMessage("Le mot de passe ne répond pas aux exigences de sécurité (minimum 6 caractères)");
         toast.error("Le mot de passe ne répond pas aux exigences de sécurité");
+      } else if (error?.message?.includes('Database error')) {
+        setErrorMessage("Erreur de base de données lors de la création du compte. Veuillez réessayer ultérieurement.");
+        toast.error("Erreur de base de données");
       } else {
-        setErrorMessage(error.message || "Une erreur s'est produite lors de l'inscription");
+        setErrorMessage(error?.message || "Une erreur s'est produite lors de l'inscription");
         toast.error("Une erreur s'est produite lors de l'inscription");
       }
     } finally {
@@ -146,9 +153,12 @@ const RegisterForm: React.FC = () => {
         </div>
         
         {errorMessage && (
-          <div className="text-sm text-red-600 bg-red-50 p-2 rounded border border-red-200">
-            {errorMessage}
-          </div>
+          <Alert variant="destructive" className="bg-red-50 text-red-600 border-red-200">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              {errorMessage}
+            </AlertDescription>
+          </Alert>
         )}
         
         <p className="text-xs text-muted-foreground">

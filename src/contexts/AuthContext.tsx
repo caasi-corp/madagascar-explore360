@@ -126,8 +126,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error("Échec de l'inscription: aucun utilisateur retourné");
       }
       
-      // La création du profil est gérée par le trigger dans Supabase
-      // Mais nous pouvons vérifier que le profil a bien été créé
+      // Attendre un court délai pour permettre au trigger de créer le profil
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Vérifier que le profil a bien été créé
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .maybeSingle();
+      
+      if (profileError) {
+        console.error("Erreur lors de la vérification du profil:", profileError);
+      } else if (!profile) {
+        console.log("Profil non trouvé, création manuelle...");
+        // Créer manuellement le profil si le trigger n'a pas fonctionné
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            role: 'user'
+          });
+        
+        if (insertError) {
+          console.error("Erreur lors de la création manuelle du profil:", insertError);
+          throw new Error("Impossible de créer le profil utilisateur");
+        }
+      }
+      
       console.log("Utilisateur créé avec succès:", data.user.id);
       
       return data;
