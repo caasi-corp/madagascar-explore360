@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export const tourAPI = {
@@ -154,5 +153,30 @@ export const tourAPI = {
     }
     
     return data;
+  },
+  
+  // Récupérer des tours similaires/liés
+  async getRelated(id: string, category?: string, limit: number = 3) {
+    let query = supabase
+      .from('tours')
+      .select('*')
+      .neq('id', id)  // Exclure le tour actuel
+      .eq('active', true); // Seulement les tours actifs
+    
+    // Si une catégorie est fournie, filtrer par catégorie
+    if (category) {
+      query = query.eq('category', category);
+    }
+    
+    const { data, error } = await query
+      .limit(limit)
+      .order('rating', { ascending: false });
+    
+    if (error) {
+      console.error('Erreur lors de la récupération des tours liés:', error);
+      throw error;
+    }
+    
+    return data || [];
   }
 };

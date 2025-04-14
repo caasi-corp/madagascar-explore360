@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,10 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { userAPI } from '@/lib/store';
+import { useAuth } from '@/contexts/AuthContext';
 
 const UserSettings = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  const { user, profile, updateProfile } = useAuth();
   const [userData, setUserData] = useState({
     firstName: '',
     lastName: '',
@@ -20,30 +20,15 @@ const UserSettings = () => {
   });
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        // Dans une implémentation réelle, nous récupérerions l'ID de l'utilisateur depuis le localStorage
-        const storedUserId = localStorage.getItem('userId');
-        if (storedUserId) {
-          setUserId(storedUserId);
-          const user = await userAPI.getById(storedUserId);
-          if (user) {
-            setUserData(prevData => ({
-              ...prevData,
-              firstName: user.firstName,
-              lastName: user.lastName,
-              email: user.email,
-            }));
-          }
-        }
-      } catch (error) {
-        console.error("Erreur lors de la récupération des données utilisateur:", error);
-        toast.error("Impossible de charger vos informations");
-      }
-    };
-
-    fetchUserData();
-  }, []);
+    if (user && profile) {
+      setUserData(prevData => ({
+        ...prevData,
+        firstName: profile.first_name || user.firstName || '',
+        lastName: profile.last_name || user.lastName || '',
+        email: user.email,
+      }));
+    }
+  }, [user, profile]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -56,7 +41,7 @@ const UserSettings = () => {
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!userId) {
+    if (!user) {
       toast.error("Veuillez vous reconnecter");
       return;
     }
@@ -64,10 +49,9 @@ const UserSettings = () => {
     setIsLoading(true);
     
     try {
-      await userAPI.update(userId, {
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        email: userData.email,
+      await updateProfile({
+        first_name: userData.firstName,
+        last_name: userData.lastName,
       });
       
       toast.success("Profil mis à jour avec succès");
@@ -82,7 +66,7 @@ const UserSettings = () => {
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!userId) {
+    if (!user) {
       toast.error("Veuillez vous reconnecter");
       return;
     }
@@ -95,9 +79,7 @@ const UserSettings = () => {
     setIsLoading(true);
     
     try {
-      // Ici, on simule la vérification du mot de passe actuel
-      // Dans une implémentation réelle, on vérifierait le mot de passe actuel
-      await userAPI.update(userId, {
+      await userAPI.update(user.id, {
         password: userData.newPassword,
       });
       

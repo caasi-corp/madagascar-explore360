@@ -1,5 +1,5 @@
-
 import { supabase } from '@/integrations/supabase/client';
+import { mapSupabaseVehicle } from '@/types/supabase';
 
 export const vehicleAPI = {
   // Récupérer tous les véhicules
@@ -14,24 +14,7 @@ export const vehicleAPI = {
       throw error;
     }
     
-    return data || [];
-  },
-  
-  // Récupérer les véhicules mis en avant
-  async getFeatured() {
-    const { data, error } = await supabase
-      .from('vehicles')
-      .select('*')
-      .eq('featured', true)
-      .eq('availability', true)
-      .order('priceperday', { ascending: true });
-    
-    if (error) {
-      console.error('Erreur lors de la récupération des véhicules mis en avant:', error);
-      throw error;
-    }
-    
-    return data || [];
+    return data.map(vehicle => mapSupabaseVehicle(vehicle)) || [];
   },
   
   // Récupérer un véhicule par ID
@@ -47,27 +30,27 @@ export const vehicleAPI = {
       return null;
     }
     
-    return data;
+    return mapSupabaseVehicle(data);
   },
   
-  // Créer un nouveau véhicule
-  async create(vehicle: any) {
+  // Ajouter un nouveau véhicule
+  async add(vehicle: any) {
     const { data, error } = await supabase
       .from('vehicles')
       .insert([
         {
           name: vehicle.name,
           type: vehicle.type,
+          priceperday: vehicle.pricePerDay,
           seats: vehicle.seats,
           transmission: vehicle.transmission,
-          fueltype: vehicle.fueltype,
-          features: vehicle.features || [],
-          priceperday: vehicle.priceperday,
-          availability: vehicle.availability !== undefined ? vehicle.availability : true,
-          featured: vehicle.featured !== undefined ? vehicle.featured : false,
+          fueltype: vehicle.fuelType,
           image: vehicle.image,
-          images: vehicle.images || [],
-          description: vehicle.description
+          features: vehicle.features,
+          availability: vehicle.availability,
+          description: vehicle.description,
+          featured: vehicle.featured || false,
+          images: vehicle.images || []
         }
       ])
       .select()
@@ -78,26 +61,25 @@ export const vehicleAPI = {
       throw error;
     }
     
-    return data;
+    return mapSupabaseVehicle(data);
   },
   
   // Mettre à jour un véhicule
-  async update(id: string, vehicleData: any) {
+  async update(id: string, vehicle: any) {
     const { data, error } = await supabase
       .from('vehicles')
       .update({
-        name: vehicleData.name,
-        type: vehicleData.type,
-        seats: vehicleData.seats,
-        transmission: vehicleData.transmission,
-        fueltype: vehicleData.fueltype,
-        features: vehicleData.features,
-        priceperday: vehicleData.priceperday,
-        availability: vehicleData.availability,
-        featured: vehicleData.featured,
-        image: vehicleData.image,
-        images: vehicleData.images,
-        description: vehicleData.description
+        name: vehicle.name,
+        type: vehicle.type,
+        priceperday: vehicle.pricePerDay,
+        seats: vehicle.seats,
+        transmission: vehicle.transmission,
+        fueltype: vehicle.fuelType,
+        image: vehicle.image,
+        features: vehicle.features,
+        availability: vehicle.availability,
+        description: vehicle.description,
+        featured: vehicle.featured
       })
       .eq('id', id)
       .select()
@@ -108,7 +90,7 @@ export const vehicleAPI = {
       throw error;
     }
     
-    return data;
+    return mapSupabaseVehicle(data);
   },
   
   // Supprimer un véhicule

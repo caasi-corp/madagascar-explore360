@@ -1,17 +1,12 @@
-
 import { supabase } from '@/integrations/supabase/client';
+import { mapSupabaseBooking } from '@/types/supabase';
 
 export const bookingAPI = {
   // Récupérer toutes les réservations
   async getAll() {
     const { data, error } = await supabase
       .from('bookings')
-      .select(`
-        *,
-        profiles:user_id (first_name, last_name, email),
-        tours:tour_id (*),
-        vehicles:vehicle_id (*)
-      `)
+      .select('*, tours(*), vehicles(*)')
       .order('created_at', { ascending: false });
     
     if (error) {
@@ -19,39 +14,14 @@ export const bookingAPI = {
       throw error;
     }
     
-    return data || [];
-  },
-  
-  // Récupérer les réservations d'un utilisateur
-  async getByUserId(userId: string) {
-    const { data, error } = await supabase
-      .from('bookings')
-      .select(`
-        *,
-        tours:tour_id (*),
-        vehicles:vehicle_id (*)
-      `)
-      .eq('user_id', userId)
-      .order('start_date', { ascending: true });
-    
-    if (error) {
-      console.error(`Erreur lors de la récupération des réservations de l'utilisateur ${userId}:`, error);
-      throw error;
-    }
-    
-    return data || [];
+    return data.map(booking => mapSupabaseBooking(booking)) || [];
   },
   
   // Récupérer une réservation par ID
   async getById(id: string) {
     const { data, error } = await supabase
       .from('bookings')
-      .select(`
-        *,
-        profiles:user_id (first_name, last_name, email),
-        tours:tour_id (*),
-        vehicles:vehicle_id (*)
-      `)
+      .select('*, tours(*), vehicles(*)')
       .eq('id', id)
       .single();
     
@@ -60,7 +30,23 @@ export const bookingAPI = {
       return null;
     }
     
-    return data;
+    return mapSupabaseBooking(data);
+  },
+  
+  // Récupérer les réservations d'un utilisateur
+  async getByUserId(userId: string) {
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('*, tours(*), vehicles(*)')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error(`Erreur lors de la récupération des réservations de l'utilisateur ${userId}:`, error);
+      throw error;
+    }
+    
+    return data.map(booking => mapSupabaseBooking(booking)) || [];
   },
   
   // Créer une nouvelle réservation

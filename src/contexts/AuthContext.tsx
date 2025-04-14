@@ -3,10 +3,11 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from "sonner";
+import { UserWithProfile, mapProfileToUser } from '@/types/supabase';
 
 interface AuthContextType {
   session: Session | null;
-  user: User | null;
+  user: UserWithProfile | null;
   profile: any | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<any>;
@@ -19,7 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserWithProfile | null>(null);
   const [profile, setProfile] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -31,7 +32,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Vérifier si une session existe déjà
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
-      setUser(session?.user || null);
       
       if (session?.user) {
         // Récupérer le profil de l'utilisateur si connecté
@@ -42,13 +42,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .single();
         
         setProfile(profile);
+        setUser(mapProfileToUser(session.user, profile));
+      } else {
+        setUser(null);
       }
       
       // Mettre en place l'écouteur d'événements d'authentification
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event, session) => {
           setSession(session);
-          setUser(session?.user || null);
           
           if (session?.user) {
             // Ne pas appeler directement les fonctions de Supabase dans le callback
@@ -61,9 +63,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 .single();
               
               setProfile(profile);
+              setUser(mapProfileToUser(session.user, profile));
             }, 0);
           } else {
             setProfile(null);
+            setUser(null);
           }
         }
       );
