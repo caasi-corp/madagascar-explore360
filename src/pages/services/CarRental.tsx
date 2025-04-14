@@ -144,11 +144,7 @@ const CarRental = () => {
     },
   });
   
-  const { data: availableVehicles } = useQuery({
-    queryKey: ['vehicles', searchParams],
-    queryFn: () => Promise.resolve(vehicles.filter(v => v.availability)),
-    initialData: vehicles,
-  });
+  const availableVehicles = vehicles.filter(v => v.availability);
   
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const params = {
