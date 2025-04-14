@@ -19,7 +19,7 @@ interface DeparturesTableProps {
   departures: Departure[];
 }
 
-const DeparturesTable: React.FC<DeparturesTableProps> = ({ departures }) => {
+const DeparturesTable = ({ departures }: DeparturesTableProps) => {
   return (
     <Table>
       <TableHeader>
@@ -83,7 +83,8 @@ const DeparturesTable: React.FC<DeparturesTableProps> = ({ departures }) => {
                 </div>
               </TableCell>
             </TableRow>
-          ))}
+          ))
+        )}
       </TableBody>
     </Table>
   );

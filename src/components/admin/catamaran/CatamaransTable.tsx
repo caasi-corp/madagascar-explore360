@@ -21,7 +21,7 @@ interface CatamaransTableProps {
   catamarans: Catamaran[];
 }
 
-const CatamaransTable: React.FC<CatamaransTableProps> = ({ catamarans }) => {
+const CatamaransTable = ({ catamarans }: CatamaransTableProps) => {
   return (
     <Table>
       <TableHeader>
@@ -71,7 +71,8 @@ const CatamaransTable: React.FC<CatamaransTableProps> = ({ catamarans }) => {
                 </div>
               </TableCell>
             </TableRow>
-          ))}
+          ))
+        )}
       </TableBody>
     </Table>
   );
