@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { bookingAPI, tourAPI, vehicleAPI } from '@/lib/store';
@@ -11,6 +10,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Calendar, MapPin, Car, Ship, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { getStatusBadge } from '@/utils/statusBadge';
 
 const BookingList = () => {
   const { user } = useAuth();
@@ -29,14 +29,12 @@ const BookingList = () => {
         const userBookings = await bookingAPI.getByUserId(user.id);
         setBookings(userBookings);
         
-        // Récupérer les détails des circuits et véhicules
         const tourIds = userBookings.filter(b => b.tour_id).map(b => b.tour_id as string);
         const vehicleIds = userBookings.filter(b => b.vehicle_id).map(b => b.vehicle_id as string);
         
         const tours: {[key: string]: Tour} = {};
         const vehicles: {[key: string]: Vehicle} = {};
         
-        // Récupérer les détails des circuits
         for (const tourId of tourIds) {
           try {
             const tour = await tourAPI.getById(tourId);
@@ -46,7 +44,6 @@ const BookingList = () => {
           }
         }
         
-        // Récupérer les détails des véhicules
         for (const vehicleId of vehicleIds) {
           try {
             const vehicle = await vehicleAPI.getById(vehicleId);
@@ -77,7 +74,6 @@ const BookingList = () => {
     try {
       await bookingAPI.cancel(bookingId);
       
-      // Mettre à jour la liste des réservations
       setBookings(bookings.map(booking => 
         booking.id === bookingId 
           ? { ...booking, status: 'Annulé' }
@@ -229,7 +225,6 @@ const BookingCard = ({ booking, tourDetails, vehicleDetails, onCancel }: Booking
   let location = "";
   let icon = <Clock className="h-5 w-5" />;
   
-  // Déterminer le type de réservation et afficher les informations appropriées
   if (tour_id && tourDetails[tour_id]) {
     const tour = tourDetails[tour_id];
     title = tour.title;

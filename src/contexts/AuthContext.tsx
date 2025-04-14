@@ -11,6 +11,9 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<User | null>;
   logout: () => Promise<void>;
   register: (userData: { email: string, password: string, first_name: string, last_name: string }) => Promise<User | null>;
+  signIn: (email: string, password: string) => Promise<User | null>; // Alias for login
+  signUp: (email: string, password: string, first_name: string, last_name: string) => Promise<User | null>; // Alias for register
+  signOut: () => Promise<void>; // Alias for logout
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -171,12 +174,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  // Add aliases for consistent naming
+  const signIn = login;
+  const signUp = (email: string, password: string, first_name: string, last_name: string) => {
+    return register({ email, password, first_name, last_name });
+  };
+  const signOut = logout;
+
   const value = {
     user,
     loading,
     login,
     logout,
-    register
+    register,
+    signIn,
+    signUp,
+    signOut
   };
 
   return (

@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
 
 const Auth = () => {
-  const { signIn, signUp, user, loading } = useAuth();
+  const { login, register, user, loading } = useAuth();
   const navigate = useNavigate();
   
   const [email, setEmail] = useState('');
@@ -32,7 +32,7 @@ const Auth = () => {
     
     setIsSubmitting(true);
     try {
-      await signIn(email, password);
+      await login(email, password);
       navigate('/');
     } catch (error) {
       // Error est déjà géré dans le contexte Auth
@@ -47,7 +47,12 @@ const Auth = () => {
     
     setIsSubmitting(true);
     try {
-      await signUp(email, password, firstName, lastName);
+      await register({
+        email, 
+        password, 
+        first_name: firstName, 
+        last_name: lastName
+      });
       // Ne pas naviguer automatiquement, attendre confirmation email
       setActiveTab('login');
     } catch (error) {

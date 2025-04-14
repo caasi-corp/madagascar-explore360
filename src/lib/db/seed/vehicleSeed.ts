@@ -1,12 +1,11 @@
-
 import { IDBPDatabase } from 'idb';
-import { NorthGascarDB, Vehicle } from '../schema';
+import { Vehicle } from '../schema';
 
 /**
  * Seeds vehicle data into the database
  * @param db The database connection
  */
-export const seedVehicles = async (db: IDBPDatabase<NorthGascarDB>): Promise<void> => {
+export const seedVehicles = async (db: any): Promise<void> => {
   console.log("Ajout des véhicules...");
   
   const vehicles: Vehicle[] = [
@@ -14,37 +13,49 @@ export const seedVehicles = async (db: IDBPDatabase<NorthGascarDB>): Promise<voi
       id: 'v1',
       name: 'Toyota Land Cruiser',
       type: '4x4',
-      pricePerDay: 89,
+      description: 'Véhicule 4x4 robuste, parfait pour les terrains difficiles de Madagascar.',
       seats: 7,
-      transmission: 'Automatic',
-      fuelType: 'Diesel',
-      image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf',
-      features: ['Climatisation', 'GPS', 'Galerie de toit', '4x4', 'Bluetooth', 'Ports USB'],
+      transmission: 'Manual',
+      fueltype: 'Diesel',
+      priceperday: 80,
+      image: 'https://images.unsplash.com/photo-1455310485008-41f674535f7e',
+      images: [],
+      features: ['4x4', 'Climatisation', 'GPS', 'Bluetooth'],
+      featured: true,
       availability: true,
+      created_at: new Date().toISOString()
     },
     {
       id: 'v2',
       name: 'Yamaha TW200',
       type: 'motorcycle',
-      pricePerDay: 45,
+      description: 'Véhicule moto compact, idéal pour les trajets courts.',
       seats: 2,
       transmission: 'Manual',
-      fuelType: 'Petrol',
+      fueltype: 'Petrol',
+      priceperday: 45,
       image: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39',
+      images: [],
       features: ['Casque inclus', 'Sacoches', 'Capacité tout-terrain', 'Économe en carburant'],
+      featured: true,
       availability: true,
+      created_at: new Date().toISOString()
     },
     {
       id: 'v3',
       name: 'BRP Can-Am Outlander',
       type: 'quad',
-      pricePerDay: 65,
+      description: 'Véhicule quad robuste, idéal pour les terrains difficiles.',
       seats: 1,
       transmission: 'Automatic',
-      fuelType: 'Petrol',
+      fueltype: 'Petrol',
+      priceperday: 65,
       image: 'https://images.unsplash.com/photo-1566845735839-6e25c92269a1',
+      images: [],
       features: ['Casque inclus', 'Coffre de rangement', 'Transmission 4x4', 'Garde au sol élevée'],
+      featured: true,
       availability: true,
+      created_at: new Date().toISOString()
     },
   ];
   

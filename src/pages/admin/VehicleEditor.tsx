@@ -42,13 +42,13 @@ const AdminVehicleEditor = () => {
               type: vehicle.type || '',
               seats: vehicle.seats || 2,
               transmission: vehicle.transmission || 'Manuel',
-              pricePerDay: vehicle.pricePerDay || 0,
+              pricePerDay: vehicle.priceperday || 0,
               description: vehicle.description || '',
               features: vehicle.features || [],
               available: vehicle.availability !== undefined ? vehicle.availability : true,
               featured: vehicle.featured !== undefined ? vehicle.featured : false,
               images: vehicle.images || [],
-              fuelType: vehicle.fuelType || ''
+              fuelType: vehicle.fueltype || ''
             });
           }
         } catch (error) {
@@ -80,10 +80,10 @@ const AdminVehicleEditor = () => {
       const vehicleToSave = {
         name: vehicleData.name,
         type: vehicleData.type as 'car' | '4x4' | 'motorcycle' | 'quad',
-        pricePerDay: vehicleData.pricePerDay,
+        priceperday: vehicleData.pricePerDay,
         seats: vehicleData.seats,
         transmission: vehicleData.transmission as 'Automatic' | 'Manual',
-        fuelType: vehicleData.fuelType,
+        fueltype: vehicleData.fuelType,
         image: vehicleData.images[0] || 'placeholder.svg',
         features: vehicleData.features,
         availability: vehicleData.available,
@@ -92,7 +92,7 @@ const AdminVehicleEditor = () => {
       if (isEditMode && id) {
         await vehicleAPI.update(id, vehicleToSave);
       } else {
-        await vehicleAPI.add(vehicleToSave);
+        await vehicleAPI.create(vehicleToSave);
       }
 
       toast({
