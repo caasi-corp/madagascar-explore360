@@ -22,6 +22,17 @@ import {
   FormLabel,
 } from '@/components/ui/form';
 import { DateRange } from 'react-day-picker';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 const vehicles: VehicleProps[] = [
   {
@@ -148,7 +159,6 @@ const CarRental = () => {
     
     setSearchParams(params);
     
-    // Filter vehicles based on form values
     const filtered = vehicles.filter(vehicle => {
       return (
         (!values.vehicleType || vehicle.type === values.vehicleType) &&
@@ -169,7 +179,6 @@ const CarRental = () => {
       <h1 className="text-3xl font-bold mb-8">Location de Véhicules à Madagascar</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Search Form */}
         <div className="lg:col-span-3">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="glass-card rounded-xl p-6 mb-8">
@@ -414,7 +423,6 @@ const CarRental = () => {
           </Form>
         </div>
       
-        {/* Results */}
         <div className="col-span-3">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredVehicles.map((vehicle) => (
