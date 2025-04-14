@@ -4,8 +4,8 @@ import { Tour } from '@/lib/db/schema';
 import { tourAPI } from '@/lib/store';
 import { useToast } from '@/components/ui/use-toast';
 
-// Fallback tours data
-const fallbackTours = [
+// Fallback tours data that matches the Tour type
+const fallbackTours: Tour[] = [
   {
     id: '1',
     title: 'Parc National d\'Andasibe',
@@ -17,7 +17,8 @@ const fallbackTours = [
     image: 'https://images.unsplash.com/photo-1661155702216-d3e9f012d6f7',
     category: 'nature',
     active: true,
-    featured: true
+    featured: true,
+    created_at: null
   },
   {
     id: '2',
@@ -30,7 +31,8 @@ const fallbackTours = [
     image: 'https://images.unsplash.com/photo-1547471080-3cc20479a792',
     category: 'nature',
     active: true,
-    featured: true
+    featured: true,
+    created_at: null
   },
   {
     id: '3',
@@ -43,7 +45,8 @@ const fallbackTours = [
     image: 'https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5',
     category: 'plage',
     active: true,
-    featured: true
+    featured: true,
+    created_at: null
   },
   {
     id: '4',
@@ -56,7 +59,8 @@ const fallbackTours = [
     image: 'https://images.unsplash.com/photo-1551907234-fb773fb08a2a',
     category: 'aventure',
     active: true,
-    featured: true
+    featured: true,
+    created_at: null
   }
 ];
 
