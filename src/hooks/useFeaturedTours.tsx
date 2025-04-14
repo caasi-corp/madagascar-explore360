@@ -67,21 +67,32 @@ const fallbackTours: Tour[] = [
 export const useFeaturedTours = () => {
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchFeaturedTours = async () => {
       try {
         setLoading(true);
+        setError(null);
         const data = await tourAPI.getFeatured();
         setTours(data);
-      } catch (error) {
-        console.error('Erreur lors du chargement des circuits en vedette:', error);
+      } catch (err: any) {
+        console.error('Erreur lors du chargement des circuits en vedette:', err);
+        
         // Set fallback data when API fails
         setTours(fallbackTours);
+        
+        // Set error message for UI display
+        if (err?.message?.includes("infinite recursion")) {
+          setError("Problème de configuration de la base de données. Utilisation des données de secours.");
+        } else {
+          setError("Impossible de charger les circuits en vedette");
+        }
+        
         toast({
           title: "Erreur",
-          description: "Impossible de charger les circuits en vedette",
+          description: "Impossible de charger les circuits en vedette. Affichage des données de secours.",
           variant: "destructive",
         });
       } finally {
@@ -92,5 +103,5 @@ export const useFeaturedTours = () => {
     fetchFeaturedTours();
   }, [toast]);
 
-  return tours;
+  return { tours, loading, error };
 };

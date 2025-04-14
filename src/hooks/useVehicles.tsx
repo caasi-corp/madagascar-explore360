@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Vehicle } from '@/lib/db/schema';
 import { vehicleAPI } from '@/lib/store';
 import { useToast } from '@/components/ui/use-toast';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 // Define the adapter interface to match VehicleProps expected by VehicleCard
 export interface VehicleProps {
@@ -89,22 +90,34 @@ export const adaptVehicleToProps = (vehicle: Vehicle): VehicleProps => {
 export const useVehicles = () => {
   const [vehicles, setVehicles] = useState<VehicleProps[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchFeaturedVehicles = async () => {
       try {
         setLoading(true);
+        setError(null);
         const data = await vehicleAPI.getFeatured();
+        
         // Use adapter to convert Vehicle[] to VehicleProps[]
         setVehicles(data.map(adaptVehicleToProps));
-      } catch (error) {
-        console.error('Erreur lors du chargement des véhicules en vedette:', error);
+      } catch (err: any) {
+        console.error('Erreur lors du chargement des véhicules en vedette:', err);
+        
         // Set fallback data when API fails
         setVehicles(fallbackVehicles);
+        
+        // Set error message for UI display
+        if (err?.message?.includes("infinite recursion")) {
+          setError("Problème de configuration de la base de données. Utilisation des données de secours.");
+        } else {
+          setError("Impossible de charger les véhicules en vedette");
+        }
+        
         toast({
           title: "Erreur",
-          description: "Impossible de charger les véhicules en vedette",
+          description: "Impossible de charger les véhicules en vedette. Affichage des données de secours.",
           variant: "destructive",
         });
       } finally {
@@ -115,5 +128,5 @@ export const useVehicles = () => {
     fetchFeaturedVehicles();
   }, [toast]);
 
-  return vehicles;
+  return { vehicles, loading, error };
 };

@@ -12,9 +12,9 @@ import { useVehicles } from '@/hooks/useVehicles';
 import { useAdvantages } from '@/hooks/useAdvantages';
 
 const Index = () => {
-  const tours = useFeaturedTours();
+  const toursData = useFeaturedTours();
   const services = useServicesData();
-  const vehicles = useVehicles();
+  const vehiclesData = useVehicles();
   const advantages = useAdvantages();
 
   return (
@@ -23,13 +23,13 @@ const Index = () => {
       <Hero />
       
       {/* Featured Tours Section */}
-      <FeaturedToursSection tours={tours} />
+      <FeaturedToursSection tours={toursData.tours} loading={toursData.loading} error={toursData.error} />
       
       {/* Services Section */}
       <ServicesSection services={services} />
       
       {/* Vehicle Rental Section */}
-      <VehicleSection vehicles={vehicles} />
+      <VehicleSection vehicles={vehiclesData} />
       
       {/* Why Choose Us Section */}
       <AdvantagesSection advantages={advantages} />
