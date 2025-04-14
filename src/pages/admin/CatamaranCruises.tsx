@@ -25,7 +25,7 @@ const CatamaranCruises = () => {
       duration: '1 jour', 
       price: 180, 
       catamaran: 'Paradis Bleu',
-      status: 'active',
+      status: 'active' as const,
       bookings: 24,
       nextDeparture: '2025-06-15'
     },
@@ -36,7 +36,7 @@ const CatamaranCruises = () => {
       duration: '3 jours', 
       price: 650, 
       catamaran: 'Paradis Bleu',
-      status: 'active',
+      status: 'active' as const,
       bookings: 18,
       nextDeparture: '2025-05-22'
     },
@@ -47,7 +47,7 @@ const CatamaranCruises = () => {
       duration: '2 jours', 
       price: 380, 
       catamaran: 'Océan Nomade',
-      status: 'active',
+      status: 'active' as const,
       bookings: 12,
       nextDeparture: '2025-05-18'
     },
@@ -58,7 +58,7 @@ const CatamaranCruises = () => {
       duration: '5 jours', 
       price: 990, 
       catamaran: 'Paradis Bleu',
-      status: 'inactive',
+      status: 'inactive' as const,
       bookings: 8,
       nextDeparture: '2025-07-10'
     },
@@ -72,7 +72,7 @@ const CatamaranCruises = () => {
       capacity: 8,
       cabins: 4,
       length: '12.8m',
-      status: 'available',
+      status: 'available' as const,
       bookings: 36,
       nextMaintenance: '2025-09-05'
     },
@@ -83,7 +83,7 @@ const CatamaranCruises = () => {
       capacity: 6,
       cabins: 3,
       length: '11.4m',
-      status: 'maintenance',
+      status: 'maintenance' as const,
       bookings: 28,
       nextMaintenance: '2025-06-10'
     }
@@ -97,7 +97,7 @@ const CatamaranCruises = () => {
       departure: '2025-05-15',
       passengersBooked: 4,
       capacity: 8,
-      status: 'confirmed'
+      status: 'confirmed' as const
     },
     {
       id: 'DEP002',
@@ -106,7 +106,7 @@ const CatamaranCruises = () => {
       departure: '2025-05-18',
       passengersBooked: 6,
       capacity: 6,
-      status: 'full'
+      status: 'full' as const
     },
     {
       id: 'DEP003',
@@ -115,7 +115,7 @@ const CatamaranCruises = () => {
       departure: '2025-05-22',
       passengersBooked: 2,
       capacity: 8,
-      status: 'confirmed'
+      status: 'confirmed' as const
     }
   ];
 
