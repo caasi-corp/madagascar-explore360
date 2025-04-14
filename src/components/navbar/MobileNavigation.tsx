@@ -4,10 +4,16 @@ import { NavLink } from 'react-router-dom';
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Menu, ChevronRight } from 'lucide-react';
+import AuthStatus from './AuthStatus';
 
-const MobileNavigation: React.FC = () => {
+interface MobileNavigationProps {
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+const MobileNavigation: React.FC<MobileNavigationProps> = ({ isOpen, onToggle }) => {
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={onToggle}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="md:hidden">
           <Menu className="h-5 w-5" />
@@ -15,6 +21,10 @@ const MobileNavigation: React.FC = () => {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+        <div className="flex justify-end pt-4 md:hidden">
+          <AuthStatus />
+        </div>
+        
         <nav className="flex flex-col gap-4 mt-8">
           <SheetClose asChild>
             <NavLink

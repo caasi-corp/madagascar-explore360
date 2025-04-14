@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import Logo from '../Logo';
 import DesktopNavigation from './DesktopNavigation';
 import MobileNavigation from './MobileNavigation';
+import AuthStatus from './AuthStatus';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -67,9 +68,12 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Logo variant={scrolled || theme === 'dark' ? 'default' : 'white'} />
         
-        <DesktopNavigation />
+        <div className="hidden md:flex items-center space-x-4">
+          <DesktopNavigation />
+          <AuthStatus />
+        </div>
 
-        <MobileNavigation />
+        <MobileNavigation isOpen={isMenuOpen} onToggle={toggleMenu} />
       </div>
     </header>
   );
