@@ -61,15 +61,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         console.log("Auth state changed:", event, session?.user?.id);
         
         if (session) {
           try {
-            const profile = await userAPI.getCurrent();
-            setUser(profile);
+            // Use setTimeout to avoid potential recursive issues with Supabase
+            setTimeout(async () => {
+              try {
+                const profile = await userAPI.getCurrent();
+                setUser(profile);
+              } catch (error) {
+                console.error("Error fetching user profile on auth change:", error);
+                setUser(null);
+              }
+            }, 0);
           } catch (error) {
-            console.error("Error fetching user profile on auth change:", error);
+            console.error("Error in auth state change handler:", error);
+            setUser(null);
           }
         } else {
           setUser(null);

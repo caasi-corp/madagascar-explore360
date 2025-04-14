@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Vehicle } from '@/lib/db/schema';
 import { vehicleAPI } from '@/lib/store';
@@ -108,13 +109,15 @@ export const useVehicles = () => {
     retry: 1,
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes
-    onError: (err: any) => {
-      console.error('Erreur React Query:', err);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les véhicules en vedette. Affichage des données de secours.",
-        variant: "destructive",
-      });
+    meta: {
+      onError: (err: any) => {
+        console.error('Erreur React Query:', err);
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les véhicules en vedette. Affichage des données de secours.",
+          variant: "destructive",
+        });
+      }
     }
   });
 

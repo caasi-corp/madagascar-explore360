@@ -84,5 +84,66 @@ export const vehicleAPI = {
       console.error("Error in vehicleAPI.getByType:", error);
       throw error;
     }
+  },
+
+  // Create a new vehicle
+  create: async (vehicle: Omit<Vehicle, 'id' | 'created_at'>): Promise<Vehicle> => {
+    try {
+      const { data, error } = await supabase
+        .from('vehicles')
+        .insert([vehicle])
+        .select()
+        .single();
+      
+      if (error) {
+        console.error("Error creating vehicle:", error);
+        throw error;
+      }
+      
+      return data;
+    } catch (error) {
+      console.error("Error in vehicleAPI.create:", error);
+      throw error;
+    }
+  },
+  
+  // Update an existing vehicle
+  update: async (id: string, updates: Partial<Vehicle>): Promise<Vehicle> => {
+    try {
+      const { data, error } = await supabase
+        .from('vehicles')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) {
+        console.error(`Error updating vehicle ${id}:`, error);
+        throw error;
+      }
+      
+      return data;
+    } catch (error) {
+      console.error("Error in vehicleAPI.update:", error);
+      throw error;
+    }
+  },
+  
+  // Delete a vehicle
+  delete: async (id: string): Promise<void> => {
+    try {
+      const { error } = await supabase
+        .from('vehicles')
+        .delete()
+        .eq('id', id);
+      
+      if (error) {
+        console.error(`Error deleting vehicle ${id}:`, error);
+        throw error;
+      }
+    } catch (error) {
+      console.error("Error in vehicleAPI.delete:", error);
+      throw error;
+    }
   }
 };

@@ -85,5 +85,45 @@ export const tourAPI = {
       console.error("Error in tourAPI.getByCategory:", error);
       throw error;
     }
+  },
+  
+  // Get related tours based on the category of a given tour
+  getRelated: async (tourId: string, limit: number = 3): Promise<Tour[]> => {
+    try {
+      // First get the tour to find its category
+      const { data: tour, error: tourError } = await supabase
+        .from('tours')
+        .select('category')
+        .eq('id', tourId)
+        .single();
+      
+      if (tourError) {
+        console.error(`Error retrieving tour ${tourId} for related tours:`, tourError);
+        throw tourError;
+      }
+      
+      if (!tour) {
+        return [];
+      }
+      
+      // Then get related tours with same category but different ID
+      const { data, error } = await supabase
+        .from('tours')
+        .select('*')
+        .eq('category', tour.category)
+        .neq('id', tourId)
+        .eq('active', true)
+        .limit(limit);
+      
+      if (error) {
+        console.error(`Error retrieving related tours for ${tourId}:`, error);
+        throw error;
+      }
+      
+      return data || [];
+    } catch (error) {
+      console.error("Error in tourAPI.getRelated:", error);
+      throw error;
+    }
   }
 };
