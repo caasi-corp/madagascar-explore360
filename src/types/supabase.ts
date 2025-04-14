@@ -17,6 +17,7 @@ export const mapProfileToUser = (user: SupabaseUser, profile: any): UserWithProf
     firstName: profile?.first_name || '',
     lastName: profile?.last_name || '',
     role: profile?.role || 'user',
+    email: user.email || '', // Ensure email is always set, using empty string as fallback
   };
 };
 
