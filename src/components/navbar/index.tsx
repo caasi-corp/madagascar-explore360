@@ -56,22 +56,6 @@ const Navbar: React.FC = () => {
     setIsMenuOpen(false);
   };
 
-  const navItems = [
-    { title: 'Accueil', path: '/' },
-    { title: 'Circuits', path: '/tours' },
-    { 
-      title: 'Services', 
-      path: '#', 
-      dropdown: [
-        { title: 'Location de Voiture', path: '/services/car-rental' },
-        { title: 'Croisières en Catamaran', path: '/services/catamaran' },
-        { title: 'Réservation d\'Hôtel', path: '/services/hotels' },
-      ]
-    },
-    { title: 'À Propos', path: '/about' },
-    { title: 'Contact', path: '/contact' },
-  ];
-
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -83,22 +67,9 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Logo variant={scrolled || theme === 'dark' ? 'default' : 'white'} />
         
-        <DesktopNavigation
-          navItems={navItems}
-          theme={theme}
-          toggleTheme={toggleTheme}
-          scrolled={scrolled}
-          closeMenu={closeMenu}
-        />
+        <DesktopNavigation />
 
-        <MobileNavigation
-          navItems={navItems}
-          theme={theme}
-          toggleTheme={toggleTheme}
-          isMenuOpen={isMenuOpen}
-          toggleMenu={toggleMenu}
-          closeMenu={closeMenu}
-        />
+        <MobileNavigation />
       </div>
     </header>
   );

@@ -11,44 +11,34 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 interface DropdownItem {
-  title: string;
-  path: string;
+  label: string;
+  href: string;
 }
 
 interface NavbarDropdownProps {
-  title: string;
+  trigger: string;
   items: DropdownItem[];
-  isDark?: boolean;
-  isScrolled?: boolean;
-  onClick?: () => void;
 }
 
 const NavbarDropdown: React.FC<NavbarDropdownProps> = ({ 
-  title, 
-  items, 
-  isDark = false,
-  isScrolled = false,
-  onClick 
+  trigger, 
+  items
 }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 
-          className={`px-3 flex items-center text-base font-medium ${
-            isScrolled || isDark
-              ? 'text-foreground hover:text-madagascar-green'
-              : 'text-white hover:text-madagascar-yellow'
-          }`}
+          className="px-3 py-2 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent"
         >
-          {title} <ChevronDown size={16} className="ml-1" />
+          {trigger} <ChevronDown size={16} className="ml-1" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {items.map((item, index) => (
           <DropdownMenuItem key={index} asChild>
-            <Link to={item.path} onClick={onClick}>
-              {item.title}
+            <Link to={item.href}>
+              {item.label}
             </Link>
           </DropdownMenuItem>
         ))}

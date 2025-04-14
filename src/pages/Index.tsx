@@ -12,10 +12,16 @@ import { useFlights } from '@/hooks/useFlights';
 import HotelCard from '@/components/hotels/HotelCard';
 import FlightCard from '@/components/flights/FlightCard';
 import { Hotel, Flight } from '@/lib/db/schema';
+import { useFeaturedTours } from '@/hooks/useFeaturedTours';
+import { useServicesData } from '@/hooks/useServicesData';
+import { useAdvantages } from '@/hooks/useAdvantages';
 
 const Index: React.FC = () => {
   const { hotels } = useHotels();
   const { flights } = useFlights();
+  const featuredTours = useFeaturedTours();
+  const services = useServicesData();
+  const advantages = useAdvantages();
 
   // Filtrer les hôtels recommandés (par exemple, ceux avec 4 ou 5 étoiles)
   const recommendedHotels = hotels
@@ -30,8 +36,8 @@ const Index: React.FC = () => {
   return (
     <>
       <Hero />
-      <FeaturedToursSection />
-      <ServicesSection />
+      <FeaturedToursSection tours={featuredTours} />
+      <ServicesSection services={services} />
       
       {/* Section Hôtels Recommandés */}
       {recommendedHotels.length > 0 && (
@@ -83,7 +89,7 @@ const Index: React.FC = () => {
         </section>
       )}
       
-      <AdvantagesSection />
+      <AdvantagesSection advantages={advantages} />
       <CallToAction />
     </>
   );
