@@ -5,7 +5,7 @@ import './App.css';
 import router from './router';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from 'next-themes';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider } from './contexts/auth';
 
 function App() {
   return (

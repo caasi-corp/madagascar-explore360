@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { UserPlus, AlertCircle } from 'lucide-react';
 import { RegisterFormData } from '@/types/auth';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const RegisterForm: React.FC = () => {
