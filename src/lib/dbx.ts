@@ -10,6 +10,8 @@ import { DBXTourAdapter } from './DataBaseX/adapters/DBXTourAdapter';
 import { DBXVehicleAdapter } from './DataBaseX/adapters/DBXVehicleAdapter';
 import { DBXUserAdapter } from './DataBaseX/adapters/DBXUserAdapter';
 import { DBXBookingAdapter } from './DataBaseX/adapters/DBXBookingAdapter';
+import { DBXHotelAdapter } from './DataBaseX/adapters/DBXHotelAdapter';
+import { DBXFlightAdapter } from './DataBaseX/adapters/DBXFlightAdapter';
 
 // Initialisation de la base de données DBX
 export const initDBX = async () => {
@@ -32,7 +34,9 @@ export const dbxAPI = {
   tours: DBXTourAdapter,
   vehicles: DBXVehicleAdapter,
   users: DBXUserAdapter,
-  bookings: DBXBookingAdapter
+  bookings: DBXBookingAdapter,
+  hotels: DBXHotelAdapter,
+  flights: DBXFlightAdapter
 };
 
 // Migration depuis IndexedDB

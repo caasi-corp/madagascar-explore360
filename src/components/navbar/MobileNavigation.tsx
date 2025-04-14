@@ -1,93 +1,210 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import ThemeToggle from './ThemeToggle';
-import AuthStatus from './AuthStatus';
+import { Menu, ChevronRight } from 'lucide-react';
 
-interface NavItem {
-  title: string;
-  path: string;
-  dropdown?: { title: string; path: string }[];
-}
-
-interface MobileNavigationProps {
-  navItems: NavItem[];
-  theme: 'light' | 'dark';
-  toggleTheme: () => void;
-  isMenuOpen: boolean;
-  toggleMenu: () => void;
-  closeMenu: () => void;
-}
-
-const MobileNavigation: React.FC<MobileNavigationProps> = ({
-  navItems,
-  theme,
-  toggleTheme,
-  isMenuOpen,
-  toggleMenu,
-  closeMenu
-}) => {
-  const location = useLocation();
-  
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
+const MobileNavigation: React.FC = () => {
   return (
-    <div className="md:hidden">
-      <div className="flex items-center">
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
-        
-        <Button 
-          onClick={toggleMenu} 
-          variant="ghost" 
-          size="icon"
-          className="ml-2"
-        >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle Menu</span>
         </Button>
-      </div>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+        <nav className="flex flex-col gap-4 mt-8">
+          <SheetClose asChild>
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-md transition-colors ${
+                  isActive
+                    ? 'bg-muted/80 text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                }`
+              }
+            >
+              Accueil
+              <ChevronRight className="h-4 w-4" />
+            </NavLink>
+          </SheetClose>
 
-      {isMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-white dark:bg-madagascar-blue/95 shadow-lg animate-fade-in">
-          <nav className="container mx-auto p-4 flex flex-col space-y-4">
-            {navItems.map((item, index) => (
-              item.dropdown ? (
-                <div key={index} className="flex flex-col space-y-2">
-                  <div className="font-medium text-lg">{item.title}</div>
-                  <div className="pl-4 flex flex-col space-y-2">
-                    {item.dropdown.map((subItem, subIndex) => (
-                      <Link
-                        key={subIndex}
-                        to={subItem.path}
-                        className={`py-1 text-base ${isActive(subItem.path) ? 'text-madagascar-green dark:text-madagascar-yellow font-medium' : ''}`}
-                        onClick={closeMenu}
-                      >
-                        {subItem.title}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <Link
-                  key={index}
-                  to={item.path}
-                  className={`py-2 text-lg font-medium ${isActive(item.path) ? 'text-madagascar-green dark:text-madagascar-yellow' : ''}`}
-                  onClick={closeMenu}
-                >
-                  {item.title}
-                </Link>
-              )
-            ))}
-            <div className="pt-4">
-              <AuthStatus />
-            </div>
-          </nav>
-        </div>
-      )}
-    </div>
+          <div className="px-4 py-2 text-sm font-medium text-muted-foreground">Circuits</div>
+          <SheetClose asChild>
+            <NavLink
+              to="/tours"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-md transition-colors pl-6 ${
+                  isActive
+                    ? 'bg-muted/80 text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                }`
+              }
+            >
+              Tous les circuits
+              <ChevronRight className="h-4 w-4" />
+            </NavLink>
+          </SheetClose>
+          <SheetClose asChild>
+            <NavLink
+              to="/tours?region=north"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-md transition-colors pl-6 ${
+                  isActive
+                    ? 'bg-muted/80 text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                }`
+              }
+            >
+              Nord
+              <ChevronRight className="h-4 w-4" />
+            </NavLink>
+          </SheetClose>
+          <SheetClose asChild>
+            <NavLink
+              to="/tours?region=south"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-md transition-colors pl-6 ${
+                  isActive
+                    ? 'bg-muted/80 text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                }`
+              }
+            >
+              Sud
+              <ChevronRight className="h-4 w-4" />
+            </NavLink>
+          </SheetClose>
+          <SheetClose asChild>
+            <NavLink
+              to="/tours?region=east"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-md transition-colors pl-6 ${
+                  isActive
+                    ? 'bg-muted/80 text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                }`
+              }
+            >
+              Est
+              <ChevronRight className="h-4 w-4" />
+            </NavLink>
+          </SheetClose>
+          <SheetClose asChild>
+            <NavLink
+              to="/tours?region=west"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-md transition-colors pl-6 ${
+                  isActive
+                    ? 'bg-muted/80 text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                }`
+              }
+            >
+              Ouest
+              <ChevronRight className="h-4 w-4" />
+            </NavLink>
+          </SheetClose>
+
+          <div className="px-4 py-2 text-sm font-medium text-muted-foreground">Services</div>
+          <SheetClose asChild>
+            <NavLink
+              to="/car-rental"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-md transition-colors pl-6 ${
+                  isActive
+                    ? 'bg-muted/80 text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                }`
+              }
+            >
+              Location de voitures
+              <ChevronRight className="h-4 w-4" />
+            </NavLink>
+          </SheetClose>
+          <SheetClose asChild>
+            <NavLink
+              to="/catamaran-cruise"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-md transition-colors pl-6 ${
+                  isActive
+                    ? 'bg-muted/80 text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                }`
+              }
+            >
+              Croisières en catamaran
+              <ChevronRight className="h-4 w-4" />
+            </NavLink>
+          </SheetClose>
+          <SheetClose asChild>
+            <NavLink
+              to="/hotels"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-md transition-colors pl-6 ${
+                  isActive
+                    ? 'bg-muted/80 text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                }`
+              }
+            >
+              Réservation d'hôtels
+              <ChevronRight className="h-4 w-4" />
+            </NavLink>
+          </SheetClose>
+          <SheetClose asChild>
+            <NavLink
+              to="/flights"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-md transition-colors pl-6 ${
+                  isActive
+                    ? 'bg-muted/80 text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                }`
+              }
+            >
+              Vols
+              <ChevronRight className="h-4 w-4" />
+            </NavLink>
+          </SheetClose>
+
+          <SheetClose asChild>
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-md transition-colors ${
+                  isActive
+                    ? 'bg-muted/80 text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                }`
+              }
+            >
+              À propos
+              <ChevronRight className="h-4 w-4" />
+            </NavLink>
+          </SheetClose>
+
+          <SheetClose asChild>
+            <NavLink
+              to="/contact"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-md transition-colors ${
+                  isActive
+                    ? 'bg-muted/80 text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                }`
+              }
+            >
+              Contact
+              <ChevronRight className="h-4 w-4" />
+            </NavLink>
+          </SheetClose>
+        </nav>
+      </SheetContent>
+    </Sheet>
   );
 };
 
