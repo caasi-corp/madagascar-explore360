@@ -1,182 +1,139 @@
-import { supabase } from '@/integrations/supabase/client';
 
+import { getDB } from '../db/db';
+import { Tour } from '../db/schema';
+
+/**
+ * API for tour operations
+ */
 export const tourAPI = {
-  // Récupérer tous les tours
-  async getAll() {
-    const { data, error } = await supabase
-      .from('tours')
-      .select('*')
-      .order('title', { ascending: true });
-    
-    if (error) {
-      console.error('Erreur lors de la récupération des tours:', error);
-      throw error;
-    }
-    
-    return data || [];
+  getAll: async () => {
+    const db = await getDB();
+    return db.getAll('tours');
   },
   
-  // Récupérer les tours mis en avant
-  async getFeatured() {
-    const { data, error } = await supabase
-      .from('tours')
-      .select('*')
-      .eq('featured', true)
-      .eq('active', true)
-      .order('rating', { ascending: false });
-    
-    if (error) {
-      console.error('Erreur lors de la récupération des tours mis en avant:', error);
-      throw error;
-    }
-    
-    return data || [];
+  getById: async (id: string) => {
+    const db = await getDB();
+    return db.get('tours', id);
   },
   
-  // Récupérer un tour par ID
-  async getById(id: string) {
-    const { data, error } = await supabase
-      .from('tours')
-      .select('*')
-      .eq('id', id)
-      .single();
-    
-    if (error) {
-      console.error(`Erreur lors de la récupération du tour ${id}:`, error);
-      return null;
-    }
-    
-    return data;
+  getByCategory: async (category: string) => {
+    const db = await getDB();
+    return db.getAllFromIndex('tours', 'by-category', category);
   },
   
-  // Créer un nouveau tour
-  async create(tour: any) {
-    const { data, error } = await supabase
-      .from('tours')
-      .insert([
-        {
-          title: tour.title,
-          description: tour.description,
-          location: tour.location,
-          duration: tour.duration,
-          price: tour.price,
-          rating: tour.rating || 0,
-          image: tour.image,
-          category: tour.category,
-          active: tour.active !== undefined ? tour.active : true,
-          featured: tour.featured !== undefined ? tour.featured : false
-        }
-      ])
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Erreur lors de la création du tour:', error);
-      throw error;
-    }
-    
-    return data;
+  getByLocation: async (location: string) => {
+    const db = await getDB();
+    return db.getAllFromIndex('tours', 'by-location', location);
   },
   
-  // Mettre à jour un tour
-  async update(id: string, tourData: any) {
-    const { data, error } = await supabase
-      .from('tours')
-      .update({
-        title: tourData.title,
-        description: tourData.description,
-        location: tourData.location,
-        duration: tourData.duration,
-        price: tourData.price,
-        rating: tourData.rating,
-        image: tourData.image,
-        category: tourData.category,
-        active: tourData.active,
-        featured: tourData.featured
-      })
-      .eq('id', id)
-      .select()
-      .single();
-    
-    if (error) {
-      console.error(`Erreur lors de la mise à jour du tour ${id}:`, error);
-      throw error;
-    }
-    
-    return data;
+  getFeatured: async () => {
+    const db = await getDB();
+    const allTours = await db.getAll('tours');
+    return allTours.filter(tour => tour.featured);
   },
   
-  // Supprimer un tour
-  async delete(id: string) {
-    const { error } = await supabase
-      .from('tours')
-      .delete()
-      .eq('id', id);
-    
-    if (error) {
-      console.error(`Erreur lors de la suppression du tour ${id}:`, error);
-      throw error;
-    }
-    
-    return true;
+  getRelated: async (id: string, category: string) => {
+    const db = await getDB();
+    const allTours = await db.getAllFromIndex('tours', 'by-category', category);
+    return allTours.filter(tour => tour.id !== id).slice(0, 4);
   },
   
-  // Mettre à jour le statut actif d'un tour
-  async toggleStatus(id: string, active: boolean) {
-    const { data, error } = await supabase
-      .from('tours')
-      .update({ active })
-      .eq('id', id)
-      .select()
-      .single();
+  search: async (searchParams: {
+    term?: string;
+    category?: string;
+    location?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    featured?: boolean;
+    active?: boolean;
+  }) => {
+    const db = await getDB();
+    let tours = await db.getAll('tours');
     
-    if (error) {
-      console.error(`Erreur lors de la mise à jour du statut du tour ${id}:`, error);
-      throw error;
+    if (searchParams.term) {
+      const term = searchParams.term.toLowerCase();
+      tours = tours.filter(tour => 
+        tour.title.toLowerCase().includes(term) || 
+        tour.description.toLowerCase().includes(term) || 
+        tour.location.toLowerCase().includes(term)
+      );
     }
     
-    return data;
+    if (searchParams.category) {
+      tours = tours.filter(tour => tour.category === searchParams.category);
+    }
+    
+    if (searchParams.location) {
+      tours = tours.filter(tour => tour.location === searchParams.location);
+    }
+    
+    if (searchParams.minPrice !== undefined) {
+      tours = tours.filter(tour => tour.price >= searchParams.minPrice!);
+    }
+    
+    if (searchParams.maxPrice !== undefined) {
+      tours = tours.filter(tour => tour.price <= searchParams.maxPrice!);
+    }
+    
+    if (searchParams.featured !== undefined) {
+      tours = tours.filter(tour => tour.featured === searchParams.featured);
+    }
+    
+    if (searchParams.active !== undefined) {
+      tours = tours.filter(tour => tour.active === searchParams.active);
+    }
+    
+    return tours;
   },
   
-  // Mettre à jour le statut mis en avant d'un tour
-  async toggleFeatured(id: string, featured: boolean) {
-    const { data, error } = await supabase
-      .from('tours')
-      .update({ featured })
-      .eq('id', id)
-      .select()
-      .single();
-    
-    if (error) {
-      console.error(`Erreur lors de la mise à jour du statut mis en avant du tour ${id}:`, error);
-      throw error;
-    }
-    
-    return data;
+  add: async (tour: Omit<Tour, 'id'>) => {
+    const db = await getDB();
+    const id = crypto.randomUUID();
+    const newTour = { ...tour, id };
+    await db.put('tours', newTour);
+    return newTour;
   },
   
-  // Récupérer des tours similaires/liés
-  async getRelated(id: string, category?: string, limit: number = 3) {
-    let query = supabase
-      .from('tours')
-      .select('*')
-      .neq('id', id)  // Exclure le tour actuel
-      .eq('active', true); // Seulement les tours actifs
-    
-    // Si une catégorie est fournie, filtrer par catégorie
-    if (category) {
-      query = query.eq('category', category);
+  update: async (id: string, tour: Partial<Tour>) => {
+    const db = await getDB();
+    const existingTour = await db.get('tours', id);
+    if (!existingTour) {
+      throw new Error('Tour not found');
     }
-    
-    const { data, error } = await query
-      .limit(limit)
-      .order('rating', { ascending: false });
-    
-    if (error) {
-      console.error('Erreur lors de la récupération des tours liés:', error);
-      throw error;
-    }
-    
-    return data || [];
+    const updatedTour = { ...existingTour, ...tour };
+    await db.put('tours', updatedTour);
+    return updatedTour;
+  },
+  
+  delete: async (id: string) => {
+    const db = await getDB();
+    await db.delete('tours', id);
+  },
+  
+  searchByPrice: async (minPrice: number, maxPrice: number) => {
+    const db = await getDB();
+    const allTours = await db.getAll('tours');
+    return allTours.filter(tour => tour.price >= minPrice && tour.price <= maxPrice);
+  },
+  
+  searchByDuration: async (minDays: number, maxDays: number) => {
+    const db = await getDB();
+    const allTours = await db.getAll('tours');
+    return allTours.filter(tour => {
+      const days = parseInt(tour.duration.split(' ')[0]);
+      return days >= minDays && days <= maxDays;
+    });
+  },
+  
+  getAllCategories: async () => {
+    const db = await getDB();
+    const allTours = await db.getAll('tours');
+    return [...new Set(allTours.map(tour => tour.category))].filter(Boolean);
+  },
+  
+  getAllLocations: async () => {
+    const db = await getDB();
+    const allTours = await db.getAll('tours');
+    return [...new Set(allTours.map(tour => tour.location))].filter(Boolean);
   }
 };

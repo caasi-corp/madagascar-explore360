@@ -22,15 +22,14 @@ import {
   CalendarDays,
   ArrowRight,
 } from 'lucide-react';
-import { bookingAPI, Tour, tourAPI } from '@/lib/store';
+import { bookingAPI, Tour, tourAPI, Booking } from '@/lib/store';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
-import { mapSupabaseBooking } from '@/types/supabase';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [upcomingBookings, setUpcomingBookings] = useState([]);
+  const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<Tour[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -84,11 +83,6 @@ const UserDashboard = () => {
     );
   }
 
-  const getUserInitials = () => {
-    if (!user) return 'UT';
-    return `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`;
-  };
-
   return (
     <div className="container mx-auto px-4 py-8 mt-16">
       <div className="flex flex-col md:flex-row gap-6">
@@ -98,9 +92,9 @@ const UserDashboard = () => {
             <CardHeader className="text-center">
               <Avatar className="w-20 h-20 mx-auto">
                 <AvatarImage src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde" />
-                <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                <AvatarFallback>{user ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` : 'UT'}</AvatarFallback>
               </Avatar>
-              <CardTitle>{user ? `${user.firstName || ''} ${user.lastName || ''}` : 'Utilisateur'}</CardTitle>
+              <CardTitle>{user ? `${user.firstName} ${user.lastName}` : 'Utilisateur'}</CardTitle>
               <CardDescription>Membre depuis {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
@@ -151,7 +145,7 @@ const UserDashboard = () => {
         
         {/* Main Content */}
         <div className="flex-1">
-          <h1 className="text-2xl font-bold mb-6">Bienvenue, {user ? user.firstName || 'Voyageur' : 'Voyageur'} !</h1>
+          <h1 className="text-2xl font-bold mb-6">Bienvenue, {user ? user.firstName : 'Voyageur'} !</h1>
           
           <Tabs defaultValue="upcoming" className="w-full">
             <TabsList className="mb-4">

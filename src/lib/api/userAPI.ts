@@ -1,152 +1,100 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { getDB } from '../db/db';
+import { User } from '../db/schema';
 
+/**
+ * API for user operations
+ */
 export const userAPI = {
-  // Récupérer tous les utilisateurs (pour l'admin)
-  async getAll() {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (error) {
-      console.error('Erreur lors de la récupération des utilisateurs:', error);
-      throw error;
-    }
-    
-    return data || [];
+  getAll: async () => {
+    const db = await getDB();
+    return db.getAll('users');
   },
   
-  // Récupérer un utilisateur par ID
-  async getById(id: string) {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', id)
-      .single();
+  getById: async (id: string) => {
+    const db = await getDB();
+    return db.get('users', id);
+  },
+  
+  getByEmail: async (email: string) => {
+    const db = await getDB();
+    console.log("Recherche d'utilisateur par email:", email);
     
-    if (error) {
-      console.error(`Erreur lors de la récupération de l'utilisateur ${id}:`, error);
+    try {
+      // Récupérer tous les utilisateurs pour la vérification
+      const allUsers = await db.getAll('users');
+      console.log("Tous les utilisateurs dans la base:", JSON.stringify(allUsers));
+      
+      // Recherche directe en mémoire plutôt que par l'index qui semble poser problème
+      const user = allUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+      
+      if (user) {
+        console.log("Utilisateur trouvé:", user);
+        return user;
+      } else {
+        console.log("Aucun utilisateur trouvé avec cet email");
+        return null;
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'utilisateur par email:", error);
       return null;
     }
-    
-    return data;
   },
   
-  // Créer un utilisateur (inscription)
-  async register({ email, password, firstName, lastName }: { email: string; password: string; firstName: string; lastName: string }) {
+  authenticate: async (email: string, password: string) => {
     try {
-      // Inscription avec Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-          },
-        },
-      });
+      console.log(`Tentative d'authentification pour: ${email} avec mot de passe: ${password}`);
+      const user = await userAPI.getByEmail(email);
       
-      if (authError) throw authError;
-      if (!authData.user) throw new Error("Échec de l'inscription");
+      if (!user) {
+        console.log("Échec d'authentification: utilisateur non trouvé");
+        return null;
+      }
       
-      return {
-        id: authData.user.id,
-        email: authData.user.email,
-        firstName,
-        lastName,
-        role: 'user',
-      };
-    } catch (error) {
-      console.error("Erreur lors de l'inscription:", error);
-      throw error;
-    }
-  },
-  
-  // Authentifier un utilisateur
-  async authenticate(email: string, password: string) {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      console.log(`Vérification du mot de passe pour ${email}`);
+      console.log(`Mot de passe fourni: ${password}`);
+      console.log(`Mot de passe stocké: ${user.password}`);
       
-      if (error) throw error;
-      if (!data.user) throw new Error("Échec de l'authentification");
+      if (user.password === password) {
+        console.log("Authentification réussie pour:", email);
+        return { id: user.id, email: user.email, role: user.role };
+      }
       
-      // Récupérer les informations de profil
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
-      
-      return {
-        id: data.user.id,
-        email: data.user.email,
-        firstName: profile?.first_name || '',
-        lastName: profile?.last_name || '',
-        role: profile?.role || 'user',
-      };
+      console.log("Échec d'authentification: mot de passe incorrect");
+      return null;
     } catch (error) {
       console.error("Erreur lors de l'authentification:", error);
-      throw error;
+      return null;
     }
   },
   
-  // Mettre à jour un utilisateur
-  async update(id: string, userData: any) {
-    const { data, error } = await supabase
-      .from('profiles')
-      .update({
-        first_name: userData.firstName,
-        last_name: userData.lastName,
-        email: userData.email,
-        // Ici, nous ne mettons pas à jour le mot de passe directement car il est géré par Auth
-      })
-      .eq('id', id)
-      .select()
-      .single();
-    
-    if (error) {
-      console.error(`Erreur lors de la mise à jour de l'utilisateur ${id}:`, error);
-      throw error;
+  register: async (userData: Omit<User, 'id' | 'role'>) => {
+    const db = await getDB();
+    // Check if email already exists
+    const existingUser = await userAPI.getByEmail(userData.email);
+    if (existingUser) {
+      throw new Error('Email already in use');
     }
     
-    // Si on veut aussi mettre à jour le mot de passe
-    if (userData.password) {
-      // Mettre à jour le mot de passe via l'API Auth
-      const { error: passwordError } = await supabase.auth.updateUser({
-        password: userData.password,
-      });
-      
-      if (passwordError) {
-        console.error(`Erreur lors de la mise à jour du mot de passe pour l'utilisateur ${id}:`, passwordError);
-        throw passwordError;
-      }
-    }
-    
-    return {
-      id: data.id,
-      email: data.email,
-      firstName: data.first_name,
-      lastName: data.last_name,
-      role: data.role,
-    };
+    const id = crypto.randomUUID();
+    const newUser = { ...userData, id, role: 'user' as const };
+    await db.put('users', newUser);
+    return { id: newUser.id, email: newUser.email, role: newUser.role };
   },
   
-  // Supprimer un utilisateur
-  async delete(id: string) {
-    // Pour supprimer un utilisateur, nous devons supprimer le compte auth
-    // Supabase supprimera automatiquement le profil associé grâce à la contrainte ON DELETE CASCADE
-    const { error } = await supabase.auth.admin.deleteUser(id);
-    
-    if (error) {
-      console.error(`Erreur lors de la suppression de l'utilisateur ${id}:`, error);
-      throw error;
+  update: async (id: string, userData: Partial<User>) => {
+    const db = await getDB();
+    const existingUser = await db.get('users', id);
+    if (!existingUser) {
+      throw new Error('User not found');
     }
-    
-    return true;
-  }
+    const updatedUser = { ...existingUser, ...userData };
+    await db.put('users', updatedUser);
+    return { id: updatedUser.id, email: updatedUser.email, role: updatedUser.role };
+  },
+  
+  delete: async (id: string) => {
+    const db = await getDB();
+    await db.delete('users', id);
+  },
 };

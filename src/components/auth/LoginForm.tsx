@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { LogIn, User, Lock, Eye, EyeOff, AlertTriangle } from 'lucide-react';
 import { LoginFormData } from "@/types/auth";
-import { useAuth } from '@/contexts/auth';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface LoginFormProps {
   onDemoLogin: (email: string, password: string) => void;
