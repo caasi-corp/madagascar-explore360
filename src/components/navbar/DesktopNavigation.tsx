@@ -1,70 +1,67 @@
 
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import NavbarLink from './NavbarLink';
 import NavbarDropdown from './NavbarDropdown';
+import ThemeToggle from './ThemeToggle';
+import AuthStatus from './AuthStatus';
 
-const DesktopNavigation: React.FC = () => {
+interface NavItem {
+  title: string;
+  path: string;
+  dropdown?: { title: string; path: string }[];
+}
+
+interface DesktopNavigationProps {
+  navItems: NavItem[];
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
+  scrolled: boolean;
+  closeMenu: () => void;
+}
+
+const DesktopNavigation: React.FC<DesktopNavigationProps> = ({ 
+  navItems, 
+  theme, 
+  toggleTheme, 
+  scrolled,
+  closeMenu 
+}) => {
+  const location = useLocation();
+  
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
+
   return (
-    <nav className="flex items-center gap-1">
-      <NavLink
-        to="/"
-        className={({ isActive }) =>
-          `px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-            isActive
-              ? 'bg-muted/80 text-foreground'
-              : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-          }`
-        }
-      >
-        Accueil
-      </NavLink>
-
-      <NavbarDropdown 
-        trigger="Circuits"
-        items={[
-          { label: 'Tous les circuits', href: '/tours' },
-          { label: 'Nord', href: '/tours?region=north' },
-          { label: 'Sud', href: '/tours?region=south' },
-          { label: 'Est', href: '/tours?region=east' },
-          { label: 'Ouest', href: '/tours?region=west' },
-        ]}
-      />
-
-      <NavbarDropdown 
-        trigger="Services"
-        items={[
-          { label: 'Location de voitures', href: '/car-rental' },
-          { label: 'Croisières en catamaran', href: '/catamaran-cruise' },
-          { label: 'Réservation d\'hôtels', href: '/hotels' },
-          { label: 'Vols', href: '/flights' },
-        ]}
-      />
-
-      <NavLink
-        to="/about"
-        className={({ isActive }) =>
-          `px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-            isActive
-              ? 'bg-muted/80 text-foreground'
-              : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-          }`
-        }
-      >
-        À propos
-      </NavLink>
-
-      <NavLink
-        to="/contact"
-        className={({ isActive }) =>
-          `px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-            isActive
-              ? 'bg-muted/80 text-foreground'
-              : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-          }`
-        }
-      >
-        Contact
-      </NavLink>
+    <nav className="hidden md:flex items-center space-x-1">
+      {navItems.map((item, index) => (
+        item.dropdown ? (
+          <NavbarDropdown
+            key={index}
+            title={item.title}
+            items={item.dropdown}
+            isDark={theme === 'dark'}
+            isScrolled={scrolled}
+            onClick={closeMenu}
+          />
+        ) : (
+          <NavbarLink
+            key={index}
+            to={item.path}
+            title={item.title}
+            isActive={isActive(item.path)}
+            isDark={theme === 'dark'}
+            isScrolled={scrolled}
+            onClick={closeMenu}
+          />
+        )
+      ))}
+      
+      <div className="ml-4 flex items-center space-x-2">
+        <ThemeToggle theme={theme} toggleTheme={toggleTheme} isScrolled={scrolled} />
+        <AuthStatus />
+      </div>
     </nav>
   );
 };

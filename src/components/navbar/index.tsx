@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Logo from '../Logo';
 import DesktopNavigation from './DesktopNavigation';
-import MobileNavigation from './mobile';
-import AuthStatus from './AuthStatus';
+import MobileNavigation from './MobileNavigation';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -57,6 +56,22 @@ const Navbar: React.FC = () => {
     setIsMenuOpen(false);
   };
 
+  const navItems = [
+    { title: 'Accueil', path: '/' },
+    { title: 'Circuits', path: '/tours' },
+    { 
+      title: 'Services', 
+      path: '#', 
+      dropdown: [
+        { title: 'Location de Voiture', path: '/services/car-rental' },
+        { title: 'Croisières en Catamaran', path: '/services/catamaran' },
+        { title: 'Réservation d\'Hôtel', path: '/services/hotels' },
+      ]
+    },
+    { title: 'À Propos', path: '/about' },
+    { title: 'Contact', path: '/contact' },
+  ];
+
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -68,12 +83,22 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Logo variant={scrolled || theme === 'dark' ? 'default' : 'white'} />
         
-        <div className="hidden md:flex items-center space-x-4">
-          <DesktopNavigation />
-          <AuthStatus />
-        </div>
+        <DesktopNavigation
+          navItems={navItems}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          scrolled={scrolled}
+          closeMenu={closeMenu}
+        />
 
-        <MobileNavigation isOpen={isMenuOpen} onToggle={toggleMenu} />
+        <MobileNavigation
+          navItems={navItems}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          isMenuOpen={isMenuOpen}
+          toggleMenu={toggleMenu}
+          closeMenu={closeMenu}
+        />
       </div>
     </header>
   );
