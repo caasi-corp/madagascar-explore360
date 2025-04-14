@@ -10,17 +10,33 @@ import { useFeaturedTours } from '@/hooks/useFeaturedTours';
 import { useServicesData } from '@/hooks/useServicesData';
 import { useVehicles } from '@/hooks/useVehicles';
 import { useAdvantages } from '@/hooks/useAdvantages';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const Index = () => {
   const toursData = useFeaturedTours();
   const services = useServicesData();
   const vehiclesData = useVehicles();
   const advantages = useAdvantages();
+  
+  // Vérifier s'il y a des erreurs globales de base de données
+  const hasDBError = toursData.error || vehiclesData.error;
 
   return (
     <>
       {/* Hero Section */}
       <Hero />
+      
+      {/* Alerte d'erreur de base de données */}
+      {hasDBError && (
+        <div className="container mx-auto px-4 mt-6">
+          <Alert variant="destructive">
+            <AlertTitle>Erreur</AlertTitle>
+            <AlertDescription>
+              Problème de configuration de la base de données. Utilisation des données de secours.
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
       
       {/* Featured Tours Section */}
       <FeaturedToursSection tours={toursData.tours} loading={toursData.loading} error={toursData.error} />

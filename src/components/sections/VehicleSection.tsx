@@ -31,7 +31,9 @@ const VehicleSection: React.FC<VehicleSectionProps> = ({ vehicles }) => {
         {error && (
           <Alert variant="destructive" className="mb-6 bg-white/10 border-white/20 text-white">
             <AlertTitle>Erreur</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription>
+              Impossible de charger les véhicules en vedette. Affichage des données de secours.
+            </AlertDescription>
           </Alert>
         )}
 

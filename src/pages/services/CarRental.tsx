@@ -1,9 +1,9 @@
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon, Car, Filter, MapPin, Settings } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Calendar } from '@/components/ui/calendar';
@@ -144,6 +144,7 @@ const CarRental = () => {
     },
   });
   
+  // Utilisation simple sans useQuery pour le moment
   const availableVehicles = vehicles.filter(v => v.availability);
   
   const onSubmit = (values: z.infer<typeof formSchema>) => {
