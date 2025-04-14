@@ -29,8 +29,11 @@ const TourDetail = () => {
         console.log('Données du circuit récupérées:', tourData);
         setTour(tourData);
         
+        // Convert limit to a number to fix the TypeScript error
+        const limitNumber = 3; // Default related tours limit
+        
         if (tourData?.category) {
-          const related = await tourAPI.getRelated(tourId, tourData.category);
+          const related = await tourAPI.getRelated(tourId, limitNumber);
           setRelatedTours(related);
         }
       } catch (error) {

@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Tour } from "../db/schema";
 
@@ -86,8 +85,8 @@ export const tourAPI = {
       throw error;
     }
   },
-  
-  // Get related tours based on the category of a given tour
+
+  // Update the getRelated method to ensure type safety
   getRelated: async (tourId: string, limit: number = 3): Promise<Tour[]> => {
     try {
       // First get the tour to find its category
