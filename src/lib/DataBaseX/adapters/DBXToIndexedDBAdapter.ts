@@ -1,6 +1,6 @@
 
 /**
- * Adaptateur pour convertir les données entre IndexedDB et les fichiers DBX
+ * Adaptateur pour convertir les données entre IndexedDB et le système DBX
  * Permet une transition en douceur vers le nouveau système
  */
 import { IDBPDatabase } from 'idb';
@@ -8,7 +8,7 @@ import { NorthGascarDB, Tour, Vehicle, User, Booking, Hotel, Flight } from '../.
 import { dbxManager, DBXDataType } from '../DBXManager';
 
 /**
- * Convertit les données d'IndexedDB vers des fichiers DBX
+ * Convertit les données d'IndexedDB vers le système DBX
  */
 export const migrateFromIndexedDBToDBX = async (db: IDBPDatabase<NorthGascarDB>): Promise<void> => {
   console.log("Migration des données depuis IndexedDB vers DBX...");

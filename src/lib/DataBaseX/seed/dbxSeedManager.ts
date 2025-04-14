@@ -1,6 +1,6 @@
 
 /**
- * Gestionnaire pour l'initialisation des données dans les fichiers DBX
+ * Gestionnaire pour l'initialisation des données dans la base DBX
  */
 import { Tour, Vehicle, User, Booking } from '../../db/schema';
 import { dbxManager } from '../DBXManager';

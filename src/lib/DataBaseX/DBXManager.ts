@@ -1,15 +1,13 @@
 
 /**
  * Gestionnaire principal de la base de données DBX
- * Fournit des méthodes pour interagir avec les fichiers .dbx
+ * Fournit des méthodes pour interagir avec les données stockées dans le navigateur
  */
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import path from 'path';
 
 // Types de base
 export type DBXDataType = 'tours' | 'vehicles' | 'users' | 'bookings' | 'hotels' | 'flights';
 
-// Interface pour les données stockées dans un fichier DBX
+// Interface pour les données stockées
 export interface DBXFile<T> {
   version: number;
   lastUpdated: string;
@@ -17,39 +15,18 @@ export interface DBXFile<T> {
 }
 
 class DBXManager {
-  private basePath: string;
+  private storagePrefix: string = 'dbx_';
   private cache: Map<string, any> = new Map();
 
-  constructor() {
-    this.basePath = path.join(process.cwd(), 'DataBaseX');
-    this.ensureDirectoryExists();
-  }
-
   /**
-   * S'assure que le répertoire DataBaseX existe
+   * Construit la clé de stockage pour une entité
    */
-  private ensureDirectoryExists(): void {
-    try {
-      if (!existsSync(this.basePath)) {
-        mkdirSync(this.basePath, { recursive: true });
-        console.log("Répertoire DataBaseX créé avec succès");
-      }
-    } catch (error) {
-      console.error("Erreur lors de la création du répertoire DataBaseX:", error);
-    }
+  private getStorageKey(type: DBXDataType): string {
+    return `${this.storagePrefix}${type}`;
   }
 
   /**
-   * Obtient le chemin complet pour un fichier .dbx
-   */
-  private getFilePath(type: DBXDataType, id?: string): string {
-    return id 
-      ? path.join(this.basePath, `${type}_${id}.dbx`)
-      : path.join(this.basePath, `${type}.dbx`);
-  }
-
-  /**
-   * Lit les données d'un fichier .dbx
+   * Lit les données d'une entité
    */
   readDBX<T>(type: DBXDataType): T[] {
     try {
@@ -60,34 +37,35 @@ class DBXManager {
         return this.cache.get(cacheKey);
       }
       
-      const filePath = this.getFilePath(type);
+      // Récupère les données du localStorage
+      const storageKey = this.getStorageKey(type);
+      const storedData = localStorage.getItem(storageKey);
       
-      // Vérifie si le fichier existe
-      if (!existsSync(filePath)) {
-        console.log(`Fichier ${filePath} non trouvé, retourne un tableau vide`);
+      // Si les données n'existent pas, retourne un tableau vide
+      if (!storedData) {
+        console.log(`Aucune donnée trouvée pour ${type}, retourne un tableau vide`);
         return [];
       }
       
-      // Lit et parse le fichier
-      const fileContent = readFileSync(filePath, 'utf-8');
-      const dbxFile: DBXFile<T> = JSON.parse(fileContent);
+      // Parse et récupère les données
+      const dbxFile: DBXFile<T> = JSON.parse(storedData);
       
       // Met en cache les données
       this.cache.set(cacheKey, dbxFile.data);
       
       return dbxFile.data;
     } catch (error) {
-      console.error(`Erreur lors de la lecture du fichier ${type}.dbx:`, error);
+      console.error(`Erreur lors de la lecture des données ${type}:`, error);
       return [];
     }
   }
 
   /**
-   * Écrit des données dans un fichier .dbx
+   * Écrit des données pour une entité
    */
   writeDBX<T>(type: DBXDataType, data: T[]): boolean {
     try {
-      const filePath = this.getFilePath(type);
+      const storageKey = this.getStorageKey(type);
       
       const dbxFile: DBXFile<T> = {
         version: 1,
@@ -95,22 +73,22 @@ class DBXManager {
         data
       };
       
-      // Écrit les données dans le fichier
-      writeFileSync(filePath, JSON.stringify(dbxFile, null, 2), 'utf-8');
+      // Écrit les données dans le localStorage
+      localStorage.setItem(storageKey, JSON.stringify(dbxFile));
       
       // Met à jour le cache
       this.cache.set(`${type}`, data);
       
-      console.log(`Données écrites avec succès dans ${filePath}`);
+      console.log(`Données écrites avec succès pour ${type}`);
       return true;
     } catch (error) {
-      console.error(`Erreur lors de l'écriture dans le fichier ${type}.dbx:`, error);
+      console.error(`Erreur lors de l'écriture des données ${type}:`, error);
       return false;
     }
   }
 
   /**
-   * Ajoute ou met à jour un élément dans un fichier .dbx
+   * Ajoute ou met à jour un élément
    */
   updateItem<T extends { id: string }>(type: DBXDataType, item: T): T {
     const items = this.readDBX<T>(type);
@@ -127,7 +105,7 @@ class DBXManager {
   }
 
   /**
-   * Supprime un élément d'un fichier .dbx
+   * Supprime un élément
    */
   deleteItem<T extends { id: string }>(type: DBXDataType, id: string): boolean {
     const items = this.readDBX<T>(type);
