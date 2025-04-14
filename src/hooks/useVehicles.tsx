@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { Vehicle } from '@/lib/db/schema';
 import { vehicleAPI } from '@/lib/store';
 import { useToast } from '@/components/ui/use-toast';
+import { useQuery } from '@tanstack/react-query';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 // Define the adapter interface to match VehicleProps expected by VehicleCard
@@ -88,45 +88,42 @@ export const adaptVehicleToProps = (vehicle: Vehicle): VehicleProps => {
 };
 
 export const useVehicles = () => {
-  const [vehicles, setVehicles] = useState<VehicleProps[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
-
-  useEffect(() => {
-    const fetchFeaturedVehicles = async () => {
+  
+  const { 
+    data: vehicles = fallbackVehicles, 
+    isLoading: loading, 
+    error: queryError 
+  } = useQuery({
+    queryKey: ['featuredVehicles'],
+    queryFn: async () => {
       try {
-        setLoading(true);
-        setError(null);
         const data = await vehicleAPI.getFeatured();
-        
-        // Use adapter to convert Vehicle[] to VehicleProps[]
-        setVehicles(data.map(adaptVehicleToProps));
-      } catch (err: any) {
+        return data.map(adaptVehicleToProps);
+      } catch (err) {
         console.error('Erreur lors du chargement des véhicules en vedette:', err);
-        
-        // Set fallback data when API fails
-        setVehicles(fallbackVehicles);
-        
-        // Set error message for UI display
-        if (err?.message?.includes("infinite recursion")) {
-          setError("Problème de configuration de la base de données. Utilisation des données de secours.");
-        } else {
-          setError("Impossible de charger les véhicules en vedette");
-        }
-        
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les véhicules en vedette. Affichage des données de secours.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
+        throw err;
       }
-    };
+    },
+    retry: 1,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
+    onError: (err: any) => {
+      console.error('Erreur React Query:', err);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les véhicules en vedette. Affichage des données de secours.",
+        variant: "destructive",
+      });
+    }
+  });
 
-    fetchFeaturedVehicles();
-  }, [toast]);
+  // Convert query error to a string for UI display
+  const error = queryError ? 
+    (queryError.message?.includes("infinite recursion") 
+      ? "Problème de configuration de la base de données. Utilisation des données de secours."
+      : "Impossible de charger les véhicules en vedette") 
+    : null;
 
   return { vehicles, loading, error };
 };

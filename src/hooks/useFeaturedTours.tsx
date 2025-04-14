@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { Tour } from '@/lib/db/schema';
 import { tourAPI } from '@/lib/store';
 import { useToast } from '@/components/ui/use-toast';
+import { useQuery } from '@tanstack/react-query';
 
 // Fallback tours data that matches the Tour type
 const fallbackTours: Tour[] = [
@@ -65,43 +65,41 @@ const fallbackTours: Tour[] = [
 ];
 
 export const useFeaturedTours = () => {
-  const [tours, setTours] = useState<Tour[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
-
-  useEffect(() => {
-    const fetchFeaturedTours = async () => {
+  
+  const { 
+    data: tours = fallbackTours, 
+    isLoading: loading, 
+    error: queryError 
+  } = useQuery({
+    queryKey: ['featuredTours'],
+    queryFn: async () => {
       try {
-        setLoading(true);
-        setError(null);
-        const data = await tourAPI.getFeatured();
-        setTours(data);
-      } catch (err: any) {
+        return await tourAPI.getFeatured();
+      } catch (err) {
         console.error('Erreur lors du chargement des circuits en vedette:', err);
-        
-        // Set fallback data when API fails
-        setTours(fallbackTours);
-        
-        // Set error message for UI display
-        if (err?.message?.includes("infinite recursion")) {
-          setError("Problème de configuration de la base de données. Utilisation des données de secours.");
-        } else {
-          setError("Impossible de charger les circuits en vedette");
-        }
-        
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les circuits en vedette. Affichage des données de secours.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
+        throw err;
       }
-    };
+    },
+    retry: 1,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
+    onError: (err: any) => {
+      console.error('Erreur React Query:', err);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les circuits en vedette. Affichage des données de secours.",
+        variant: "destructive",
+      });
+    }
+  });
 
-    fetchFeaturedTours();
-  }, [toast]);
+  // Convert query error to a string for UI display
+  const error = queryError ? 
+    (queryError.message?.includes("infinite recursion") 
+      ? "Problème de configuration de la base de données. Utilisation des données de secours."
+      : "Impossible de charger les circuits en vedette") 
+    : null;
 
   return { tours, loading, error };
 };
