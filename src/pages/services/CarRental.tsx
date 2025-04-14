@@ -1,26 +1,13 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon, Car, Filter, MapPin, Settings } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Calendar } from '@/components/ui/calendar';
-import { VehicleProps } from '@/components/VehicleCard';
+import { VehicleProps } from '@/hooks/useVehicles';
 import {
   Popover,
   PopoverContent,
