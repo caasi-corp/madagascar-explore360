@@ -86,7 +86,7 @@ const RegisterForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -98,6 +98,7 @@ const RegisterForm: React.FC = () => {
               value={formData.firstName}
               onChange={handleChange}
               required
+              className="border-gray-300 focus:border-madagascar-green focus:ring focus:ring-madagascar-green/20"
             />
           </div>
           <div className="space-y-2">
@@ -109,6 +110,7 @@ const RegisterForm: React.FC = () => {
               value={formData.lastName}
               onChange={handleChange}
               required
+              className="border-gray-300 focus:border-madagascar-green focus:ring focus:ring-madagascar-green/20"
             />
           </div>
         </div>
@@ -125,6 +127,7 @@ const RegisterForm: React.FC = () => {
             value={formData.email}
             onChange={handleChange}
             required
+            className="border-gray-300 focus:border-madagascar-green focus:ring focus:ring-madagascar-green/20"
           />
         </div>
         <div className="space-y-2">
@@ -137,6 +140,7 @@ const RegisterForm: React.FC = () => {
             onChange={handleChange}
             required
             minLength={6}
+            className="border-gray-300 focus:border-madagascar-green focus:ring focus:ring-madagascar-green/20"
           />
         </div>
         <div className="space-y-2">
@@ -149,6 +153,7 @@ const RegisterForm: React.FC = () => {
             onChange={handleChange}
             required
             minLength={6}
+            className="border-gray-300 focus:border-madagascar-green focus:ring focus:ring-madagascar-green/20"
           />
         </div>
         
@@ -175,7 +180,7 @@ const RegisterForm: React.FC = () => {
 
       <div className="mt-6">
         <Button 
-          className="w-full bg-madagascar-green hover:bg-madagascar-green/80" 
+          className="w-full bg-madagascar-green hover:bg-madagascar-green/80 transition-colors duration-300 shadow-md" 
           type="submit"
           disabled={isLoading}
         >
