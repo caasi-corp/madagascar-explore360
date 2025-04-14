@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Logo from '../Logo';
 import DesktopNavigation from './DesktopNavigation';
-import MobileNavigation from './MobileNavigation';
+import MobileNavigation from './mobile';
 import AuthStatus from './AuthStatus';
 
 const Navbar: React.FC = () => {
