@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router-dom';
 import router from './router';
 import { Toaster } from './components/ui/sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { initDB } from './lib/store';
+import { initDB, initDBX, migrateToDBX } from './lib/store';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './components/ui/dialog';
 import { Button } from './components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -25,20 +25,29 @@ function App() {
   const [initError, setInitError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Initialiser la base de données au chargement de l'application
+    // Initialiser les bases de données au chargement de l'application
     const initialize = async () => {
       try {
         setIsInitializing(true);
-        const db = await initDB();
-        console.log("Base de données initialisée avec succès");
         
-        // Vérifier que les utilisateurs ont bien été créés
-        const users = await db.getAll('users');
-        console.log(`La base contient ${users.length} utilisateurs:`, JSON.stringify(users));
+        // Première étape : initialiser IndexedDB pour la migration
+        const db = await initDB();
+        console.log("Base de données IndexedDB initialisée avec succès");
+        
+        // Deuxième étape : initialiser la nouvelle base DBX
+        await initDBX();
+        console.log("Base de données DBX initialisée avec succès");
+        
+        // Troisième étape : migrer les données de IndexedDB vers DBX
+        await migrateToDBX(db);
+        console.log("Migration des données vers DBX terminée");
+        
+        // Vérifier que les utilisateurs ont bien été créés (via DBX maintenant)
+        console.log("Base de données prête à l'emploi");
         
       } catch (error) {
-        console.error("Erreur lors de l'initialisation de la base de données:", error);
-        setInitError((error as Error).message || "Erreur lors de l'initialisation de la base de données");
+        console.error("Erreur lors de l'initialisation des bases de données:", error);
+        setInitError((error as Error).message || "Erreur lors de l'initialisation des bases de données");
       } finally {
         setIsInitializing(false);
       }
