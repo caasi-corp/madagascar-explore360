@@ -1,108 +1,62 @@
 
-import { useState, useEffect } from 'react';
-import { Tour } from '@/lib/db/schema';
-import { tourAPI } from '@/lib/store';
-import { useToast } from '@/components/ui/use-toast';
-import { useQuery } from '@tanstack/react-query';
+import { TourProps } from '@/components/TourCard';
 
-// Fallback tours data that matches the Tour type
-const fallbackTours: Tour[] = [
-  {
-    id: '1',
-    title: 'Parc National d\'Andasibe',
-    description: 'Découvrez la faune et la flore uniques de Madagascar',
-    location: 'Andasibe',
-    duration: '2 jours',
-    price: 199,
-    rating: 4.8,
-    image: 'https://images.unsplash.com/photo-1661155702216-d3e9f012d6f7',
-    category: 'nature',
-    active: true,
-    featured: true,
-    created_at: null
-  },
-  {
-    id: '2',
-    title: 'Avenue des Baobabs',
-    description: 'Admirez les célèbres baobabs au coucher du soleil',
-    location: 'Morondava',
-    duration: '1 jour',
-    price: 99,
-    rating: 4.9,
-    image: 'https://images.unsplash.com/photo-1547471080-3cc20479a792',
-    category: 'nature',
-    active: true,
-    featured: true,
-    created_at: null
-  },
-  {
-    id: '3',
-    title: 'Nosy Be',
-    description: 'Profitez des plages paradisiaques de l\'île aux parfums',
-    location: 'Nosy Be',
-    duration: '5 jours',
-    price: 499,
-    rating: 4.7,
-    image: 'https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5',
-    category: 'plage',
-    active: true,
-    featured: true,
-    created_at: null
-  },
-  {
-    id: '4',
-    title: 'Parc National de l\'Isalo',
-    description: 'Randonnée à travers des canyons spectaculaires',
-    location: 'Isalo',
-    duration: '3 jours',
-    price: 299,
-    rating: 4.6,
-    image: 'https://images.unsplash.com/photo-1551907234-fb773fb08a2a',
-    category: 'aventure',
-    active: true,
-    featured: true,
-    created_at: null
-  }
-];
-
-export const useFeaturedTours = () => {
-  const { toast } = useToast();
-  
-  const { 
-    data: tours = fallbackTours, 
-    isLoading: loading, 
-    error: queryError 
-  } = useQuery({
-    queryKey: ['featuredTours'],
-    queryFn: async () => {
-      try {
-        return await tourAPI.getFeatured();
-      } catch (err) {
-        console.error('Erreur lors du chargement des circuits en vedette:', err);
-        throw err;
-      }
+export function useFeaturedTours(): TourProps[] {
+  // Sample tour data
+  const featuredTours: TourProps[] = [
+    {
+      id: '1',
+      title: 'Circuit Allée des Baobabs',
+      description: 'Découvrez l\'emblématique Allée des Baobabs, l\'un des sites les plus célèbres de Madagascar.',
+      location: 'Morondava',
+      duration: '2 Jours',
+      price: 299,
+      rating: 4.9,
+      image: 'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb',
+      featured: true,
+      category: 'Nature',
+      active: true,
     },
-    retry: 1,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
-    meta: {
-      onError: (err: any) => {
-        console.error('Erreur React Query:', err);
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les circuits en vedette. Affichage des données de secours.",
-          variant: "destructive",
-        });
-      }
-    }
-  });
+    {
+      id: '2',
+      title: 'Randonnée Lémuriens à Andasibe',
+      description: 'Randonnez à travers le Parc National d\'Andasibe et rencontrez différentes espèces de lémuriens dans leur habitat naturel.',
+      location: 'Andasibe',
+      duration: '3 Jours',
+      price: 349,
+      rating: 4.8,
+      image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027',
+      featured: true,
+      category: 'Faune',
+      active: true,
+    },
+    {
+      id: '3',
+      title: 'Aventure au Parc National de l\'Isalo',
+      description: 'Découvrez les paysages époustouflants du Parc National de l\'Isalo avec ses canyons, cascades et piscines naturelles.',
+      location: 'Isalo',
+      duration: '4 Jours',
+      price: 499,
+      rating: 4.7,
+      image: 'https://images.unsplash.com/photo-1469041797191-50ace28483c3',
+      featured: true,
+      category: 'Aventure',
+      active: true,
+    },
+    {
+      id: '4',
+      title: 'Paradis de l\'île de Nosy Be',
+      description: 'Détendez-vous sur les magnifiques plages de Nosy Be, la principale destination balnéaire de Madagascar.',
+      location: 'Nosy Be',
+      duration: '5 Jours',
+      price: 599,
+      rating: 4.9,
+      image: 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57',
+      featured: false,
+      category: 'Plage',
+      active: true,
+    },
+  ];
 
-  // Convert query error to a string for UI display
-  const error = queryError ? 
-    (queryError.message?.includes("infinite recursion") 
-      ? "Problème de configuration de la base de données. Utilisation des données de secours."
-      : "Impossible de charger les circuits en vedette") 
-    : null;
-
-  return { tours, loading, error };
-};
+  return featuredTours;
+}

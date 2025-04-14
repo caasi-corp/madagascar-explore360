@@ -1,4 +1,6 @@
 
+import { IDBPDatabase } from 'idb';
+import { NorthGascarDB } from '../schema';
 import { seedUsers } from './userSeed';
 import { seedTours } from './tourSeed';
 import { seedVehicles } from './vehicleSeed';
@@ -8,7 +10,7 @@ import { seedBookings } from './bookingSeed';
  * Seeds the database with initial data
  * @param db The database connection
  */
-export const seedData = async (db: any) => {
+export const seedData = async (db: IDBPDatabase<NorthGascarDB>) => {
   console.log("Début du processus de seed de la base de données");
   
   try {

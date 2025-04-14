@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Navigate } from 'react-router-dom';
 import UserLayout from '@/components/UserLayout';
 import UserDashboard from '@/pages/UserDashboard';
 import UserSettings from '@/pages/UserSettings';
@@ -9,29 +8,12 @@ import Wishlist from '@/pages/user/Wishlist';
 import PaymentMethods from '@/pages/user/PaymentMethods';
 import Notifications from '@/pages/user/Notifications';
 
-// Route protégée pour les utilisateurs connectés
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  // Vérifier si l'utilisateur est connecté
-  const isAuthenticated = !!localStorage.getItem('supabase.auth.token');
-  
-  if (!isAuthenticated) {
-    // Rediriger vers la page de connexion si non connecté
-    return <Navigate to="/auth" replace />;
-  }
-  
-  return <>{children}</>;
-};
-
 const userRoutes = {
   path: '/user',
-  element: (
-    <ProtectedRoute>
-      <UserLayout />
-    </ProtectedRoute>
-  ),
+  element: <UserLayout />,
   children: [
     {
-      index: true,
+      path: 'dashboard',
       element: <UserDashboard />
     },
     {
@@ -47,7 +29,7 @@ const userRoutes = {
       element: <Wishlist />
     },
     {
-      path: 'payment-methods',
+      path: 'payments',
       element: <PaymentMethods />
     },
     {

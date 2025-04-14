@@ -48,7 +48,7 @@ const UserDashboard = () => {
         const userBookings = await bookingAPI.getByUserId(user.id);
         // Filtrer pour n'obtenir que les réservations à venir
         const upcoming = userBookings.filter(booking => 
-          new Date(booking.start_date) >= new Date()
+          new Date(booking.startDate) >= new Date()
         );
         setUpcomingBookings(upcoming);
         
@@ -92,9 +92,9 @@ const UserDashboard = () => {
             <CardHeader className="text-center">
               <Avatar className="w-20 h-20 mx-auto">
                 <AvatarImage src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde" />
-                <AvatarFallback>{user ? `${user.first_name.charAt(0)}${user.last_name.charAt(0)}` : 'UT'}</AvatarFallback>
+                <AvatarFallback>{user ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` : 'UT'}</AvatarFallback>
               </Avatar>
-              <CardTitle>{user ? `${user.first_name} ${user.last_name}` : 'Utilisateur'}</CardTitle>
+              <CardTitle>{user ? `${user.firstName} ${user.lastName}` : 'Utilisateur'}</CardTitle>
               <CardDescription>Membre depuis {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
@@ -145,7 +145,7 @@ const UserDashboard = () => {
         
         {/* Main Content */}
         <div className="flex-1">
-          <h1 className="text-2xl font-bold mb-6">Bienvenue, {user ? user.first_name : 'Voyageur'} !</h1>
+          <h1 className="text-2xl font-bold mb-6">Bienvenue, {user ? user.firstName : 'Voyageur'} !</h1>
           
           <Tabs defaultValue="upcoming" className="w-full">
             <TabsList className="mb-4">
@@ -161,7 +161,7 @@ const UserDashboard = () => {
                   {upcomingBookings.map((booking) => (
                     <Card key={booking.id}>
                       <CardHeader>
-                        <CardTitle className="text-lg">{booking.tour_id ? "Circuit réservé" : booking.vehicle_id ? "Location de véhicule" : "Réservation"}</CardTitle>
+                        <CardTitle className="text-lg">{booking.tourId ? "Circuit réservé" : booking.vehicleId ? "Location de véhicule" : "Réservation"}</CardTitle>
                         <CardDescription>Réservation #{booking.id.slice(0, 6)}</CardDescription>
                         <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                             booking.status === 'Confirmed'
@@ -177,14 +177,14 @@ const UserDashboard = () => {
                           <div className="flex items-center">
                             <CalendarDays className="mr-2 h-4 w-4 text-madagascar-green" />
                             <span className="text-sm">
-                              {new Date(booking.start_date).toLocaleDateString('fr-FR')} - {new Date(booking.end_date).toLocaleDateString('fr-FR')}
+                              {new Date(booking.startDate).toLocaleDateString('fr-FR')} - {new Date(booking.endDate).toLocaleDateString('fr-FR')}
                             </span>
                           </div>
                           <div className="flex items-center">
                             <Clock className="mr-2 h-4 w-4 text-madagascar-green" />
                             <span className="text-sm">
-                              {new Date(booking.start_date) > new Date() 
-                                ? `${Math.ceil((new Date(booking.start_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} jours restants` 
+                              {new Date(booking.startDate) > new Date() 
+                                ? `${Math.ceil((new Date(booking.startDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} jours restants` 
                                 : "Commence aujourd'hui!"
                               }
                             </span>

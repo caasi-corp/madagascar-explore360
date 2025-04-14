@@ -1,7 +1,7 @@
 
-import { Tour } from '@/lib/db/schema';
+import { TourProps } from '@/components/TourCard';
 
-export const tours: Tour[] = [
+export const tours: TourProps[] = [
   {
     id: '1',
     title: 'Circuit Allée des Baobabs',
@@ -13,8 +13,6 @@ export const tours: Tour[] = [
     image: 'https://images.unsplash.com/photo-1482938289607-e9573fc25ebb',
     featured: true,
     category: 'Nature',
-    active: true,
-    created_at: new Date().toISOString()
   },
   {
     id: '2',
@@ -27,8 +25,6 @@ export const tours: Tour[] = [
     image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027',
     featured: true,
     category: 'Faune',
-    active: true,
-    created_at: new Date().toISOString()
   },
   {
     id: '3',
@@ -41,8 +37,6 @@ export const tours: Tour[] = [
     image: 'https://images.unsplash.com/photo-1469041797191-50ace28483c3',
     featured: true,
     category: 'Aventure',
-    active: true,
-    created_at: new Date().toISOString()
   },
   {
     id: '4',
@@ -55,8 +49,6 @@ export const tours: Tour[] = [
     image: 'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57',
     featured: false,
     category: 'Plage',
-    active: true,
-    created_at: new Date().toISOString()
   },
   {
     id: '5',
@@ -69,8 +61,6 @@ export const tours: Tour[] = [
     image: 'https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a',
     featured: false,
     category: 'Faune',
-    active: true,
-    created_at: new Date().toISOString()
   },
   {
     id: '6',
@@ -83,8 +73,6 @@ export const tours: Tour[] = [
     image: 'https://images.unsplash.com/photo-1504623953583-4ae307ea839f',
     featured: false,
     category: 'Aventure',
-    active: true,
-    created_at: new Date().toISOString()
   },
 ];
 

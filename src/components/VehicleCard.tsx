@@ -1,9 +1,22 @@
+
 import React from 'react';
 import { Check, Car, Users, Fuel, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { VehicleProps } from '@/hooks/useVehicles';
+
+export interface VehicleProps {
+  id: string;
+  name: string;
+  type: 'car' | '4x4' | 'motorcycle' | 'quad';
+  pricePerDay: number;
+  seats: number;
+  transmission: 'Automatic' | 'Manual';
+  fuelType: string;
+  image: string;
+  features: string[];
+  availability: boolean;
+}
 
 interface VehicleCardProps {
   vehicle: VehicleProps;
@@ -25,6 +38,7 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
     }
   };
 
+  // Convert English transmission to French for display
   const getTranslatedTransmission = (transmission: 'Automatic' | 'Manual'): string => {
     return transmission === 'Automatic' ? 'Automatique' : 'Manuelle';
   };

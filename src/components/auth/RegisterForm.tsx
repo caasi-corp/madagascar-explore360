@@ -6,13 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { UserPlus } from 'lucide-react';
+import { userAPI } from '@/lib/store';
 import { RegisterFormData } from '@/types/auth';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
 
 const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
@@ -34,27 +33,29 @@ const RegisterForm: React.FC = () => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords don't match");
+      toast.error("Les mots de passe ne correspondent pas");
       return;
     }
     
     setIsLoading(true);
     
     try {
-      const newUser = await register({
-        first_name: formData.firstName,
-        last_name: formData.lastName,
+      const newUser = await userAPI.register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
         email: formData.email,
         password: formData.password
       });
       
       if (newUser) {
-        toast.success('Account created successfully!');
+        localStorage.setItem('userId', newUser.id);
+        localStorage.setItem('userRole', newUser.role);
+        toast.success('Compte créé avec succès !');
         navigate('/user/dashboard');
       }
     } catch (error) {
-      console.error("Registration error:", error);
-      toast.error("An error occurred during registration");
+      console.error("Erreur d'inscription:", error);
+      toast.error("Une erreur s'est produite lors de l'inscription");
     } finally {
       setIsLoading(false);
     }
@@ -65,22 +66,22 @@ const RegisterForm: React.FC = () => {
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="firstName">First Name</Label>
+            <Label htmlFor="firstName">Prénom</Label>
             <Input
               id="firstName"
               name="firstName"
-              placeholder="John"
+              placeholder="Jean"
               value={formData.firstName}
               onChange={handleChange}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="lastName">Last Name</Label>
+            <Label htmlFor="lastName">Nom</Label>
             <Input
               id="lastName"
               name="lastName"
-              placeholder="Doe"
+              placeholder="Dupont"
               value={formData.lastName}
               onChange={handleChange}
               required
@@ -92,7 +93,7 @@ const RegisterForm: React.FC = () => {
           <Input
             id="email"
             name="email"
-            placeholder="name@example.com"
+            placeholder="nom@exemple.com"
             type="email"
             autoCapitalize="none"
             autoComplete="email"
@@ -103,7 +104,7 @@ const RegisterForm: React.FC = () => {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">Mot de passe</Label>
           <Input
             id="password"
             name="password"
@@ -114,7 +115,7 @@ const RegisterForm: React.FC = () => {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
           <Input
             id="confirmPassword"
             name="confirmPassword"
@@ -125,13 +126,13 @@ const RegisterForm: React.FC = () => {
           />
         </div>
         <p className="text-xs text-muted-foreground">
-          By creating an account, you agree to our{' '}
+          En créant un compte, vous acceptez nos{' '}
           <Link to="/terms-of-service" className="text-madagascar-green hover:underline">
-            Terms of Service
+            Conditions d'utilisation
           </Link>{' '}
-          and{' '}
+          et notre{' '}
           <Link to="/privacy-policy" className="text-madagascar-green hover:underline">
-            Privacy Policy
+            Politique de confidentialité
           </Link>.
         </p>
       </div>
@@ -145,11 +146,11 @@ const RegisterForm: React.FC = () => {
           {isLoading ? (
             <div className="flex items-center">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-              Creating account...
+              Création du compte...
             </div>
           ) : (
             <>
-              <UserPlus className="mr-2 h-4 w-4" /> Create Account
+              <UserPlus className="mr-2 h-4 w-4" /> Créer un compte
             </>
           )}
         </Button>

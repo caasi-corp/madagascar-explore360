@@ -1,40 +1,40 @@
 
 import { IDBPDatabase } from 'idb';
-import { User } from '../schema';
+import { NorthGascarDB, User } from '../schema';
 
 /**
  * Seeds user data into the database
  * @param db The database connection
  * @returns Whether the seeding was successful
  */
-export const seedUsers = async (db: any): Promise<boolean> => {
+export const seedUsers = async (db: IDBPDatabase<NorthGascarDB>): Promise<boolean> => {
   console.log("Création des utilisateurs de test...");
   
   try {
     const users: User[] = [
       {
         id: 'admin1',
-        first_name: 'Admin',
-        last_name: 'User',
+        firstName: 'Admin',
+        lastName: 'User',
         email: 'admin@northgascartours.com',
+        password: 'Admin123!',
         role: 'admin',
-        created_at: new Date().toISOString()
       },
       {
         id: 'user1',
-        first_name: 'Pierre',
-        last_name: 'Martin',
+        firstName: 'Pierre',
+        lastName: 'Martin',
         email: 'user@northgascartours.com',
+        password: 'User123!',
         role: 'user',
-        created_at: new Date().toISOString()
       },
       {
         id: 'user2',
-        first_name: 'Marie',
-        last_name: 'Dubois',
+        firstName: 'Marie',
+        lastName: 'Dubois',
         email: 'marie@example.com',
+        password: 'password',
         role: 'user',
-        created_at: new Date().toISOString()
       }
     ];
     

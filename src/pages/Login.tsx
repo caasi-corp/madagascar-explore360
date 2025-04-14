@@ -4,10 +4,12 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { userAPI } from '@/lib/store';
+import { resetDB } from '@/lib/db/db';
 import LoginForm from '@/components/auth/LoginForm';
 import DemoCredentials from '@/components/auth/DemoCredentials';
 
 const Login = () => {
+  const [isResetting, setIsResetting] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: '',
@@ -19,12 +21,12 @@ const Login = () => {
     const checkUsers = async () => {
       try {
         const users = await userAPI.getAll();
-        console.log(`Login page: ${users.length} users found in database`);
+        console.log(`Page de connexion: ${users.length} utilisateurs trouvés dans la base`);
         if (users.length === 0) {
-          setLoginError("No users found in the database. Please create a user or contact an administrator.");
+          setLoginError("Aucun utilisateur trouvé dans la base de données. Veuillez réinitialiser la base de données.");
         }
       } catch (error) {
-        console.error("Error checking users:", error);
+        console.error("Erreur lors de la vérification des utilisateurs:", error);
       }
     };
     
@@ -40,13 +42,34 @@ const Login = () => {
     setLoginError(null);
   };
 
+  const handleResetDatabase = async () => {
+    try {
+      setIsResetting(true);
+      setLoginError(null);
+      await resetDB();
+      toast.success("Base de données réinitialisée avec succès. Veuillez vous reconnecter.");
+      
+      const users = await userAPI.getAll();
+      console.log(`Après réinitialisation: ${users.length} utilisateurs dans la base`);
+      if (users.length > 0) {
+        toast.success(`${users.length} utilisateurs ajoutés avec succès`);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la réinitialisation de la base de données:", error);
+      setLoginError("Erreur lors de la réinitialisation. Veuillez recharger la page.");
+      toast.error("Erreur lors de la réinitialisation de la base de données");
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center p-4 pt-24 mt-16">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome</CardTitle>
+          <CardTitle className="text-2xl">Bienvenue</CardTitle>
           <CardDescription>
-            Login to your account to continue
+            Connectez-vous à votre compte pour continuer
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -57,9 +80,9 @@ const Login = () => {
         </CardContent>
         <CardFooter className="flex flex-col">
           <p className="text-sm text-center text-muted-foreground">
-            Don't have an account?{" "}
+            Vous n'avez pas de compte ?{" "}
             <Link to="/register" className="text-madagascar-green hover:underline">
-              Sign Up
+              S'inscrire
             </Link>
           </p>
         </CardFooter>
@@ -67,8 +90,8 @@ const Login = () => {
       
       <DemoCredentials 
         onDemoLogin={handleDemoLogin}
-        onResetDatabase={() => {}}
-        isResetting={false}
+        onResetDatabase={handleResetDatabase}
+        isResetting={isResetting}
       />
     </div>
   );

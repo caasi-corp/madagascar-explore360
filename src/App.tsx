@@ -1,25 +1,79 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import router from './router';
-import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from './contexts/AuthContext';
+import { Toaster } from './components/ui/sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { initDB } from './lib/store';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './components/ui/dialog';
+import { Button } from './components/ui/button';
+import { Loader2 } from 'lucide-react';
+import { AuthProvider } from './contexts/AuthContext';
 
-// Créer une instance de QueryClient avec configuration améliorée
+// Initialize the query client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 2,
+      staleTime: 60 * 1000,
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 10, // 10 minutes
     },
   },
 });
 
 function App() {
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [initError, setInitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Initialiser la base de données au chargement de l'application
+    const initialize = async () => {
+      try {
+        setIsInitializing(true);
+        const db = await initDB();
+        console.log("Base de données initialisée avec succès");
+        
+        // Vérifier que les utilisateurs ont bien été créés
+        const users = await db.getAll('users');
+        console.log(`La base contient ${users.length} utilisateurs:`, JSON.stringify(users));
+        
+      } catch (error) {
+        console.error("Erreur lors de l'initialisation de la base de données:", error);
+        setInitError((error as Error).message || "Erreur lors de l'initialisation de la base de données");
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+    
+    initialize();
+  }, []);
+
+  if (isInitializing) {
+    return (
+      <div className="h-screen w-screen flex flex-col items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-madagascar-green" />
+        <p className="mt-4">Initialisation de l'application...</p>
+      </div>
+    );
+  }
+
+  if (initError) {
+    return (
+      <Dialog open={!!initError}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Erreur d'initialisation</DialogTitle>
+            <DialogDescription>
+              Une erreur est survenue lors de l'initialisation de la base de données: {initError}
+            </DialogDescription>
+          </DialogHeader>
+          <Button onClick={() => window.location.reload()}>
+            Réessayer
+          </Button>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
@@ -27,7 +81,6 @@ function App() {
           <RouterProvider router={router} />
           <Toaster />
         </AuthProvider>
-        {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
       </QueryClientProvider>
     </React.StrictMode>
   );
