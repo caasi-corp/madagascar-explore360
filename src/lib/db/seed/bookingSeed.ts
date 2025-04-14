@@ -14,6 +14,9 @@ export const seedBookings = async (db: any): Promise<void> => {
       id: 'b1',
       user_id: 'user1',
       tour_id: '1',
+      vehicle_id: null,  // Add missing property
+      hotel_id: null,    // Add missing property
+      flight_id: null,   // Add missing property
       start_date: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 15 days from now
       end_date: new Date(Date.now() + 17 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 17 days from now
       status: 'Confirmed',

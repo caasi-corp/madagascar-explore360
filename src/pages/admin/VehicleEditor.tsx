@@ -87,6 +87,11 @@ const AdminVehicleEditor = () => {
         image: vehicleData.images[0] || 'placeholder.svg',
         features: vehicleData.features,
         availability: vehicleData.available,
+        // Add missing properties required by the Vehicle type
+        description: vehicleData.description || null,
+        featured: vehicleData.featured,
+        images: vehicleData.images.length > 0 ? vehicleData.images : null,
+        created_at: new Date().toISOString()
       };
 
       if (isEditMode && id) {

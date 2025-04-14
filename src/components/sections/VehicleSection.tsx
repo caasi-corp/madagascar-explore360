@@ -3,7 +3,8 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowRight } from 'lucide-react';
-import VehicleCard, { VehicleProps } from '@/components/VehicleCard';
+import VehicleCard from '@/components/VehicleCard';
+import { VehicleProps } from '@/hooks/useVehicles';
 
 interface VehicleSectionProps {
   vehicles: VehicleProps[];
