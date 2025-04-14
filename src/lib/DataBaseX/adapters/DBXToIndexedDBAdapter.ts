@@ -1,59 +1,88 @@
 
 /**
- * Adaptateur pour convertir les données entre IndexedDB et le système DBX
- * Permet une transition en douceur vers le nouveau système
+ * Adaptateur pour migrer les données d'IndexedDB vers DBX
  */
 import { IDBPDatabase } from 'idb';
-import { NorthGascarDB, Tour, Vehicle, User, Booking, Hotel, Flight } from '../../db/schema';
-import { dbxManager, DBXDataType } from '../DBXManager';
+import { NorthGascarDB } from '../../db/schema';
+import { dbxManager } from '../DBXManager';
 
 /**
- * Convertit les données d'IndexedDB vers le système DBX
+ * Migre les données d'IndexedDB vers DBX
+ * @param db La connexion à la base de données IndexedDB
  */
-export const migrateFromIndexedDBToDBX = async (db: IDBPDatabase<NorthGascarDB>): Promise<void> => {
-  console.log("Migration des données depuis IndexedDB vers DBX...");
+export const migrateFromIndexedDBToDBX = async (db: IDBPDatabase<NorthGascarDB>): Promise<boolean> => {
+  console.log("Début de la migration des données d'IndexedDB vers DBX...");
   
   try {
-    // Migration des tours
-    const tours = await db.getAll('tours');
-    dbxManager.writeDBX<Tour>('tours', tours);
-    console.log(`${tours.length} tours migrés vers DBX`);
-    
-    // Migration des véhicules
-    const vehicles = await db.getAll('vehicles');
-    dbxManager.writeDBX<Vehicle>('vehicles', vehicles);
-    console.log(`${vehicles.length} véhicules migrés vers DBX`);
-    
-    // Migration des utilisateurs
+    // Migrer les utilisateurs
+    console.log("Migration des utilisateurs...");
     const users = await db.getAll('users');
-    dbxManager.writeDBX<User>('users', users);
-    console.log(`${users.length} utilisateurs migrés vers DBX`);
+    if (users.length > 0) {
+      dbxManager.writeDBX('users', users);
+      console.log(`${users.length} utilisateurs migrés avec succès`);
+    }
     
-    // Migration des réservations
+    // Migrer les circuits
+    console.log("Migration des circuits...");
+    const tours = await db.getAll('tours');
+    if (tours.length > 0) {
+      dbxManager.writeDBX('tours', tours);
+      console.log(`${tours.length} circuits migrés avec succès`);
+    }
+    
+    // Migrer les véhicules
+    console.log("Migration des véhicules...");
+    const vehicles = await db.getAll('vehicles');
+    if (vehicles.length > 0) {
+      dbxManager.writeDBX('vehicles', vehicles);
+      console.log(`${vehicles.length} véhicules migrés avec succès`);
+    }
+    
+    // Migrer les réservations
+    console.log("Migration des réservations...");
     const bookings = await db.getAll('bookings');
-    dbxManager.writeDBX<Booking>('bookings', bookings);
-    console.log(`${bookings.length} réservations migrées vers DBX`);
+    if (bookings.length > 0) {
+      dbxManager.writeDBX('bookings', bookings);
+      console.log(`${bookings.length} réservations migrées avec succès`);
+    }
     
-    // Migration des hôtels (si présents)
+    // Migrer les hôtels (si présents)
+    console.log("Migration des hôtels...");
     try {
       const hotels = await db.getAll('hotels');
-      dbxManager.writeDBX<Hotel>('hotels', hotels);
-      console.log(`${hotels.length} hôtels migrés vers DBX`);
+      if (hotels.length > 0) {
+        dbxManager.writeDBX('hotels', hotels);
+        console.log(`${hotels.length} hôtels migrés avec succès`);
+      }
     } catch (e) {
-      console.log("Pas de migration d'hôtels - table non trouvée");
+      console.log("Aucun hôtel à migrer ou store non disponible");
     }
     
-    // Migration des vols (si présents)
+    // Migrer les vols (si présents)
+    console.log("Migration des vols...");
     try {
       const flights = await db.getAll('flights');
-      dbxManager.writeDBX<Flight>('flights', flights);
-      console.log(`${flights.length} vols migrés vers DBX`);
+      if (flights.length > 0) {
+        dbxManager.writeDBX('flights', flights);
+        console.log(`${flights.length} vols migrés avec succès`);
+      }
     } catch (e) {
-      console.log("Pas de migration de vols - table non trouvée");
+      console.log("Aucun vol à migrer ou store non disponible");
     }
     
-    console.log("Migration des données vers DBX terminée avec succès");
+    console.log("Migration terminée avec succès!");
+    return true;
   } catch (error) {
-    console.error("Erreur lors de la migration vers DBX:", error);
+    console.error("Erreur lors de la migration:", error);
+    return false;
   }
+};
+
+/**
+ * Vérifie si des données existent dans DBX
+ * Retourne true si des données existent, false sinon
+ */
+export const checkDBXData = (): boolean => {
+  const users = dbxManager.readDBX('users');
+  return users.length > 0;
 };
