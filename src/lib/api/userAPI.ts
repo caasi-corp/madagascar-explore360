@@ -3,21 +3,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "../db/schema";
 
 export const userAPI = {
-  // Récupérer tous les utilisateurs (admin)
+  // Get all users (admin)
   getAll: async (): Promise<User[]> => {
     const { data, error } = await supabase
       .from('profiles')
       .select('*');
     
     if (error) {
-      console.error("Erreur lors de la récupération des utilisateurs:", error);
+      console.error("Error retrieving users:", error);
       throw error;
     }
     
     return data || [];
   },
   
-  // Récupérer un utilisateur par son ID
+  // Get a user by ID
   getById: async (id: string): Promise<User | null> => {
     const { data, error } = await supabase
       .from('profiles')
@@ -26,14 +26,14 @@ export const userAPI = {
       .single();
     
     if (error) {
-      console.error(`Erreur lors de la récupération de l'utilisateur ${id}:`, error);
+      console.error(`Error retrieving user ${id}:`, error);
       throw error;
     }
     
     return data;
   },
   
-  // Récupérer l'utilisateur actuel
+  // Get the current user
   getCurrent: async (): Promise<User | null> => {
     const { data: { session } } = await supabase.auth.getSession();
     
@@ -48,14 +48,14 @@ export const userAPI = {
       .single();
     
     if (error) {
-      console.error("Erreur lors de la récupération de l'utilisateur courant:", error);
+      console.error("Error retrieving current user:", error);
       throw error;
     }
     
     return data;
   },
   
-  // Mettre à jour un utilisateur
+  // Update a user
   update: async (id: string, updates: Partial<User>): Promise<User> => {
     const { data, error } = await supabase
       .from('profiles')
@@ -65,10 +65,29 @@ export const userAPI = {
       .single();
     
     if (error) {
-      console.error(`Erreur lors de la mise à jour de l'utilisateur ${id}:`, error);
+      console.error(`Error updating user ${id}:`, error);
       throw error;
     }
     
     return data;
+  },
+  
+  // Register a new user (this is handled by Supabase Auth and a trigger)
+  register: async (userData: { email: string; password: string; first_name: string; last_name: string }): Promise<User | null> => {
+    // Registration is handled by Supabase Auth in AuthContext.tsx
+    // This is just a placeholder in case we need to add additional profile setup
+    return null;
+  },
+  
+  // Change password (requires current password)
+  changePassword: async (newPassword: string): Promise<void> => {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+    
+    if (error) {
+      console.error("Error changing password:", error);
+      throw error;
+    }
   }
 };

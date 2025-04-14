@@ -22,22 +22,22 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    name: 'Tableau de bord',
+    name: 'Dashboard',
     href: '/user/dashboard',
     icon: User
   },
   {
-    name: 'Mes Réservations',
+    name: 'My Bookings',
     href: '/user/bookings',
     icon: Calendar
   },
   {
-    name: 'Liste de Souhaits',
+    name: 'Wishlist',
     href: '/user/wishlist',
     icon: Heart
   },
   {
-    name: 'Méthodes de Paiement',
+    name: 'Payment Methods',
     href: '/user/payments',
     icon: CreditCard
   },
@@ -47,7 +47,7 @@ const navItems: NavItem[] = [
     icon: Bell
   },
   {
-    name: 'Paramètres',
+    name: 'Settings',
     href: '/user/settings',
     icon: Settings
   }
@@ -62,10 +62,10 @@ const UserSidebar: React.FC = () => {
       <div className="p-4">
         <div className="flex items-center space-x-3 mb-8">
           <div className="bg-northgascar-teal text-white rounded-full h-10 w-10 flex items-center justify-center font-medium">
-            {user?.firstName?.charAt(0) || user?.email?.charAt(0) || 'U'}
+            {user?.first_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
           </div>
           <div>
-            <h3 className="font-medium">{user?.firstName} {user?.lastName}</h3>
+            <h3 className="font-medium">{user?.first_name} {user?.last_name}</h3>
             <p className="text-xs text-muted-foreground">{user?.email}</p>
           </div>
         </div>

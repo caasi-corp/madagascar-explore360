@@ -29,15 +29,15 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ toggleTheme, theme }) => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
   return (
     <header className="bg-background border-b border-border py-3 px-6 flex justify-between items-center">
       <div className="flex items-center space-x-2">
-        <h1 className="text-xl font-semibold hidden md:block">Tableau de Bord Administrateur</h1>
+        <h1 className="text-xl font-semibold hidden md:block">Admin Dashboard</h1>
       </div>
       
       <div className="flex items-center space-x-4">
@@ -58,24 +58,24 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ toggleTheme, theme }) => {
             <DropdownMenuSeparator />
             <div className="max-h-80 overflow-y-auto">
               <DropdownMenuItem className="cursor-pointer flex flex-col items-start p-3">
-                <div className="font-medium">Nouvelle demande de réservation</div>
-                <div className="text-sm text-muted-foreground">John Doe a réservé le circuit Avenue des Baobabs</div>
-                <div className="text-xs text-muted-foreground mt-1">Il y a 5 minutes</div>
+                <div className="font-medium">New Booking Request</div>
+                <div className="text-sm text-muted-foreground">John Doe booked the Avenue of Baobabs tour</div>
+                <div className="text-xs text-muted-foreground mt-1">5 minutes ago</div>
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer flex flex-col items-start p-3">
-                <div className="font-medium">Nouveau message</div>
-                <div className="text-sm text-muted-foreground">Sandra Adams vous a envoyé un message</div>
-                <div className="text-xs text-muted-foreground mt-1">Il y a 1 heure</div>
+                <div className="font-medium">New Message</div>
+                <div className="text-sm text-muted-foreground">Sandra Adams sent you a message</div>
+                <div className="text-xs text-muted-foreground mt-1">1 hour ago</div>
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer flex flex-col items-start p-3">
-                <div className="font-medium">Mise à jour système</div>
-                <div className="text-sm text-muted-foreground">Le système a été mis à jour avec succès</div>
-                <div className="text-xs text-muted-foreground mt-1">Il y a 2 heures</div>
+                <div className="font-medium">System Update</div>
+                <div className="text-sm text-muted-foreground">The system has been updated successfully</div>
+                <div className="text-xs text-muted-foreground mt-1">2 hours ago</div>
               </DropdownMenuItem>
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer justify-center text-center font-medium text-madagascar-green">
-              Voir toutes les notifications
+              View all notifications
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -88,20 +88,20 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ toggleTheme, theme }) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer">
-              <User className="mr-2 h-4 w-4" /> Profil
+              <User className="mr-2 h-4 w-4" /> Profile
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer">
-              <Settings className="mr-2 h-4 w-4" /> Paramètres
+              <Settings className="mr-2 h-4 w-4" /> Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem 
               className="cursor-pointer text-destructive focus:text-destructive"
               onClick={handleLogout}
             >
-              <LogOut className="mr-2 h-4 w-4" /> Déconnexion
+              <LogOut className="mr-2 h-4 w-4" /> Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

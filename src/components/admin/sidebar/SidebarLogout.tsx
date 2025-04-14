@@ -9,8 +9,8 @@ const SidebarLogout: React.FC = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
@@ -22,7 +22,7 @@ const SidebarLogout: React.FC = () => {
         onClick={handleLogout}
       >
         <LogOut className="mr-2 h-4 w-4" />
-        <span>Déconnexion</span>
+        <span>Logout</span>
       </Button>
     </div>
   );

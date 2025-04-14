@@ -3,11 +3,11 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
-import { initDB } from './lib/store';
+import { initDB } from './lib/db/db';
 
-// Initialisation de la base de données
+// Initialize the database
 initDB().then((success) => {
-  console.log(success ? "Base de données initialisée avec succès" : "Échec d'initialisation de la base de données");
+  console.log(success ? "Database initialized successfully" : "Failed to initialize database");
 });
 
 // Add Google Analytics script if needed

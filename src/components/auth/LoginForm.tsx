@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -49,26 +50,26 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, loginError }) => {
     setIsLoading(true);
     
     try {
-      console.log("Tentative de connexion avec:", formData.email, formData.password);
+      console.log("Attempting login with:", formData.email, formData.password);
       const user = await login(formData.email, formData.password);
       
       if (user) {
-        console.log("Utilisateur authentifié:", user);
+        console.log("User authenticated:", user);
         
         if (user.role === 'admin') {
-          toast.success('Bienvenue, Admin !');
+          toast.success('Welcome, Admin!');
           navigate('/admin');
         } else {
-          toast.success('Connexion réussie !');
+          toast.success('Login successful!');
           navigate('/user/dashboard');
         }
       } else {
-        console.log("Échec d'authentification");
-        toast.error('Email ou mot de passe invalide');
+        console.log("Authentication failed");
+        toast.error('Invalid email or password');
       }
     } catch (error) {
-      console.error("Erreur de connexion:", error);
-      toast.error('Erreur lors de la connexion');
+      console.error("Login error:", error);
+      toast.error('Error during login');
     } finally {
       setIsLoading(false);
     }
@@ -93,7 +94,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, loginError }) => {
             <Input
               id="email"
               name="email"
-              placeholder="nom@exemple.com"
+              placeholder="name@example.com"
               type="email"
               autoCapitalize="none"
               autoComplete="email"
@@ -107,12 +108,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, loginError }) => {
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password">Mot de passe</Label>
+            <Label htmlFor="password">Password</Label>
             <a 
               href="/forgot-password"
               className="text-sm text-madagascar-green hover:underline"
             >
-              Mot de passe oublié ?
+              Forgot password?
             </a>
           </div>
           <div className="relative">
@@ -149,7 +150,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, loginError }) => {
             htmlFor="remember"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            Se souvenir de moi
+            Remember me
           </label>
         </div>
         <Button 
@@ -160,11 +161,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, loginError }) => {
           {isLoading ? (
             <div className="flex items-center">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-              Connexion en cours...
+              Logging in...
             </div>
           ) : (
             <>
-              <LogIn className="mr-2 h-4 w-4" /> Se connecter
+              <LogIn className="mr-2 h-4 w-4" /> Login
             </>
           )}
         </Button>

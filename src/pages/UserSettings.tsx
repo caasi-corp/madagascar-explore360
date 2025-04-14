@@ -6,13 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { userAPI } from '@/lib/store';
+import { useAuth } from '@/contexts/AuthContext';
 
 const UserSettings = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  const { user } = useAuth();
   const [userData, setUserData] = useState({
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
     currentPassword: '',
     newPassword: '',
@@ -20,30 +21,15 @@ const UserSettings = () => {
   });
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        // Dans une implémentation réelle, nous récupérerions l'ID de l'utilisateur depuis le localStorage
-        const storedUserId = localStorage.getItem('userId');
-        if (storedUserId) {
-          setUserId(storedUserId);
-          const user = await userAPI.getById(storedUserId);
-          if (user) {
-            setUserData(prevData => ({
-              ...prevData,
-              firstName: user.firstName,
-              lastName: user.lastName,
-              email: user.email,
-            }));
-          }
-        }
-      } catch (error) {
-        console.error("Erreur lors de la récupération des données utilisateur:", error);
-        toast.error("Impossible de charger vos informations");
-      }
-    };
-
-    fetchUserData();
-  }, []);
+    if (user) {
+      setUserData(prevData => ({
+        ...prevData,
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
+        email: user.email || '',
+      }));
+    }
+  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -56,24 +42,24 @@ const UserSettings = () => {
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!userId) {
-      toast.error("Veuillez vous reconnecter");
+    if (!user) {
+      toast.error("Please log in again");
       return;
     }
     
     setIsLoading(true);
     
     try {
-      await userAPI.update(userId, {
-        firstName: userData.firstName,
-        lastName: userData.lastName,
+      await userAPI.update(user.id, {
+        first_name: userData.first_name,
+        last_name: userData.last_name,
         email: userData.email,
       });
       
-      toast.success("Profil mis à jour avec succès");
+      toast.success("Profile updated successfully");
     } catch (error) {
-      console.error("Erreur lors de la mise à jour du profil:", error);
-      toast.error("Échec de la mise à jour du profil");
+      console.error("Error updating profile:", error);
+      toast.error("Failed to update profile");
     } finally {
       setIsLoading(false);
     }
@@ -82,24 +68,20 @@ const UserSettings = () => {
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!userId) {
-      toast.error("Veuillez vous reconnecter");
+    if (!user) {
+      toast.error("Please log in again");
       return;
     }
     
     if (userData.newPassword !== userData.confirmPassword) {
-      toast.error("Les mots de passe ne correspondent pas");
+      toast.error("Passwords don't match");
       return;
     }
     
     setIsLoading(true);
     
     try {
-      // Ici, on simule la vérification du mot de passe actuel
-      // Dans une implémentation réelle, on vérifierait le mot de passe actuel
-      await userAPI.update(userId, {
-        password: userData.newPassword,
-      });
+      await userAPI.changePassword(userData.newPassword);
       
       setUserData(prevState => ({
         ...prevState,
@@ -108,10 +90,10 @@ const UserSettings = () => {
         confirmPassword: '',
       }));
       
-      toast.success("Mot de passe modifié avec succès");
+      toast.success("Password changed successfully");
     } catch (error) {
-      console.error("Erreur lors du changement de mot de passe:", error);
-      toast.error("Échec de la modification du mot de passe");
+      console.error("Error changing password:", error);
+      toast.error("Failed to change password");
     } finally {
       setIsLoading(false);
     }
@@ -120,40 +102,40 @@ const UserSettings = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Paramètres du compte</h1>
+        <h1 className="text-2xl font-bold mb-6">Account Settings</h1>
         
-        {/* Informations personnelles */}
+        {/* Personal Information */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Informations personnelles</CardTitle>
-            <CardDescription>Mettez à jour vos informations personnelles</CardDescription>
+            <CardTitle>Personal Information</CardTitle>
+            <CardDescription>Update your personal information</CardDescription>
           </CardHeader>
           <form onSubmit={handleProfileUpdate}>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">Prénom</Label>
+                  <Label htmlFor="first_name">First Name</Label>
                   <Input
-                    id="firstName"
-                    name="firstName"
-                    value={userData.firstName}
+                    id="first_name"
+                    name="first_name"
+                    value={userData.first_name}
                     onChange={handleChange}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Nom</Label>
+                  <Label htmlFor="last_name">Last Name</Label>
                   <Input
-                    id="lastName"
-                    name="lastName"
-                    value={userData.lastName}
+                    id="last_name"
+                    name="last_name"
+                    value={userData.last_name}
                     onChange={handleChange}
                     required
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Adresse email</Label>
+                <Label htmlFor="email">Email Address</Label>
                 <Input
                   id="email"
                   name="email"
@@ -170,22 +152,22 @@ const UserSettings = () => {
                 className="bg-madagascar-green hover:bg-madagascar-green/80"
                 disabled={isLoading}
               >
-                {isLoading ? 'Mise à jour...' : 'Enregistrer les modifications'}
+                {isLoading ? 'Updating...' : 'Save Changes'}
               </Button>
             </CardFooter>
           </form>
         </Card>
         
-        {/* Changement de mot de passe */}
+        {/* Password Change */}
         <Card>
           <CardHeader>
-            <CardTitle>Changer le mot de passe</CardTitle>
-            <CardDescription>Mettez à jour votre mot de passe pour sécuriser votre compte</CardDescription>
+            <CardTitle>Change Password</CardTitle>
+            <CardDescription>Update your password to secure your account</CardDescription>
           </CardHeader>
           <form onSubmit={handlePasswordChange}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="currentPassword">Mot de passe actuel</Label>
+                <Label htmlFor="currentPassword">Current Password</Label>
                 <Input
                   id="currentPassword"
                   name="currentPassword"
@@ -196,7 +178,7 @@ const UserSettings = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="newPassword">Nouveau mot de passe</Label>
+                <Label htmlFor="newPassword">New Password</Label>
                 <Input
                   id="newPassword"
                   name="newPassword"
@@ -207,7 +189,7 @@ const UserSettings = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</Label>
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -224,7 +206,7 @@ const UserSettings = () => {
                 className="bg-madagascar-green hover:bg-madagascar-green/80"
                 disabled={isLoading}
               >
-                {isLoading ? 'Mise à jour...' : 'Changer le mot de passe'}
+                {isLoading ? 'Updating...' : 'Change Password'}
               </Button>
             </CardFooter>
           </form>
