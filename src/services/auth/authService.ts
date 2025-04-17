@@ -57,11 +57,11 @@ export const authService = {
   },
 
   /**
-   * Registers a new user
+   * Registers a new user with optional admin role
    */
-  register: async (email: string, password: string, firstName: string, lastName: string): Promise<boolean> => {
+  register: async (email: string, password: string, firstName: string, lastName: string, isAdmin: boolean = false): Promise<boolean> => {
     try {
-      console.log("Tentative d'inscription avec:", email, "prénom:", firstName, "nom:", lastName);
+      console.log("Tentative d'inscription avec:", email, "prénom:", firstName, "nom:", lastName, "admin:", isAdmin);
       
       // Vérifier si l'email existe déjà
       const { data: existingUser } = await supabase
@@ -83,7 +83,8 @@ export const authService = {
         options: {
           data: {
             first_name: firstName,
-            last_name: lastName
+            last_name: lastName,
+            role: isAdmin ? 'admin' : 'user'
           }
         }
       });
@@ -98,7 +99,20 @@ export const authService = {
         return false;
       }
 
-      console.log("Inscription réussie pour:", email);
+      // Si l'inscription est réussie, mettre à jour manuellement le rôle dans profiles si c'est un admin
+      if (data.user && isAdmin) {
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ role: 'admin' })
+          .eq('id', data.user.id);
+          
+        if (updateError) {
+          console.error("Erreur lors de la définition du rôle admin:", updateError);
+          // On continue car l'utilisateur est créé, mais sans le rôle admin
+        }
+      }
+
+      console.log("Inscription réussie pour:", email, "avec le rôle:", isAdmin ? 'admin' : 'user');
       toast.success("Inscription réussie ! Veuillez vérifier votre email pour confirmer votre compte.");
       return true;
     } catch (error) {
@@ -155,6 +169,32 @@ export const authService = {
     } catch (error) {
       console.error("Error fetching profile:", error);
       return null;
+    }
+  },
+
+  /**
+   * Deletes all users (admin function)
+   */
+  deleteAllUsers: async (): Promise<boolean> => {
+    try {
+      // Délète tous les utilisateurs de profiles (cascade supprime aussi dans auth.users)
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000');  // Évite toute erreur avec une condition impossible
+        
+      if (error) {
+        console.error("Error deleting users:", error);
+        toast.error("Erreur lors de la suppression des utilisateurs");
+        return false;
+      }
+      
+      toast.success("Tous les utilisateurs ont été supprimés");
+      return true;
+    } catch (error) {
+      console.error("Error deleting users:", error);
+      toast.error("Erreur lors de la suppression des utilisateurs");
+      return false;
     }
   }
 };

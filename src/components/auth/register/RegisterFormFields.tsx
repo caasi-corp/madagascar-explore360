@@ -92,6 +92,28 @@ const RegisterFormFields: React.FC<RegisterFormFieldsProps> = ({
       
       <div className="flex items-start space-x-2">
         <Checkbox 
+          id="isAdmin" 
+          name="isAdmin"
+          checked={formData.isAdmin}
+          onCheckedChange={(checked) => 
+            setFormData(prev => ({ ...prev, isAdmin: checked === true }))
+          }
+        />
+        <div className="grid gap-1.5 leading-none">
+          <label
+            htmlFor="isAdmin"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            S'inscrire en tant qu'administrateur
+          </label>
+          <p className="text-xs text-muted-foreground">
+            Cochez cette case pour créer un compte avec des privilèges d'administrateur
+          </p>
+        </div>
+      </div>
+      
+      <div className="flex items-start space-x-2">
+        <Checkbox 
           id="terms" 
           name="terms"
           checked={formData.terms}

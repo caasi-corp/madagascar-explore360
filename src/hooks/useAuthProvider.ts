@@ -53,7 +53,7 @@ export function useAuthProvider() {
     };
   }, []);
 
-  // Appel initial pour vérifier/créer le compte administrateur
+  // Appel initial pour vérifier si les tables nécessaires existent
   useEffect(() => {
     adminService.ensureAdminExists();
   }, []);
@@ -67,6 +67,7 @@ export function useAuthProvider() {
     logout: async () => {
       await authService.logout();
       setUser(null);
-    }
+    },
+    deleteAllUsers: authService.deleteAllUsers
   };
 }
