@@ -7,13 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const { login, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -34,6 +35,10 @@ const LoginForm = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,15 +105,33 @@ const LoginForm = () => {
             Mot de passe oublié?
           </Button>
         </div>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          placeholder="••••••••"
-          required
-          value={formData.password}
-          onChange={handleChange}
-        />
+        <div className="relative">
+          <Input
+            id="password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="••••••••"
+            required
+            value={formData.password}
+            onChange={handleChange}
+          />
+          <Button 
+            type="button"
+            variant="ghost" 
+            size="icon"
+            onClick={togglePasswordVisibility}
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
+          >
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+            <span className="sr-only">
+              {showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+            </span>
+          </Button>
+        </div>
       </div>
       <div className="flex items-center space-x-2">
         <Checkbox 
