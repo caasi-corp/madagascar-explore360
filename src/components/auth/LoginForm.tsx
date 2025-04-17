@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,13 +11,21 @@ import { Loader2 } from "lucide-react";
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     remember: false,
   });
+
+  // Rediriger l'utilisateur s'il est déjà connecté
+  useEffect(() => {
+    if (user) {
+      // Utilisateur déjà connecté, rediriger vers le tableau de bord approprié
+      navigate(user.role === 'admin' ? "/admin" : "/user/dashboard");
+    }
+  }, [user, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -29,15 +37,19 @@ const LoginForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Ne pas continuer si l'utilisateur est déjà connecté
+    if (user) return;
+    
     setIsLoading(true);
     
     try {
-      const user = await login(formData.email, formData.password);
+      const loggedInUser = await login(formData.email, formData.password);
       
-      if (user) {
+      if (loggedInUser) {
         toast.success("Connexion réussie!");
-        navigate(user.role === 'admin' ? "/admin" : "/user/dashboard");
-      } else {
+        navigate(loggedInUser.role === 'admin' ? "/admin" : "/user/dashboard");
+      } else if (!user) { // Vérifier si l'utilisateur n'est toujours pas connecté
         toast.error("Échec de la connexion. Veuillez vérifier vos identifiants.");
       }
     } catch (error) {
