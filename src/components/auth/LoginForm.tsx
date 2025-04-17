@@ -55,9 +55,9 @@ const LoginForm = () => {
     setLoginError(null); // Reset any previous error
     
     try {
-      console.log("Tentative de connexion avec:", formData.email, formData.password);
+      console.log("Tentative de connexion avec:", formData.email);
       
-      // Faire la tentative de connexion
+      // Faire la tentative de connexion avec Supabase
       const loggedInUser = await login(formData.email, formData.password);
       
       if (loggedInUser) {

@@ -83,29 +83,66 @@ export function useAuthProvider() {
     };
   }, []);
 
+  // Fonction pour vérifier et créer le compte administrateur si nécessaire
+  const ensureAdminExists = async () => {
+    try {
+      // Vérifier si l'administrateur existe déjà
+      const { data: existingAdmin } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', 'admin@northgascartours.com')
+        .maybeSingle();
+      
+      if (!existingAdmin) {
+        console.log("L'administrateur n'existe pas, création du compte admin...");
+        
+        // Créer le compte administrateur dans Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: 'admin@northgascartours.com',
+          password: 'Admin123!',
+        });
+        
+        if (authError) {
+          console.error("Erreur lors de la création du compte auth admin:", authError);
+          return;
+        }
+        
+        if (authData.user) {
+          // Insérer le profil administrateur
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              id: authData.user.id,
+              email: 'admin@northgascartours.com',
+              role: 'admin',
+              first_name: 'Admin',
+              last_name: 'User'
+            });
+          
+          if (profileError) {
+            console.error("Erreur lors de la création du profil admin:", profileError);
+          } else {
+            console.log("Compte administrateur créé avec succès!");
+          }
+        }
+      } else {
+        console.log("Le compte administrateur existe déjà dans la base de données");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la vérification/création du compte admin:", error);
+    }
+  };
+
+  // Appel initial pour vérifier/créer le compte administrateur
+  useEffect(() => {
+    ensureAdminExists();
+  }, []);
+
   const login = async (email: string, password: string) => {
     try {
       console.log("Tentative de connexion avec:", email);
       
-      // Cas spécial pour l'administrateur (utilisation des identifiants codés en dur)
-      if (email === 'admin@northgascartours.com' && password === 'Admin123!') {
-        console.log("Identifiants admin détectés, création d'une session spéciale");
-        
-        // Créer un utilisateur temporaire avec les droits d'administrateur
-        const adminUser: AuthUser = {
-          id: 'admin1',
-          email: 'admin@northgascartours.com',
-          role: 'admin',
-          firstName: 'Admin',
-          lastName: 'User'
-        };
-        
-        setUser(adminUser);
-        toast.success("Connexion administrative réussie!");
-        return adminUser;
-      }
-      
-      // Pour les utilisateurs normaux, utiliser l'authentification Supabase
+      // Pour tous les utilisateurs, utiliser l'authentification Supabase
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
