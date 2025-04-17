@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,7 +10,6 @@ export function useAuthProvider() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Set up authentication state change listeners
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
         console.log('Auth state changed:', event);
@@ -19,7 +17,6 @@ export function useAuthProvider() {
         
         if (currentSession?.user) {
           try {
-            // Get user profile
             const { data, error } = await supabase
               .from('profiles')
               .select('*')
@@ -49,7 +46,6 @@ export function useAuthProvider() {
       }
     );
     
-    // Check for existing session
     const initializeAuth = async () => {
       try {
         setIsLoading(true);
@@ -100,7 +96,6 @@ export function useAuthProvider() {
       }
       
       if (data.user) {
-        // If login successful, return user object directly without waiting for state update
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
@@ -132,6 +127,17 @@ export function useAuthProvider() {
 
   const register = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
+      const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('email', email)
+        .maybeSingle();
+        
+      if (existingUser) {
+        toast.error("Cette adresse email est déjà utilisée.");
+        return false;
+      }
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -145,11 +151,15 @@ export function useAuthProvider() {
       
       if (error) {
         console.error("Registration error:", error.message);
-        toast.error(error.message);
+        if (error.message.includes('email') && error.message.includes('already')) {
+          toast.error("Cette adresse email est déjà utilisée.");
+        } else {
+          toast.error(error.message);
+        }
         return false;
       }
 
-      toast.success("Registration successful! Please check your email to confirm your account.");
+      toast.success("Inscription réussie ! Veuillez vérifier votre email pour confirmer votre compte.");
       return true;
     } catch (error) {
       console.error("Registration error:", error);

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ const RegisterForm = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [emailCheckInProgress, setEmailCheckInProgress] = useState(false);
   
   const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
@@ -43,6 +45,31 @@ const RegisterForm = () => {
     }
   };
   
+  const validateEmail = async () => {
+    if (!formData.email || errors.email) return false;
+    
+    setEmailCheckInProgress(true);
+    try {
+      const emailExists = await emailService.checkEmailExists(formData.email);
+      
+      if (emailExists === true) {
+        setErrors(prev => ({ 
+          ...prev, 
+          email: 'Cet email est déjà utilisé. Veuillez vous connecter ou utiliser une autre adresse email.' 
+        }));
+        setEmailCheckInProgress(false);
+        return false;
+      }
+      
+      setEmailCheckInProgress(false);
+      return emailExists === false;
+    } catch (error) {
+      console.error("Erreur lors de la vérification de l'email:", error);
+      setEmailCheckInProgress(false);
+      return false;
+    }
+  };
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -55,6 +82,7 @@ const RegisterForm = () => {
     setIsLoading(true);
     
     try {
+      // Vérification double pour s'assurer que l'email n'existe pas déjà
       const emailExists = await emailService.checkEmailExists(formData.email);
       
       if (emailExists === true) {
@@ -82,8 +110,16 @@ const RegisterForm = () => {
         }, 1500);
       }
     } catch (error) {
-      console.error("Erreur lors de l'inscription:", error);
-      toast.error("Une erreur est survenue lors de l'inscription");
+      // Vérifier si l'erreur est une erreur de duplication
+      if (error instanceof Error && error.message.includes('email already in use')) {
+        setErrors(prev => ({ 
+          ...prev, 
+          email: 'Cet email est déjà utilisé. Veuillez vous connecter ou utiliser une autre adresse email.' 
+        }));
+      } else {
+        console.error("Erreur lors de l'inscription:", error);
+        toast.error("Une erreur est survenue lors de l'inscription");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -101,7 +137,7 @@ const RegisterForm = () => {
       <Button 
         type="submit" 
         className="w-full bg-madagascar-green hover:bg-madagascar-green/90"
-        disabled={isLoading}
+        disabled={isLoading || emailCheckInProgress}
       >
         {isLoading ? (
           <>
