@@ -39,6 +39,8 @@ const LoginForm = () => {
       // Utilisateur déjà connecté, rediriger vers le tableau de bord approprié
       navigate(user.role === 'admin' ? "/admin" : "/user/dashboard");
     }
+    // Réinitialiser le message d'erreur au chargement
+    setLoginError(null);
   }, [user, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,6 +49,11 @@ const LoginForm = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+    
+    // Effacer le message d'erreur lorsque l'utilisateur commence à modifier les champs
+    if (loginError) {
+      setLoginError(null);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -92,7 +99,7 @@ const LoginForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <ErrorMessage message={loginError} />
+      {loginError && <ErrorMessage message={loginError} />}
       
       <div className="space-y-2">
         <Label htmlFor="email">Adresse email</Label>
