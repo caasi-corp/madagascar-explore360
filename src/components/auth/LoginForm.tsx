@@ -6,48 +6,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { LogIn, User, Lock, Eye, EyeOff, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { Loader2 } from "lucide-react";
 
-interface LoginFormProps {
-  onDemoLogin: (email: string, password: string) => void;
-  loginError: string | null;
-}
-
-interface LoginFormData {
-  email: string;
-  password: string;
-  remember: boolean;
-}
-
-const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, loginError }) => {
+const LoginForm = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState<LoginFormData>({
+  const [formData, setFormData] = useState({
     email: '',
     password: '',
     remember: false,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value,
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
     }));
-  };
-
-  const handleCheckboxChange = (checked: boolean) => {
-    setFormData(prevState => ({
-      ...prevState,
-      remember: checked,
-    }));
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,126 +32,83 @@ const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, loginError }) => {
     setIsLoading(true);
     
     try {
-      console.log("Tentative de connexion avec:", formData.email, formData.password);
       const user = await login(formData.email, formData.password);
       
       if (user) {
-        console.log("Utilisateur authentifié:", user);
-        
-        if (user.role === 'admin') {
-          toast.success('Bienvenue, Admin !');
-          navigate('/admin');
-        } else {
-          toast.success('Connexion réussie !');
-          navigate('/user/dashboard');
-        }
+        toast.success("Connexion réussie!");
+        navigate(user.role === 'admin' ? "/admin" : "/user/dashboard");
       } else {
-        console.log("Échec d'authentification");
-        toast.error('Email ou mot de passe invalide');
+        toast.error("Échec de la connexion. Veuillez vérifier vos identifiants.");
       }
     } catch (error) {
-      console.error("Erreur de connexion:", error);
-      toast.error('Erreur lors de la connexion');
+      console.error("Erreur lors de la connexion:", error);
+      toast.error("Une erreur est survenue lors de la connexion");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="space-y-4">
-        {loginError && (
-          <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-2 text-sm text-destructive">
-            <AlertTriangle size={16} />
-            <span>{loginError}</span>
-          </div>
-        )}
-        
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <User size={16} className="text-gray-400" />
-            </div>
-            <Input
-              id="email"
-              name="email"
-              placeholder="nom@exemple.com"
-              type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
-              value={formData.email}
-              onChange={handleChange}
-              className="pl-10"
-              required
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Mot de passe</Label>
-            <a 
-              href="/forgot-password"
-              className="text-sm text-madagascar-green hover:underline"
-            >
-              Mot de passe oublié ?
-            </a>
-          </div>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Lock size={16} className="text-gray-400" />
-            </div>
-            <Input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              value={formData.password}
-              onChange={handleChange}
-              className="pl-10"
-              required
-            />
-            <div 
-              className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
-              onClick={togglePasswordVisibility}
-            >
-              {showPassword ? 
-                <EyeOff size={16} className="text-gray-400" /> : 
-                <Eye size={16} className="text-gray-400" />
-              }
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="remember" 
-            checked={formData.remember}
-            onCheckedChange={handleCheckboxChange}
-          />
-          <label
-            htmlFor="remember"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Se souvenir de moi
-          </label>
-        </div>
-        <Button 
-          className="w-full bg-madagascar-green hover:bg-madagascar-green/80" 
-          type="submit"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <div className="flex items-center">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-              Connexion en cours...
-            </div>
-          ) : (
-            <>
-              <LogIn className="mr-2 h-4 w-4" /> Se connecter
-            </>
-          )}
-        </Button>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="email">Adresse email</Label>
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="votre@email.com"
+          required
+          value={formData.email}
+          onChange={handleChange}
+        />
       </div>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password">Mot de passe</Label>
+          <Button variant="link" className="p-0 h-auto font-normal text-xs text-muted-foreground" type="button">
+            Mot de passe oublié?
+          </Button>
+        </div>
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="••••••••"
+          required
+          value={formData.password}
+          onChange={handleChange}
+        />
+      </div>
+      <div className="flex items-center space-x-2">
+        <Checkbox 
+          id="remember" 
+          name="remember"
+          checked={formData.remember}
+          onCheckedChange={(checked) => 
+            setFormData(prev => ({ ...prev, remember: checked === true }))
+          }
+        />
+        <label
+          htmlFor="remember"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Se souvenir de moi
+        </label>
+      </div>
+      <Button 
+        type="submit" 
+        className="w-full bg-madagascar-green hover:bg-madagascar-green/90"
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
+            Connexion en cours...
+          </>
+        ) : (
+          "Se connecter"
+        )}
+      </Button>
     </form>
   );
 };

@@ -1,7 +1,8 @@
 
 import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw } from "lucide-react";
 
 interface DemoCredentialsProps {
   onDemoLogin: (email: string, password: string) => void;
@@ -9,56 +10,40 @@ interface DemoCredentialsProps {
   isResetting: boolean;
 }
 
-const DemoCredentials: React.FC<DemoCredentialsProps> = ({ 
-  onDemoLogin, 
-  onResetDatabase, 
-  isResetting 
-}) => {
+const DemoCredentials: React.FC<DemoCredentialsProps> = ({ onDemoLogin }) => {
   return (
-    <div className="mt-6 p-4 bg-muted/50 rounded-md max-w-md w-full">
-      <h3 className="font-medium mb-2 text-center">Identifiants de démonstration</h3>
-      <div 
-        className="text-sm bg-muted p-2 rounded block mb-2 cursor-pointer hover:bg-muted/70 transition-colors"
-        onClick={() => onDemoLogin('admin@northgascartours.com', 'Admin123!')}
-      >
-        <p className="text-sm text-muted-foreground mb-1">Connexion administrateur :</p>
-        <code className="text-xs block">
-          Email: admin@northgascartours.com | Mot de passe: Admin123!
-        </code>
-      </div>
-      <div 
-        className="text-sm bg-muted p-2 rounded block mb-4 cursor-pointer hover:bg-muted/70 transition-colors"
-        onClick={() => onDemoLogin('user@northgascartours.com', 'User123!')}
-      >
-        <p className="text-sm text-muted-foreground mb-1">Connexion utilisateur :</p>
-        <code className="text-xs block">
-          Email: user@northgascartours.com | Mot de passe: User123!
-        </code>
-      </div>
-      
-      <div className="flex justify-center">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onResetDatabase}
-          disabled={isResetting}
-          className="text-xs"
-        >
-          {isResetting ? (
-            <>
-              <RefreshCw className="mr-1 h-3 w-3 animate-spin" /> Réinitialisation...
-            </>
-          ) : (
-            <>
-              <RefreshCw className="mr-1 h-3 w-3" /> Réinitialiser la base de données
-            </>
-          )}
-        </Button>
-      </div>
-      <p className="text-xs text-center mt-2 text-muted-foreground">
-        Utilisez ce bouton si vous rencontrez des problèmes de connexion
-      </p>
-    </div>
+    <Card className="w-full max-w-md mt-4">
+      <CardHeader>
+        <CardTitle className="text-lg">Comptes de démonstration</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <p className="text-sm mb-2">Compte administrateur:</p>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full justify-between"
+            onClick={() => onDemoLogin('admin@northgascartours.com', 'Admin123!')}
+          >
+            <span>admin@northgascartours.com</span>
+            <span className="text-muted-foreground">Admin123!</span>
+          </Button>
+        </div>
+        
+        <div>
+          <p className="text-sm mb-2">Compte utilisateur:</p>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full justify-between"
+            onClick={() => onDemoLogin('user@northgascartours.com', 'User123!')}
+          >
+            <span>user@northgascartours.com</span>
+            <span className="text-muted-foreground">User123!</span>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

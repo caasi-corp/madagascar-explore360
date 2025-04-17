@@ -4,162 +4,222 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { UserPlus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Link } from 'react-router-dom';
+import { Loader2 } from "lucide-react";
 
-interface RegisterFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
-const RegisterForm: React.FC = () => {
+const RegisterForm = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState<RegisterFormData>({
+  
+  const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
+    terms: false,
   });
-
+  
+  const [errors, setErrors] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    terms: '',
+  });
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value,
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
     }));
+    
+    // Clear error when user starts typing again
+    if (errors[name as keyof typeof errors]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
-
+  
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { ...errors };
+    
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'Le prénom est requis';
+      isValid = false;
+    }
+    
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Le nom est requis';
+      isValid = false;
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'L\'email est requis';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'L\'email n\'est pas valide';
+      isValid = false;
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'Le mot de passe est requis';
+      isValid = false;
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Le mot de passe doit contenir au moins 6 caractères';
+      isValid = false;
+    }
+    
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Les mots de passe ne correspondent pas';
+      isValid = false;
+    }
+    
+    if (!formData.terms) {
+      newErrors.terms = 'Vous devez accepter les conditions d\'utilisation';
+      isValid = false;
+    }
+    
+    setErrors(newErrors);
+    return isValid;
+  };
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Les mots de passe ne correspondent pas");
+    if (!validateForm()) {
       return;
     }
     
     setIsLoading(true);
     
     try {
-      const user = await register(
-        formData.email,
-        formData.password,
-        formData.firstName,
-        formData.lastName
-      );
+      const user = await register(formData.email, formData.password, formData.firstName, formData.lastName);
       
       if (user) {
+        toast.success("Inscription réussie! Bienvenue chez North Gasikara Tours.");
         navigate('/user/dashboard');
       }
     } catch (error) {
-      console.error("Erreur d'inscription:", error);
-      toast.error("Une erreur s'est produite lors de l'inscription");
+      console.error("Erreur lors de l'inscription:", error);
+      toast.error("Une erreur est survenue lors de l'inscription");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="firstName">Prénom</Label>
-            <Input
-              id="firstName"
-              name="firstName"
-              placeholder="Jean"
-              value={formData.firstName}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="lastName">Nom</Label>
-            <Input
-              id="lastName"
-              name="lastName"
-              placeholder="Dupont"
-              value={formData.lastName}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        </div>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="firstName">Prénom</Label>
           <Input
-            id="email"
-            name="email"
-            placeholder="nom@exemple.com"
-            type="email"
-            autoCapitalize="none"
-            autoComplete="email"
-            autoCorrect="off"
-            value={formData.email}
+            id="firstName"
+            name="firstName"
+            placeholder="John"
+            value={formData.firstName}
             onChange={handleChange}
-            required
+            className={errors.firstName ? 'border-red-500' : ''}
           />
+          {errors.firstName && <p className="text-xs text-red-500">{errors.firstName}</p>}
         </div>
+        
         <div className="space-y-2">
-          <Label htmlFor="password">Mot de passe</Label>
+          <Label htmlFor="lastName">Nom</Label>
           <Input
-            id="password"
-            name="password"
-            type="password"
-            value={formData.password}
+            id="lastName"
+            name="lastName"
+            placeholder="Doe"
+            value={formData.lastName}
             onChange={handleChange}
-            required
+            className={errors.lastName ? 'border-red-500' : ''}
           />
+          {errors.lastName && <p className="text-xs text-red-500">{errors.lastName}</p>}
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-          <Input
-            id="confirmPassword"
-            name="confirmPassword"
-            type="password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <p className="text-xs text-muted-foreground">
-          En créant un compte, vous acceptez nos{' '}
-          <Link to="/terms-of-service" className="text-madagascar-green hover:underline">
-            Conditions d'utilisation
-          </Link>{' '}
-          et notre{' '}
-          <Link to="/privacy-policy" className="text-madagascar-green hover:underline">
-            Politique de confidentialité
-          </Link>.
-        </p>
       </div>
-
-      <div className="mt-6">
-        <Button 
-          className="w-full bg-madagascar-green hover:bg-madagascar-green/80" 
-          type="submit"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <div className="flex items-center">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-              Création du compte...
-            </div>
-          ) : (
-            <>
-              <UserPlus className="mr-2 h-4 w-4" /> Créer un compte
-            </>
-          )}
-        </Button>
+      
+      <div className="space-y-2">
+        <Label htmlFor="email">Adresse email</Label>
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="john.doe@example.com"
+          value={formData.email}
+          onChange={handleChange}
+          className={errors.email ? 'border-red-500' : ''}
+        />
+        {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
       </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="password">Mot de passe</Label>
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="••••••••"
+          value={formData.password}
+          onChange={handleChange}
+          className={errors.password ? 'border-red-500' : ''}
+        />
+        {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+        <Input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          placeholder="••••••••"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          className={errors.confirmPassword ? 'border-red-500' : ''}
+        />
+        {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword}</p>}
+      </div>
+      
+      <div className="flex items-start space-x-2">
+        <Checkbox 
+          id="terms" 
+          name="terms"
+          checked={formData.terms}
+          onCheckedChange={(checked) => 
+            setFormData(prev => ({ ...prev, terms: checked === true }))
+          }
+          className={errors.terms ? 'border-red-500' : ''}
+        />
+        <div className="grid gap-1.5 leading-none">
+          <label
+            htmlFor="terms"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            J'accepte les conditions d'utilisation et la politique de confidentialité
+          </label>
+          {errors.terms && <p className="text-xs text-red-500">{errors.terms}</p>}
+        </div>
+      </div>
+      
+      <Button 
+        type="submit" 
+        className="w-full bg-madagascar-green hover:bg-madagascar-green/90"
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Inscription en cours...
+          </>
+        ) : (
+          "S'inscrire"
+        )}
+      </Button>
     </form>
   );
 };
