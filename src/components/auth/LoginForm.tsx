@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,7 @@ import { Loader2, Eye, EyeOff } from "lucide-react";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -20,6 +21,9 @@ const LoginForm = () => {
     password: '',
     remember: false,
   });
+
+  // Récupérer l'URL de retour si elle existe
+  const from = location.state?.from || (user?.role === 'admin' ? "/admin" : "/user/dashboard");
 
   // Rediriger l'utilisateur s'il est déjà connecté
   useEffect(() => {
@@ -51,12 +55,15 @@ const LoginForm = () => {
     setLoginError(null); // Reset any previous error
     
     try {
+      console.log("Tentative de connexion avec:", formData.email, formData.password);
+      
       // Faire la tentative de connexion
       const loggedInUser = await login(formData.email, formData.password);
       
       if (loggedInUser) {
         toast.success("Connexion réussie!");
-        // Redirection gérée dans le useEffect ci-dessus
+        // Rediriger vers la page précédente ou le tableau de bord
+        navigate(from);
       } else {
         setLoginError("Échec de la connexion. Veuillez vérifier vos identifiants.");
         toast.error("Échec de la connexion. Veuillez vérifier vos identifiants.");

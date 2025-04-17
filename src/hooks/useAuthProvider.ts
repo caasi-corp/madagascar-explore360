@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -84,6 +85,27 @@ export function useAuthProvider() {
 
   const login = async (email: string, password: string) => {
     try {
+      console.log("Tentative de connexion avec:", email);
+      
+      // Cas spécial pour l'administrateur (utilisation des identifiants codés en dur)
+      if (email === 'admin@northgascartours.com' && password === 'Admin123!') {
+        console.log("Identifiants admin détectés, création d'une session spéciale");
+        
+        // Créer un utilisateur temporaire avec les droits d'administrateur
+        const adminUser: AuthUser = {
+          id: 'admin1',
+          email: 'admin@northgascartours.com',
+          role: 'admin',
+          firstName: 'Admin',
+          lastName: 'User'
+        };
+        
+        setUser(adminUser);
+        toast.success("Connexion administrative réussie!");
+        return adminUser;
+      }
+      
+      // Pour les utilisateurs normaux, utiliser l'authentification Supabase
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
