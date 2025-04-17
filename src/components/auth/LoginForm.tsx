@@ -7,7 +7,16 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import PasswordInput from './PasswordInput';
+import ErrorMessage from './ErrorMessage';
+import LoadingButton from './LoadingButton';
+
+interface LoginFormData {
+  email: string;
+  password: string;
+  remember: boolean;
+}
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -15,8 +24,7 @@ const LoginForm = () => {
   const { login, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
     remember: false,
@@ -39,10 +47,6 @@ const LoginForm = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -88,11 +92,8 @@ const LoginForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {loginError && (
-        <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md">
-          {loginError}
-        </div>
-      )}
+      <ErrorMessage message={loginError} />
+      
       <div className="space-y-2">
         <Label htmlFor="email">Adresse email</Label>
         <Input
@@ -105,6 +106,7 @@ const LoginForm = () => {
           onChange={handleChange}
         />
       </div>
+      
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="password">Mot de passe</Label>
@@ -112,34 +114,14 @@ const LoginForm = () => {
             Mot de passe oublié?
           </Button>
         </div>
-        <div className="relative">
-          <Input
-            id="password"
-            name="password"
-            type={showPassword ? "text" : "password"}
-            placeholder="••••••••"
-            required
-            value={formData.password}
-            onChange={handleChange}
-          />
-          <Button 
-            type="button"
-            variant="ghost" 
-            size="icon"
-            onClick={togglePasswordVisibility}
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
-          >
-            {showPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-            <span className="sr-only">
-              {showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-            </span>
-          </Button>
-        </div>
+        <PasswordInput
+          id="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+        />
       </div>
+      
       <div className="flex items-center space-x-2">
         <Checkbox 
           id="remember" 
@@ -156,20 +138,15 @@ const LoginForm = () => {
           Se souvenir de moi
         </label>
       </div>
-      <Button 
+      
+      <LoadingButton 
         type="submit" 
         className="w-full bg-madagascar-green hover:bg-madagascar-green/90"
-        disabled={isLoading}
+        isLoading={isLoading}
+        loadingText="Connexion en cours..."
       >
-        {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
-            Connexion en cours...
-          </>
-        ) : (
-          "Se connecter"
-        )}
-      </Button>
+        Se connecter
+      </LoadingButton>
     </form>
   );
 };
