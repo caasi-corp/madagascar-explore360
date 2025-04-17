@@ -13,6 +13,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const { login, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -42,6 +43,7 @@ const LoginForm = () => {
     if (user) return;
     
     setIsLoading(true);
+    setLoginError(null); // Reset any previous error
     
     try {
       const loggedInUser = await login(formData.email, formData.password);
@@ -49,11 +51,17 @@ const LoginForm = () => {
       if (loggedInUser) {
         toast.success("Connexion réussie!");
         navigate(loggedInUser.role === 'admin' ? "/admin" : "/user/dashboard");
-      } else if (!user) { // Vérifier si l'utilisateur n'est toujours pas connecté
-        toast.error("Échec de la connexion. Veuillez vérifier vos identifiants.");
+      } else {
+        // Ne pas afficher d'erreur si l'utilisateur est maintenant connecté
+        // (cela pourrait arriver via la mise à jour de l'état auth)
+        if (!user) {
+          setLoginError("Échec de la connexion. Veuillez vérifier vos identifiants.");
+          toast.error("Échec de la connexion. Veuillez vérifier vos identifiants.");
+        }
       }
     } catch (error) {
       console.error("Erreur lors de la connexion:", error);
+      setLoginError("Une erreur est survenue lors de la connexion");
       toast.error("Une erreur est survenue lors de la connexion");
     } finally {
       setIsLoading(false);
@@ -62,6 +70,11 @@ const LoginForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {loginError && (
+        <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md">
+          {loginError}
+        </div>
+      )}
       <div className="space-y-2">
         <Label htmlFor="email">Adresse email</Label>
         <Input
