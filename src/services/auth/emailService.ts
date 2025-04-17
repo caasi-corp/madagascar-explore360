@@ -12,33 +12,25 @@ export const emailService = {
     try {
       console.log("Vérification de l'existence de l'email:", email);
       
-      // Vérifier d'abord dans les utilisateurs Supabase
-      const { data: authData, error: authError } = await supabase.auth
-        .admin
-        .listUsers({
-          filter: { email }
-        });
+      // Vérifier dans la table profiles
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('email', email)
+        .maybeSingle();
       
-      if (authError) {
-        console.error("Erreur lors de la vérification dans auth:", authError);
-        
-        // Fallback: vérifier dans la table profiles si l'API admin n'est pas disponible
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('email')
-          .eq('email', email)
-          .maybeSingle();
-        
-        if (error) {
-          console.error("Erreur lors de la vérification de l'email dans profiles:", error);
-          return null;
-        }
-        
-        return data !== null;
+      if (error) {
+        console.error("Erreur lors de la vérification de l'email dans profiles:", error);
+        return null;
       }
       
-      // Si nous avons trouvé des utilisateurs avec cet email dans auth
-      return authData && authData.users && authData.users.length > 0;
+      // Si l'email existe dans la table profiles
+      if (data !== null) {
+        return true;
+      }
+      
+      // Si l'email n'existe pas dans la table profiles, on renvoie false
+      return false;
     } catch (error) {
       console.error("Erreur lors de la vérification de l'email:", error);
       return null;
