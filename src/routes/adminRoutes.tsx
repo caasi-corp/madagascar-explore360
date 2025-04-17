@@ -27,33 +27,39 @@ const adminRoutes = {
   path: '/admin',
   element: (
     <AdminRoute>
-      <AdminLayout />
+      <Outlet />
     </AdminRoute>
   ),
   children: [
-    { index: true, element: <AdminDashboard /> },
-    { path: 'tours', element: <Tours /> },
-    { path: 'tours/new', element: <TourEditor /> },
-    { path: 'tours/edit/:id', element: <TourEditor /> },
-    { path: 'tours/categories', element: <TourCategories /> },
-    { path: 'bookings', element: <Bookings /> },
-    { path: 'excursions-calendar', element: <ExcursionsCalendar /> },
-    { path: 'customers', element: <Customers /> },
-    { path: 'vehicles', element: <Vehicles /> },
-    { path: 'vehicles/new', element: <VehicleEditor /> },
-    { path: 'vehicles/edit/:id', element: <VehicleEditor /> },
-    { path: 'vehicles/bookings', element: <VehicleBookings /> },
-    { path: 'catamaran-cruises', element: <CatamaranCruises /> },
-    { path: 'catamaran-cruises/new', element: <CatamaranCruiseEditor /> },
-    { path: 'catamaran-cruises/edit/:id', element: <CatamaranCruiseEditor /> },
-    { path: 'hotels', element: <Hotels /> },
-    { path: 'reports', element: <Reports /> },
-    { path: 'messages', element: <Messages /> },
-    { path: 'settings', element: <Settings /> },
-    { path: 'settings/seo', element: <SeoSettings /> },
-    { path: 'settings/users', element: <UserManagement /> },
-    { path: 'users', element: <UserList /> },
-    { path: '*', element: <Navigate to="/admin" replace /> }
+    {
+      path: '',
+      element: <AdminLayout />,
+      children: [
+        { index: true, element: <AdminDashboard /> },
+        { path: 'tours', element: <Tours /> },
+        { path: 'tours/new', element: <TourEditor /> },
+        { path: 'tours/edit/:id', element: <TourEditor /> },
+        { path: 'tours/categories', element: <TourCategories /> },
+        { path: 'bookings', element: <Bookings /> },
+        { path: 'excursions-calendar', element: <ExcursionsCalendar /> },
+        { path: 'customers', element: <Customers /> },
+        { path: 'vehicles', element: <Vehicles /> },
+        { path: 'vehicles/new', element: <VehicleEditor /> },
+        { path: 'vehicles/edit/:id', element: <VehicleEditor /> },
+        { path: 'vehicles/bookings', element: <VehicleBookings /> },
+        { path: 'catamaran-cruises', element: <CatamaranCruises /> },
+        { path: 'catamaran-cruises/new', element: <CatamaranCruiseEditor /> },
+        { path: 'catamaran-cruises/edit/:id', element: <CatamaranCruiseEditor /> },
+        { path: 'hotels', element: <Hotels /> },
+        { path: 'reports', element: <Reports /> },
+        { path: 'messages', element: <Messages /> },
+        { path: 'settings', element: <Settings /> },
+        { path: 'settings/seo', element: <SeoSettings /> },
+        { path: 'settings/users', element: <UserManagement /> },
+        { path: 'users', element: <UserList /> },
+        { path: '*', element: <Navigate to="/admin" replace /> }
+      ]
+    }
   ]
 };
 
