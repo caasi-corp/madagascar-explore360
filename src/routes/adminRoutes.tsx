@@ -24,6 +24,7 @@ import Hotels from '@/pages/admin/Hotels';
 import UserList from '@/pages/admin/UserList';
 
 const adminRoutes = {
+  path: '/admin',
   element: (
     <AdminRoute>
       <AdminLayout />
