@@ -2,16 +2,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import RegisterForm from '@/components/auth/RegisterForm';
+import RegisterForm from '@/components/auth/register/RegisterForm';
 
 const Register = () => {
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center p-4 pt-24 mt-16">
-      <Card className="w-full max-w-lg">
+      <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Créer un compte</CardTitle>
           <CardDescription>
-            Inscrivez-vous pour commencer à réserver des circuits et aventures
+            Inscrivez-vous pour accéder à toutes les fonctionnalités
           </CardDescription>
         </CardHeader>
         <CardContent>
