@@ -64,19 +64,24 @@ export const authService = {
       console.log("Tentative d'inscription avec:", email, "prénom:", firstName, "nom:", lastName, "admin:", isAdmin);
       
       // Vérifier si l'email existe déjà
-      const { data: existingUser } = await supabase
+      const { data: existingUsers, error: checkError } = await supabase
         .from('profiles')
         .select('email')
-        .eq('email', email)
-        .maybeSingle();
+        .eq('email', email);
         
-      if (existingUser) {
-        console.log("Email déjà utilisé:", email);
-        toast.error("Cette adresse email est déjà utilisée.");
+      if (checkError) {
+        console.error("Error checking existing user:", checkError);
+        toast.error("Erreur lors de la vérification de l'email");
         return false;
       }
       
-      // Inscription de l'utilisateur
+      if (existingUsers && existingUsers.length > 0) {
+        console.log("Email déjà utilisé:", email);
+        toast.error("Cette adresse email est déjà utilisée");
+        return false;
+      }
+      
+      // Inscription de l'utilisateur avec email/mot de passe
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -91,29 +96,21 @@ export const authService = {
       
       if (error) {
         console.error("Registration error:", error.message);
-        if (error.message.includes('email') && error.message.includes('already')) {
-          toast.error("Cette adresse email est déjà utilisée.");
-        } else {
-          toast.error(error.message);
-        }
+        toast.error("Erreur d'inscription: " + error.message);
         return false;
       }
 
-      // Si l'inscription est réussie, mettre à jour manuellement le rôle dans profiles si c'est un admin
-      if (data.user && isAdmin) {
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({ role: 'admin' })
-          .eq('id', data.user.id);
-          
-        if (updateError) {
-          console.error("Erreur lors de la définition du rôle admin:", updateError);
-          // On continue car l'utilisateur est créé, mais sans le rôle admin
-        }
+      if (!data.user) {
+        console.error("No user returned from registration");
+        toast.error("Échec de l'inscription: aucun utilisateur créé");
+        return false;
       }
 
+      // Succès de l'inscription
       console.log("Inscription réussie pour:", email, "avec le rôle:", isAdmin ? 'admin' : 'user');
-      toast.success("Inscription réussie ! Veuillez vérifier votre email pour confirmer votre compte.");
+      toast.success(`Inscription réussie${isAdmin ? ' en tant qu\'administrateur' : ''} !`);
+      
+      // Rediriger vers la page de connexion
       return true;
     } catch (error) {
       console.error("Registration error:", error);
@@ -132,10 +129,10 @@ export const authService = {
   logout: async (): Promise<void> => {
     try {
       await supabase.auth.signOut();
-      toast.success("Logout successful");
+      toast.success("Déconnexion réussie");
     } catch (error) {
       console.error("Logout error:", error);
-      toast.error("Error during logout");
+      toast.error("Erreur lors de la déconnexion");
     }
   },
 

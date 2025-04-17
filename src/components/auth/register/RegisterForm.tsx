@@ -19,7 +19,7 @@ const RegisterForm = () => {
     password: '',
     confirmPassword: '',
     terms: false,
-    isAdmin: false, // Nouvelle option pour créer un compte administrateur
+    isAdmin: false
   });
   
   const [errors, setErrors] = useState<RegisterErrors>({
@@ -56,22 +56,24 @@ const RegisterForm = () => {
     
     try {
       console.log("Tentative d'inscription avec:", formData.email, "admin:", formData.isAdmin);
+      
       const success = await register(
         formData.email, 
         formData.password, 
         formData.firstName, 
         formData.lastName,
-        formData.isAdmin // Passer l'option admin
+        formData.isAdmin
       );
       
       if (success) {
-        toast.success(`Inscription réussie${formData.isAdmin ? ' en tant qu\'administrateur' : ''} ! Veuillez vérifier votre email pour confirmer votre compte.`);
+        toast.success(`Inscription réussie${formData.isAdmin ? ' en tant qu\'administrateur' : ''} !`);
         
+        // Rediriger vers la page de connexion après un court délai
         setTimeout(() => {
           navigate('/login');
         }, 1500);
       } else {
-        toast.error("Une erreur est survenue lors de l'inscription. Veuillez réessayer.");
+        toast.error("L'inscription a échoué. Veuillez réessayer.");
       }
     } catch (error) {
       if (error instanceof Error) {

@@ -18,9 +18,13 @@ export function useAuthProvider() {
         setSession(currentSession);
         
         if (currentSession?.user) {
-          const userData = await authService.fetchUserProfile(currentSession.user.id);
-          if (userData) {
-            setUser(userData);
+          try {
+            const userData = await authService.fetchUserProfile(currentSession.user.id);
+            if (userData) {
+              setUser(userData);
+            }
+          } catch (error) {
+            console.error("Error fetching user profile:", error);
           }
         } else {
           setUser(null);
@@ -34,9 +38,13 @@ export function useAuthProvider() {
         const { data: { session: initialSession } } = await supabase.auth.getSession();
         
         if (initialSession?.user) {
-          const userData = await authService.fetchUserProfile(initialSession.user.id);
-          if (userData) {
-            setUser(userData);
+          try {
+            const userData = await authService.fetchUserProfile(initialSession.user.id);
+            if (userData) {
+              setUser(userData);
+            }
+          } catch (error) {
+            console.error("Error initializing authentication:", error);
           }
         }
       } catch (error) {

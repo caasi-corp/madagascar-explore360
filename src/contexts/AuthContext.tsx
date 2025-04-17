@@ -10,17 +10,11 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<AuthUser | null>;
   register: (email: string, password: string, firstName: string, lastName: string, isAdmin?: boolean) => Promise<boolean>;
   logout: () => Promise<void>;
-  deleteAllUsers?: () => Promise<boolean>; // New function to delete all users
+  deleteAllUsers?: () => Promise<boolean>;
 }
 
 // Creating context with a default value
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  isLoading: true,
-  login: async () => null,
-  register: async () => false,
-  logout: async () => {},
-});
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const auth = useAuthProvider();
@@ -32,4 +26,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth doit être utilisé à l'intérieur d'un AuthProvider");
+  }
+  return context;
+};
