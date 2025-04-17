@@ -6,12 +6,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { UserPlus } from 'lucide-react';
-import { userAPI } from '@/lib/store';
-import { RegisterFormData } from '@/types/auth';
+import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
+
+interface RegisterFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
@@ -40,17 +48,14 @@ const RegisterForm: React.FC = () => {
     setIsLoading(true);
     
     try {
-      const newUser = await userAPI.register({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        password: formData.password
-      });
+      const user = await register(
+        formData.email,
+        formData.password,
+        formData.firstName,
+        formData.lastName
+      );
       
-      if (newUser) {
-        localStorage.setItem('userId', newUser.id);
-        localStorage.setItem('userRole', newUser.role);
-        toast.success('Compte créé avec succès !');
+      if (user) {
         navigate('/user/dashboard');
       }
     } catch (error) {

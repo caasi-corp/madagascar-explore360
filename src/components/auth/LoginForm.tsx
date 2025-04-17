@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -6,12 +7,17 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { LogIn, User, Lock, Eye, EyeOff, AlertTriangle } from 'lucide-react';
-import { LoginFormData } from "@/types/auth";
 import { useAuth } from '@/contexts/AuthContext';
 
 interface LoginFormProps {
   onDemoLogin: (email: string, password: string) => void;
   loginError: string | null;
+}
+
+interface LoginFormData {
+  email: string;
+  password: string;
+  remember: boolean;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onDemoLogin, loginError }) => {

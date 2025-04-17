@@ -17,8 +17,8 @@ import {
 const AuthStatus: React.FC = () => {
   const { user, logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
   };
 
   // Si l'utilisateur est connecté
