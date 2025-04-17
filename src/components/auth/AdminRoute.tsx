@@ -3,7 +3,11 @@ import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
-const AdminRoute: React.FC = () => {
+interface AdminRouteProps {
+  children?: React.ReactNode;
+}
+
+const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
   const { user, isLoading } = useAuth();
 
   // Afficher un indicateur de chargement pendant la vérification de l'authentification
@@ -17,7 +21,7 @@ const AdminRoute: React.FC = () => {
   }
 
   // Si l'utilisateur est connecté et est un administrateur, afficher les routes enfants
-  return <Outlet />;
+  return children ? <>{children}</> : <Outlet />;
 };
 
 export default AdminRoute;
