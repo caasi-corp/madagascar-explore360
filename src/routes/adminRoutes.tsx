@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import AdminLayout from '@/components/AdminLayout';
 import AdminDashboard from '@/pages/AdminDashboard';
 import AdminRoute from '@/components/auth/AdminRoute';
