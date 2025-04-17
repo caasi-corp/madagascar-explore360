@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from "lucide-react";
+import { supabase } from '@/integrations/supabase/client';
 
 const RegisterForm = () => {
   const navigate = useNavigate();
@@ -89,6 +90,34 @@ const RegisterForm = () => {
     return isValid;
   };
   
+  const checkEmailExists = async (email: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: false
+        }
+      });
+      
+      // Si l'API ne renvoie pas d'erreur, cela signifie que l'email existe déjà
+      if (!error) {
+        return true;
+      }
+      
+      // Si l'erreur est "User not found", l'email n'existe pas encore
+      if (error.message.includes('User not found') || error.message.includes('Invalid login credentials')) {
+        return false;
+      }
+      
+      // Pour toute autre erreur, on considère que la vérification a échoué
+      console.error('Erreur lors de la vérification de l'email:', error);
+      return null;
+    } catch (error) {
+      console.error('Erreur lors de la vérification de l\'email:', error);
+      return null;
+    }
+  };
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -99,11 +128,31 @@ const RegisterForm = () => {
     setIsLoading(true);
     
     try {
+      // Vérifier si l'email existe déjà
+      const emailExists = await checkEmailExists(formData.email);
+      
+      if (emailExists === true) {
+        setErrors(prev => ({ 
+          ...prev, 
+          email: 'Cet email est déjà utilisé. Veuillez vous connecter ou utiliser une autre adresse email.' 
+        }));
+        setIsLoading(false);
+        return;
+      }
+      
+      if (emailExists === null) {
+        toast.error("Impossible de vérifier la disponibilité de l'email. Veuillez réessayer plus tard.");
+        setIsLoading(false);
+        return;
+      }
+      
+      // Si l'email n'existe pas, procéder à l'inscription
       const user = await register(formData.email, formData.password, formData.firstName, formData.lastName);
       
       if (user) {
         toast.success("Inscription réussie! Bienvenue chez North Gasikara Tours.");
-        navigate('/user/dashboard');
+        // Rediriger vers la page de connexion
+        navigate('/login');
       }
     } catch (error) {
       console.error("Erreur lors de l'inscription:", error);
