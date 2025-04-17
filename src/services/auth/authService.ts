@@ -61,6 +61,9 @@ export const authService = {
    */
   register: async (email: string, password: string, firstName: string, lastName: string): Promise<boolean> => {
     try {
+      console.log("Tentative d'inscription avec:", email, "prénom:", firstName, "nom:", lastName);
+      
+      // Vérifier si l'email existe déjà
       const { data: existingUser } = await supabase
         .from('profiles')
         .select('email')
@@ -68,10 +71,12 @@ export const authService = {
         .maybeSingle();
         
       if (existingUser) {
+        console.log("Email déjà utilisé:", email);
         toast.error("Cette adresse email est déjà utilisée.");
         return false;
       }
       
+      // Inscription de l'utilisateur
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -93,10 +98,16 @@ export const authService = {
         return false;
       }
 
+      console.log("Inscription réussie pour:", email);
       toast.success("Inscription réussie ! Veuillez vérifier votre email pour confirmer votre compte.");
       return true;
     } catch (error) {
       console.error("Registration error:", error);
+      if (error instanceof Error) {
+        toast.error("Erreur d'inscription: " + error.message);
+      } else {
+        toast.error("Une erreur est survenue lors de l'inscription");
+      }
       return false;
     }
   },

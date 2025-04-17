@@ -1,13 +1,12 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2 } from "lucide-react";
-import { emailService } from '@/services/auth/emailService';
 import { RegisterFormData, RegisterErrors, validateRegisterForm } from '@/utils/validation/registerValidation';
 import RegisterFormFields from './RegisterFormFields';
+import LoadingButton from '../LoadingButton';
+import { emailService } from '@/services/auth/emailService';
 
 const RegisterForm = () => {
   const navigate = useNavigate();
@@ -82,25 +81,14 @@ const RegisterForm = () => {
     setIsLoading(true);
     
     try {
-      // Vérification double pour s'assurer que l'email n'existe pas déjà
-      const emailExists = await emailService.checkEmailExists(formData.email);
-      
-      if (emailExists === true) {
-        setErrors(prev => ({ 
-          ...prev, 
-          email: 'Cet email est déjà utilisé. Veuillez vous connecter ou utiliser une autre adresse email.' 
-        }));
-        setIsLoading(false);
-        return;
-      }
-      
-      if (emailExists === null) {
-        toast.error("Impossible de vérifier la disponibilité de l'email. Veuillez réessayer plus tard.");
-        setIsLoading(false);
-        return;
-      }
-      
-      const success = await register(formData.email, formData.password, formData.firstName, formData.lastName);
+      // Inscription de l'utilisateur directement sans vérification supplémentaire
+      console.log("Tentative d'inscription avec:", formData.email);
+      const success = await register(
+        formData.email, 
+        formData.password, 
+        formData.firstName, 
+        formData.lastName
+      );
       
       if (success) {
         toast.success("Inscription réussie ! Veuillez vérifier votre email pour confirmer votre compte.");
@@ -108,17 +96,24 @@ const RegisterForm = () => {
         setTimeout(() => {
           navigate('/login');
         }, 1500);
+      } else {
+        toast.error("Une erreur est survenue lors de l'inscription. Veuillez réessayer.");
       }
     } catch (error) {
-      // Vérifier si l'erreur est une erreur de duplication
-      if (error instanceof Error && error.message.includes('email already in use')) {
-        setErrors(prev => ({ 
-          ...prev, 
-          email: 'Cet email est déjà utilisé. Veuillez vous connecter ou utiliser une autre adresse email.' 
-        }));
+      // Traitement spécifique selon le type d'erreur
+      if (error instanceof Error) {
+        if (error.message.includes('email already in use')) {
+          setErrors(prev => ({ 
+            ...prev, 
+            email: 'Cet email est déjà utilisé. Veuillez vous connecter ou utiliser une autre adresse email.' 
+          }));
+        } else {
+          console.error("Erreur lors de l'inscription:", error);
+          toast.error("Une erreur est survenue lors de l'inscription: " + error.message);
+        }
       } else {
-        console.error("Erreur lors de l'inscription:", error);
-        toast.error("Une erreur est survenue lors de l'inscription");
+        console.error("Erreur inconnue lors de l'inscription:", error);
+        toast.error("Une erreur inconnue est survenue lors de l'inscription");
       }
     } finally {
       setIsLoading(false);
@@ -134,20 +129,14 @@ const RegisterForm = () => {
         setFormData={setFormData}
       />
       
-      <Button 
+      <LoadingButton 
         type="submit" 
         className="w-full bg-madagascar-green hover:bg-madagascar-green/90"
-        disabled={isLoading || emailCheckInProgress}
+        isLoading={isLoading}
+        loadingText="Inscription en cours..."
       >
-        {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Inscription en cours...
-          </>
-        ) : (
-          "S'inscrire"
-        )}
-      </Button>
+        S'inscrire
+      </LoadingButton>
     </form>
   );
 };
