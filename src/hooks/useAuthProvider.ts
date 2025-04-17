@@ -11,48 +11,45 @@ export function useAuthProvider() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Configure les écouteurs d'événements d'authentification d'abord
+    // Set up authentication state change listeners
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
+      async (event, currentSession) => {
         console.log('Auth state changed:', event);
         setSession(currentSession);
         
         if (currentSession?.user) {
-          // Utilise setTimeout pour éviter les appels récursifs
-          setTimeout(async () => {
-            try {
-              // Récupère le profil utilisateur
-              const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', currentSession.user.id)
-                .single();
-              
-              if (error) {
-                console.error('Erreur lors de la récupération du profil:', error);
-                return;
-              }
-              
-              if (data) {
-                setUser({
-                  id: data.id,
-                  email: data.email,
-                  role: data.role,
-                  firstName: data.first_name,
-                  lastName: data.last_name
-                });
-              }
-            } catch (error) {
-              console.error("Erreur lors de la récupération du profil:", error);
+          try {
+            // Get user profile
+            const { data, error } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', currentSession.user.id)
+              .single();
+            
+            if (error) {
+              console.error('Error fetching profile:', error);
+              return;
             }
-          }, 0);
+            
+            if (data) {
+              setUser({
+                id: data.id,
+                email: data.email,
+                role: data.role,
+                firstName: data.first_name,
+                lastName: data.last_name
+              });
+            }
+          } catch (error) {
+            console.error("Error fetching profile:", error);
+          }
         } else {
           setUser(null);
         }
       }
     );
     
-    // Vérifie la session existante
+    // Check for existing session
     const initializeAuth = async () => {
       try {
         setIsLoading(true);
@@ -76,7 +73,7 @@ export function useAuthProvider() {
           }
         }
       } catch (error) {
-        console.error("Erreur lors de l'initialisation de l'authentification:", error);
+        console.error("Error initializing authentication:", error);
       } finally {
         setIsLoading(false);
       }
@@ -97,18 +94,23 @@ export function useAuthProvider() {
       });
       
       if (error) {
-        console.error("Erreur lors de la connexion:", error.message);
+        console.error("Login error:", error.message);
         toast.error(error.message);
         return null;
       }
       
       if (data.user) {
-        // Si login réussi, retourner directement un objet utilisateur sans attendre la mise à jour du state
-        const { data: profileData } = await supabase
+        // If login successful, return user object directly without waiting for state update
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', data.user.id)
           .single();
+          
+        if (profileError) {
+          console.error("Profile fetch error:", profileError.message);
+          return null;
+        }
           
         if (profileData) {
           return {
@@ -121,9 +123,9 @@ export function useAuthProvider() {
         }
       }
       
-      return user;
+      return null;
     } catch (error) {
-      console.error("Erreur lors de la connexion:", error);
+      console.error("Login error:", error);
       return null;
     }
   };
@@ -142,15 +144,15 @@ export function useAuthProvider() {
       });
       
       if (error) {
-        console.error("Erreur lors de l'inscription:", error.message);
+        console.error("Registration error:", error.message);
         toast.error(error.message);
         return false;
       }
 
-      toast.success("Inscription réussie! Veuillez vérifier votre email pour confirmer votre compte.");
+      toast.success("Registration successful! Please check your email to confirm your account.");
       return true;
     } catch (error) {
-      console.error("Erreur lors de l'inscription:", error);
+      console.error("Registration error:", error);
       return false;
     }
   };
@@ -158,10 +160,11 @@ export function useAuthProvider() {
   const logout = async () => {
     try {
       await supabase.auth.signOut();
-      toast.success("Déconnexion réussie");
+      setUser(null);
+      toast.success("Logout successful");
     } catch (error) {
-      console.error("Erreur lors de la déconnexion:", error);
-      toast.error("Erreur lors de la déconnexion");
+      console.error("Logout error:", error);
+      toast.error("Error during logout");
     }
   };
 
