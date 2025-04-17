@@ -14,7 +14,8 @@ import {
   MessageCircle,
   Settings,
   Ship,
-  LucideIcon
+  LucideIcon,
+  UsersRound
 } from 'lucide-react';
 import SidebarNavGroup from './SidebarNavGroup';
 
@@ -49,6 +50,11 @@ const navItems: NavItem[] = [
       { name: 'Liste des réservations', href: '/admin/bookings', icon: Calendar },
       { name: 'Calendrier des excursions', href: '/admin/excursions-calendar', icon: CalendarDays }
     ]
+  },
+  {
+    name: 'Utilisateurs',
+    href: '/admin/users',
+    icon: UsersRound
   },
   {
     name: 'Clients',
