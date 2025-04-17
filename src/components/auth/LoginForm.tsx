@@ -46,18 +46,15 @@ const LoginForm = () => {
     setLoginError(null); // Reset any previous error
     
     try {
+      // Faire la tentative de connexion
       const loggedInUser = await login(formData.email, formData.password);
       
       if (loggedInUser) {
         toast.success("Connexion réussie!");
-        navigate(loggedInUser.role === 'admin' ? "/admin" : "/user/dashboard");
+        // Redirection gérée dans le useEffect ci-dessus
       } else {
-        // Ne pas afficher d'erreur si l'utilisateur est maintenant connecté
-        // (cela pourrait arriver via la mise à jour de l'état auth)
-        if (!user) {
-          setLoginError("Échec de la connexion. Veuillez vérifier vos identifiants.");
-          toast.error("Échec de la connexion. Veuillez vérifier vos identifiants.");
-        }
+        setLoginError("Échec de la connexion. Veuillez vérifier vos identifiants.");
+        toast.error("Échec de la connexion. Veuillez vérifier vos identifiants.");
       }
     } catch (error) {
       console.error("Erreur lors de la connexion:", error);
@@ -67,6 +64,15 @@ const LoginForm = () => {
       setIsLoading(false);
     }
   };
+
+  // Si l'utilisateur est déjà connecté, on peut retourner null ou un loader
+  if (user) {
+    return (
+      <div className="flex justify-center items-center py-4">
+        <Loader2 className="h-8 w-8 animate-spin text-madagascar-green" />
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

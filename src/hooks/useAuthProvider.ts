@@ -102,6 +102,25 @@ export function useAuthProvider() {
         return null;
       }
       
+      if (data.user) {
+        // Si login réussi, retourner directement un objet utilisateur sans attendre la mise à jour du state
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+          
+        if (profileData) {
+          return {
+            id: profileData.id,
+            email: profileData.email,
+            role: profileData.role,
+            firstName: profileData.first_name,
+            lastName: profileData.last_name
+          };
+        }
+      }
+      
       return user;
     } catch (error) {
       console.error("Erreur lors de la connexion:", error);
