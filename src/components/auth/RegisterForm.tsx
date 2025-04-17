@@ -110,10 +110,10 @@ const RegisterForm = () => {
       }
       
       // Pour toute autre erreur, on considère que la vérification a échoué
-      console.error('Erreur lors de la vérification de l'email:', error);
+      console.error("Erreur lors de la vérification de l'email:", error);
       return null;
     } catch (error) {
-      console.error('Erreur lors de la vérification de l\'email:', error);
+      console.error("Erreur lors de la vérification de l'email:", error);
       return null;
     }
   };
