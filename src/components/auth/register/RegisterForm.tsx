@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -76,6 +75,8 @@ const RegisterForm = () => {
       const success = await register(formData.email, formData.password, formData.firstName, formData.lastName);
       
       if (success) {
+        toast.success("Inscription réussie ! Veuillez vérifier votre email pour confirmer votre compte.");
+        
         setTimeout(() => {
           navigate('/login');
         }, 1500);
