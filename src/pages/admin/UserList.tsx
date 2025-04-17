@@ -2,12 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { User, Mail, Shield, User2, CalendarDays } from 'lucide-react';
+import { User, Mail, Shield, User2, CalendarDays, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface UserProfile {
   id: string;
@@ -96,7 +97,10 @@ const UserList = () => {
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle className="text-2xl">Liste des Utilisateurs</CardTitle>
+            <div>
+              <CardTitle className="text-2xl">Liste des Utilisateurs</CardTitle>
+              <CardDescription>Gestion des comptes utilisateurs de la plateforme</CardDescription>
+            </div>
             <Button 
               variant="outline" 
               onClick={fetchUsers}
@@ -107,6 +111,15 @@ const UserList = () => {
           </div>
         </CardHeader>
         <CardContent>
+          <Alert className="mb-6 border-amber-500 text-amber-500">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Information de sécurité</AlertTitle>
+            <AlertDescription>
+              Pour des raisons de sécurité, les mots de passe des utilisateurs sont stockés sous forme de hachage cryptographique et ne peuvent pas être affichés en clair. 
+              C'est une pratique standard de sécurité qui protège les données sensibles des utilisateurs.
+            </AlertDescription>
+          </Alert>
+
           {loading ? (
             <div className="flex justify-center items-center py-10">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-madagascar-green"></div>
@@ -142,6 +155,7 @@ const UserList = () => {
                               {user.first_name || ''} {user.last_name || ''}
                               {!user.first_name && !user.last_name && <span className="text-muted-foreground italic">Non renseigné</span>}
                             </div>
+                            <div className="text-xs text-muted-foreground">ID: {user.id}</div>
                           </div>
                         </div>
                       </TableCell>

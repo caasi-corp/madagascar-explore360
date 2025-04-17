@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface AdminRouteProps {
@@ -9,6 +9,7 @@ interface AdminRouteProps {
 
 const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
   const { user, isLoading } = useAuth();
+  const location = useLocation();
 
   // Afficher un indicateur de chargement pendant la vérification de l'authentification
   if (isLoading) {
@@ -17,7 +18,8 @@ const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
 
   // Vérifier si l'utilisateur est connecté et a le rôle d'administrateur
   if (!user || user.role !== 'admin') {
-    return <Navigate to="/login" replace />;
+    // Rediriger vers la page de connexion avec l'URL de retour
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
   // Si l'utilisateur est connecté et est un administrateur, afficher les routes enfants
