@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
@@ -12,7 +11,7 @@ import { tourAPI } from '@/lib/store';
 import TourCard from '@/components/TourCard';
 
 const TourDetail = () => {
-  const { tourId } = useParams<{ tourId: string }>();
+  const { id } = useParams<{ id: string }>();
   const [tour, setTour] = useState<Tour | null>(null);
   const [relatedTours, setRelatedTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,15 +21,15 @@ const TourDetail = () => {
     const fetchTourData = async () => {
       try {
         setLoading(true);
-        if (!tourId) return;
+        if (!id) return;
         
-        console.log('Chargement du circuit avec ID:', tourId);
-        const tourData = await tourAPI.getById(tourId);
+        console.log('Chargement du circuit avec ID:', id);
+        const tourData = await tourAPI.getById(id);
         console.log('Données du circuit récupérées:', tourData);
         setTour(tourData);
         
         if (tourData?.category) {
-          const related = await tourAPI.getRelated(tourId, tourData.category);
+          const related = await tourAPI.getRelated(id, tourData.category);
           setRelatedTours(related);
         }
       } catch (error) {
@@ -46,9 +45,9 @@ const TourDetail = () => {
     };
 
     fetchTourData();
-    // Scroll to top when component mounts or tourId changes
+    // Scroll to top when component mounts or id changes
     window.scrollTo(0, 0);
-  }, [tourId, toast]);
+  }, [id, toast]);
 
   if (loading) {
     return (
