@@ -25,11 +25,7 @@ import UserList from '@/pages/admin/UserList';
 
 const adminRoutes = {
   path: '/admin',
-  element: (
-    <AdminRoute>
-      <Outlet />
-    </AdminRoute>
-  ),
+  element: <AdminRoute><Outlet /></AdminRoute>,
   children: [
     {
       path: '',

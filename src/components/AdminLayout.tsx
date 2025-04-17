@@ -5,7 +5,11 @@ import AdminSidebar from './AdminSidebar';
 import Footer from './Footer';
 import { Outlet } from 'react-router-dom';
 
-const AdminLayout: React.FC = () => {
+interface AdminLayoutProps {
+  children?: React.ReactNode;
+}
+
+const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   
   useEffect(() => {
@@ -34,7 +38,7 @@ const AdminLayout: React.FC = () => {
       <div className="flex flex-col flex-1 md:ml-64">
         <AdminHeader toggleTheme={toggleTheme} theme={theme} />
         <main className="flex-grow p-6">
-          <Outlet />
+          {children || <Outlet />}
         </main>
         <Footer />
       </div>
