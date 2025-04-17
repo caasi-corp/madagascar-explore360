@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,30 +8,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from "lucide-react";
-import PasswordInput from './PasswordInput';
-import ErrorMessage from './ErrorMessage';
-import LoadingButton from './LoadingButton';
-
-interface LoginFormData {
-  email: string;
-  password: string;
-  remember: boolean;
-}
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { login, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [loginError, setLoginError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<LoginFormData>({
+  const [formData, setFormData] = useState({
     email: '',
     password: '',
     remember: false,
   });
-
-  // Récupérer l'URL de retour si elle existe
-  const from = location.state?.from || (user?.role === 'admin' ? "/admin" : "/user/dashboard");
 
   // Rediriger l'utilisateur s'il est déjà connecté
   useEffect(() => {
@@ -39,8 +25,6 @@ const LoginForm = () => {
       // Utilisateur déjà connecté, rediriger vers le tableau de bord approprié
       navigate(user.role === 'admin' ? "/admin" : "/user/dashboard");
     }
-    // Réinitialiser le message d'erreur au chargement
-    setLoginError(null);
   }, [user, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,11 +33,6 @@ const LoginForm = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-    
-    // Effacer le message d'erreur lorsque l'utilisateur commence à modifier les champs
-    if (loginError) {
-      setLoginError(null);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,44 +42,26 @@ const LoginForm = () => {
     if (user) return;
     
     setIsLoading(true);
-    setLoginError(null); // Reset any previous error
     
     try {
-      console.log("Tentative de connexion avec:", formData.email);
-      
-      // Faire la tentative de connexion avec Supabase
       const loggedInUser = await login(formData.email, formData.password);
       
       if (loggedInUser) {
         toast.success("Connexion réussie!");
-        // Rediriger vers la page précédente ou le tableau de bord
-        navigate(from);
-      } else {
-        setLoginError("Échec de la connexion. Veuillez vérifier vos identifiants.");
+        navigate(loggedInUser.role === 'admin' ? "/admin" : "/user/dashboard");
+      } else if (!user) { // Vérifier si l'utilisateur n'est toujours pas connecté
         toast.error("Échec de la connexion. Veuillez vérifier vos identifiants.");
       }
     } catch (error) {
       console.error("Erreur lors de la connexion:", error);
-      setLoginError("Échec de la connexion. Veuillez vérifier vos identifiants.");
-      toast.error("Échec de la connexion. Veuillez vérifier vos identifiants.");
+      toast.error("Une erreur est survenue lors de la connexion");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Si l'utilisateur est déjà connecté, on peut retourner null ou un loader
-  if (user) {
-    return (
-      <div className="flex justify-center items-center py-4">
-        <Loader2 className="h-8 w-8 animate-spin text-madagascar-green" />
-      </div>
-    );
-  }
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {loginError && <ErrorMessage message={loginError} />}
-      
       <div className="space-y-2">
         <Label htmlFor="email">Adresse email</Label>
         <Input
@@ -113,7 +74,6 @@ const LoginForm = () => {
           onChange={handleChange}
         />
       </div>
-      
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="password">Mot de passe</Label>
@@ -121,14 +81,16 @@ const LoginForm = () => {
             Mot de passe oublié?
           </Button>
         </div>
-        <PasswordInput
+        <Input
           id="password"
           name="password"
+          type="password"
+          placeholder="••••••••"
+          required
           value={formData.password}
           onChange={handleChange}
         />
       </div>
-      
       <div className="flex items-center space-x-2">
         <Checkbox 
           id="remember" 
@@ -145,15 +107,20 @@ const LoginForm = () => {
           Se souvenir de moi
         </label>
       </div>
-      
-      <LoadingButton 
+      <Button 
         type="submit" 
         className="w-full bg-madagascar-green hover:bg-madagascar-green/90"
-        isLoading={isLoading}
-        loadingText="Connexion en cours..."
+        disabled={isLoading}
       >
-        Se connecter
-      </LoadingButton>
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
+            Connexion en cours...
+          </>
+        ) : (
+          "Se connecter"
+        )}
+      </Button>
     </form>
   );
 };

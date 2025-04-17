@@ -18,7 +18,6 @@ export interface RegisterFormData {
   password: string;
   confirmPassword: string;
   terms: boolean;
-  isAdmin?: boolean; // Added optional admin flag
 }
 
 export const validateRegisterForm = (formData: RegisterFormData): { isValid: boolean; errors: RegisterErrors } => {

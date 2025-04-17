@@ -12,7 +12,6 @@ export const emailService = {
     try {
       console.log("Vérification de l'existence de l'email:", email);
       
-      // Vérifier dans la table profiles
       const { data, error } = await supabase
         .from('profiles')
         .select('email')
@@ -20,17 +19,11 @@ export const emailService = {
         .maybeSingle();
       
       if (error) {
-        console.error("Erreur lors de la vérification de l'email dans profiles:", error);
+        console.error("Erreur lors de la vérification de l'email:", error);
         return null;
       }
       
-      // Si l'email existe dans la table profiles
-      if (data !== null) {
-        return true;
-      }
-      
-      // Si l'email n'existe pas dans la table profiles, on renvoie false
-      return false;
+      return data !== null;
     } catch (error) {
       console.error("Erreur lors de la vérification de l'email:", error);
       return null;
