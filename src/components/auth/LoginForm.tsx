@@ -58,8 +58,8 @@ const LoginForm = () => {
       }
     } catch (error) {
       console.error("Erreur lors de la connexion:", error);
-      setLoginError("Une erreur est survenue lors de la connexion");
-      toast.error("Une erreur est survenue lors de la connexion");
+      setLoginError("Échec de la connexion. Veuillez vérifier vos identifiants.");
+      toast.error("Échec de la connexion. Veuillez vérifier vos identifiants.");
     } finally {
       setIsLoading(false);
     }
