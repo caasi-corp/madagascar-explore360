@@ -137,11 +137,12 @@ const RegisterForm = () => {
         return;
       }
       
-      const user = await register(formData.email, formData.password, formData.firstName, formData.lastName);
+      const success = await register(formData.email, formData.password, formData.firstName, formData.lastName);
       
-      if (user) {
-        toast.success("Inscription réussie! Bienvenue chez North Gasikara Tours.");
-        navigate('/login');
+      if (success) {
+        setTimeout(() => {
+          navigate('/login');
+        }, 1500);
       }
     } catch (error) {
       console.error("Erreur lors de l'inscription:", error);

@@ -17,7 +17,7 @@ interface AuthContextType {
   session: Session | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<AuthUser | null>;
-  register: (email: string, password: string, firstName: string, lastName: string) => Promise<AuthUser | null>;
+  register: (email: string, password: string, firstName: string, lastName: string) => Promise<boolean>;
   logout: () => Promise<void>;
 }
 
@@ -143,14 +143,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) {
         console.error("Erreur lors de l'inscription:", error.message);
         toast.error(error.message);
-        return null;
+        return false;
       }
 
       toast.success("Inscription réussie! Veuillez vérifier votre email pour confirmer votre compte.");
-      return user;
+      return true; // Retourner true au lieu de user qui est null à ce stade
     } catch (error) {
       console.error("Erreur lors de l'inscription:", error);
-      return null;
+      return false;
     }
   };
 
